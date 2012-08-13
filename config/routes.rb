@@ -1,4 +1,31 @@
 FoodTruck::Application.routes.draw do
+
+  resources :meals
+
+  resources :cuisines
+
+  resources :colleges
+
+  resources :city_states
+
+  resources :metros
+
+  resources :twitter_accounts
+
+  root to: 'root#route_subdomain', constraints: lambda {|req| tokens =req.host.downcase.split('.'); (3==tokens.size && 'www'!=tokens.first) ? true : false }
+  root to: 'root#index'
+
+
+
+
+ 
+  root to: 'root#index'
+
+  scope "/", controller: :food_truck do
+    get "index", as: :home_page
+    get ":name", to: :lookup, as: :lookup
+  end
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

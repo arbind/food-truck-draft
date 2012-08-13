@@ -1,0 +1,100 @@
+FoodTruckKeywords.txt
+
+
+*overview:
+food truck
+lunch truck
+food truck la
+catering food trucks
+taco truck
+food truck festival
+la food truck festival
+great food truck
+pizza truck
+fiesta
+miami
+fest
+best 
+portland
+san francisco
+chicago
+atlanta
+top la
+boston
+san diego
+gourmet
+menu
+dallas
+orange county
+schedule
+map
+houston
+seattle
+mexican
+austin
+orlando
+california
+florida
+
+
+
+*metros:
+la
+dc
+nyc
+ny
+new york
+los angeles
+miami
+best la
+portland
+san francisco
+chicago
+atlanta
+top la
+boston
+san diego
+dallas
+orange county
+houston
+seattle
+austin
+orlando
+
+
+
+*states:
+california
+florida
+
+
+
+
+*service:
+ratings [top yelp ratings, top foodtruck.us rated most liked, most wanting to try, most shared]
+menu
+schedule
+map
+
+
+
+*qualifiers:
+great
+best
+top
+
+
+
+*cuisine:
+hot dog
+taco
+pizza
+mexican
+
+
+
+*festival:
+festival
+fiesta
+fest
+food truck friday

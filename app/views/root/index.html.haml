@@ -1,0 +1,13 @@
+.x= "Have a #{@target_interest[:meal_kw]} meal!"
+.x= "Truck: #{@target_interest[:food_truck_kw]}"
+.x= "#{@target_interest[:fest_kw]} Festival"
+.x= "Cuisine: #{@target_interest[:cuisine_kw]}"
+.x= "College of #{@target_interest[:college_kw]}"
+.x= "City of #{@target_interest[:location][:city_kw]}"
+.x= "State of #{@target_interest[:location][:state_kw]}"
+.x= "around #{@target_interest[:location][:metro_kw]}" 
+
+/ - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
+
+%h1 index
+= request.host

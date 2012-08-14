@@ -229,3 +229,8 @@
 [08/12/12 23:00:21 -0700 Arbinds-MacBook-Air.local (4254)] WARN : Agent configured not to send data in this environment - edit newrelic.yml to change this
 [08/12/12 23:00:21 -0700 Arbinds-MacBook-Air.local (4254)] INFO : New Relic Ruby Agent 3.3.4 Initialized: pid = 4254
 [08/12/12 23:00:21 -0700 Arbinds-MacBook-Air.local (4254)] INFO : Agent Log at /Users/sequoia/code/food-truck/us/food-truck/log/newrelic_agent.log
+[08/13/12 01:07:20 -0700 Arbinds-MacBook-Air.local (4338)] INFO : Dispatcher: thin
+[08/13/12 01:07:20 -0700 Arbinds-MacBook-Air.local (4338)] INFO : Application: development
+[08/13/12 01:07:20 -0700 Arbinds-MacBook-Air.local (4338)] WARN : Agent configured not to send data in this environment - edit newrelic.yml to change this
+[08/13/12 01:07:20 -0700 Arbinds-MacBook-Air.local (4338)] INFO : New Relic Ruby Agent 3.3.4 Initialized: pid = 4338
+[08/13/12 01:07:20 -0700 Arbinds-MacBook-Air.local (4338)] INFO : Agent Log at /Users/sequoia/code/food-truck/us/food-truck/log/newrelic_agent.log

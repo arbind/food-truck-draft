@@ -1,3 +1,74 @@
+======================================================
+Best Food Trucks: score[:ratings] 
+======================================================
+score is equal to a vested Yelp rating:
+At least 100 ratings to be full vested.
+Each rating = 1% vested (max vesting is 100%).
+code: ------------------------------------------------
+vesting = 0 if num_ratings.zero?
+vesting ||= (num_ratings/100) if 100>num_ratings
+vesting ||= 1 if 99<num_ratings
+yelp_rating = lookup_yelp_rating
+score[:ratings] = yelp_rating * vesting
+======================================================
+
+======================================================
+Active Food Trucks: score[:active]
+======================================================
+Score gives preference to tweets within last 24 hours
+code: ------------------------------------------------
+last_tweeted_at = time_of_last_tweet
+score[:active]  = 5 if 8.hours.ago < time_of_last_tweet
+score[:active] ||= 4 if 16.hours.ago < time_of_last_tweet
+score[:active] ||= 3 if 1.day.ago < time_of_last_tweet
+score[:active] ||= 2 if 2.days.ago < time_of_last_tweet
+score[:active] ||= 1 if 3.days.ago < time_of_last_tweet
+score[:active] ||= 0 if 4.days.ago < time_of_last_tweet
+------------------------------------------------------
+======================================================
+
+======================================================
+score indicator
+======================================================
+each score can be from 0 to 5
+An indicator light will show brighter for higher scores  
+------------------------------------------------------
+5 - bright green  alpha: 1.00
+4 - bright green  alpha: 0.75
+3 - bright green  alpha: 0.50
+2 - bright yellow alpha: 0.40
+1 - bright grey   alpha: 0.40
+0 - bright grey   alpha: 0.25
+------------------------------------------------------
+
+
+
+======================================================
+Score Filter Buttons:
+======================================================
+These buttons use the score and:
+ o show depressed down with green light bulb when on
+ o show unpressed up with grey light bulb when off
+ When best and active are both pressed, score = score[rating] + score[:active]
+------------------------------------------------------
+[ best ] sort by score[:rating]
+[ active ] sort by score[:active]
+[ top 10 / all] filter to show only top 10 (displays top 10 when active and all when inactive)
+------------------------------------------------------
+
+======================================================
+Interaction Buttons:
+======================================================
+[ I know where this truck is! ]
+[ I have tried this truck! ] -> pop up: want to rate this on yelp? -> yes: open yelp
+[ Bookmark to my favorites ] -> login and save to favorites
+[ I want to try this ] -> login and save to want to try list
+------------------------------------------------------
+
+
+
+
+
 
 miami
 

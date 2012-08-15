@@ -25,7 +25,8 @@ module FoodTruck
 
     # Custom directories with classes and modules you want to be autoloadable.
     config.autoload_paths += Dir[Rails.root.join('app', 'mixins', '{**}')]
-    config.autoload_paths += Dir[Rails.root.join('app', 'services', '{**}')]
+    # config.autoload_paths += Dir[Rails.root.join('app', 'services', '{**}')]
+    config.autoload_paths += Dir[Rails.root.join('app', 'services', '{**/*}')]
 
     # config.autoload_paths += %W(#{config.root}/app/extentions)
     # config.autoload_paths += %W(#{config.root}/app/mixins)

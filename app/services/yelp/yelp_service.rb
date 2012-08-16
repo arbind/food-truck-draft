@@ -51,11 +51,11 @@ class YelpService
 
   def self.food_trucks_in_city(city, state, term="truck", radius=V2_MAX_RADIUS_FILTER, page=1)
     offset = V2_MAX_RESULTS_LIMIT*(page-1) # 1 + this ?
-    location = [city, state].join(',')
     query = {
       term: term,
       categories: ['streetvendors', 'foodstands'],
-      location: location,
+      city: city,
+      state: state,
       radius_filter: radius,
       offset: offset,
       limit: V2_MAX_RESULTS_LIMIT
@@ -168,7 +168,6 @@ class YelpService
     end
     response = client.search(request)
   end
-
 
 private
 

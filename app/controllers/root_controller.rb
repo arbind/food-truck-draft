@@ -1,6 +1,7 @@
 class RootController < ApplicationController
 
   def index
+    @tweeter = Tweeter.all.first
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: nil }
@@ -8,6 +9,7 @@ class RootController < ApplicationController
   end
 
   def route_subdomain
+    @tweeter = Tweeter.all.first
     # view_path   = "root/#{@route_to}/index" if @route_to.present?
     view_path = "root/index"
     respond_to do |format|

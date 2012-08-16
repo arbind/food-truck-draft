@@ -1,3 +1,14 @@
+:javascript
+  $(document).ready(function(){
+    $('body').pageScroller({ navigation: '#nav' });
+
+    $('a.next').live('click mousedown', function(ev){ pageScroller.next(); ev.preventDefault(); });
+    $('a.prev').live('click mousedown', function(ev){ pageScroller.prev(); ev.preventDefault(); });
+  });
+
+
+%h1 index
+= request.host
 .x= "Have a #{@target_interest[:meal_kw]} meal!"
 .x= "Truck: #{@target_interest[:food_truck_kw]}"
 .x= "#{@target_interest[:fest_kw]} Festival"
@@ -7,10 +18,103 @@
 .x= "State of #{@target_interest[:location][:state_kw]}"
 .x= "around #{@target_interest[:location][:metro_kw]}" 
 
-/ - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
 
-%h1 index
-= request.host
+#nav.pageScrollerNav.standardNav.right.light
+  %ul
+    %li
+      %a{href:"#"} 1 quizLink
+      %a{href:"#"} 2 quizLink
+
+#header
+  %h1 FOOD TRUCK
+  %h2 AWESOME FOOD
+
+#wrapper
+  #main
+    / - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
+    .section
+      .tweeter{style: "background-color:##{@tweeter.profile_background_color}; background-image: url(#{@tweeter.profile_background_image_url}); background-repeat: #{@tweeter.profile_background_tile ? 'repeat' : 'no'}; "}
+        .page_container
+          .field= "twitter_id = #{@tweeter.twitter_id}"
+          .profile_card
+            .header
+              .profile
+                %img{src:"#{@tweeter.profile_image_url_bigger}"}
+                .id
+                  .fullname
+                    = "#{@tweeter.name}"
+                    .yelp_ratings
+                      %img.yelp_rating{src:'http://s3-media3.ak.yelpcdn.com/assets/2/www/img/5ef3eb3cb162/ico/stars/stars_3_half.png'}
+
+                  .username= "<s>@</s>#{@tweeter.screen_name}".html_safe
+                  %p.bio= "#{@tweeter.description}"
+                  .location-and-url
+                    %span.location
+                      = "#{@tweeter.location}"
+                    %span.divider ·
+                    %span.url
+                      %a{href:@tweeter.url}
+                      = "#{@tweeter.url}"
+                      = @tweeter.geo_enabled ? "(Geo Enabled!)" : "(Not Geo Enabled)"
+                .stats
+                  %ul
+                    %li
+                      %strong= 365
+                      reviews
+                    %li
+                      %strong= @tweeter.statuses_count
+                      tweets
+                    %li
+                      %strong= @tweeter.friends_count
+                      following
+                    %li
+                      %strong= @tweeter.followers_count
+                      followers
+          .yelp{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
+            .review{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
+              %h3 yelp reviews
+          .tweet.status{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
+            %h3 Last tweet:
+            .tweet{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
+              = @tweeter.timeline.first['text']
+            .timeline{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
+              %h3 More tweets
+              - @tweeter.timeline.each do |timeline|
+                .tweet{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
+                  = timeline['text']
+
+          .field= "profile_background_color = #{@tweeter.profile_background_color}"
+          .field= "profile_background_image_url = #{@tweeter.profile_background_image_url}"
+          .field= "profile_background_image_url_https = #{@tweeter.profile_background_image_url_https}"
+          .field= "profile_background_tile = #{@tweeter.profile_background_tile}"
+
+          .field= "profile_image_url_https = #{@tweeter.profile_image_url_https}"
+          .field= "profile_link_color = #{@tweeter.profile_link_color}"
+          .field= "profile_sidebar_border_color = #{@tweeter.profile_sidebar_border_color}"
+          .field= "profile_sidebar_fill_color = #{@tweeter.profile_sidebar_fill_color}"
+          .field= "profile_text_color = #{@tweeter.profile_text_color}"
+          .field= "profile_use_background_image = #{@tweeter.profile_use_background_image}"
+
+          .field= "twitter_account_created_at = #{@tweeter.twitter_account_created_at}"
+          .field= "is_protected = #{@tweeter.is_protected}"
+          .field= "kind = #{@tweeter.kind}"
+          .field= "listed_count = #{@tweeter.listed_count}"
+          .field= "favourites_count = #{@tweeter.favourites_count}"
+          .field= "utc_offset = #{@tweeter.utc_offset}"
+          .field= "time_zone = #{@tweeter.time_zone}"
+          .field= "verified = #{@tweeter.verified}"
+          .field= "lang = #{@tweeter.lang}"
+          .field= "default_profile = #{@tweeter.default_profile}"
+          .field= "default_profile_image = #{@tweeter.default_profile_image}"
+          .field= "timeline = #{@tweeter.timeline}"
+
+    .section
+      .toolbar
+        .button
+          %a.button.red.next{href:'#'} preview
+
+
+
 
 / (type="text/javascript" src="http://www.refmobworks.com/yelpreview?phone=2142191300")
 

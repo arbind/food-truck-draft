@@ -1,8 +1,8 @@
-class TwitterAccountsController < ApplicationController
+class TweetersController < ApplicationController
   # GET /twitter_accounts
   # GET /twitter_accounts.json
   def index
-    @twitter_accounts = TwitterAccount.all
+    @twitter_accounts = Tweeter.all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -13,7 +13,7 @@ class TwitterAccountsController < ApplicationController
   # GET /twitter_accounts/1
   # GET /twitter_accounts/1.json
   def show
-    @twitter_account = TwitterAccount.find(params[:id])
+    @twitter_account = Tweeter.find(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
@@ -24,7 +24,7 @@ class TwitterAccountsController < ApplicationController
   # GET /twitter_accounts/new
   # GET /twitter_accounts/new.json
   def new
-    @twitter_account = TwitterAccount.new
+    @twitter_account = Tweeter.new
 
     respond_to do |format|
       format.html # new.html.erb
@@ -34,13 +34,13 @@ class TwitterAccountsController < ApplicationController
 
   # GET /twitter_accounts/1/edit
   def edit
-    @twitter_account = TwitterAccount.find(params[:id])
+    @twitter_account = Tweeter.find(params[:id])
   end
 
   # POST /twitter_accounts
   # POST /twitter_accounts.json
   def create
-    @twitter_account = TwitterAccount.new(params[:twitter_account])
+    @twitter_account = Tweeter.new(params[:twitter_account])
 
     respond_to do |format|
       if @twitter_account.save
@@ -56,7 +56,7 @@ class TwitterAccountsController < ApplicationController
   # PUT /twitter_accounts/1
   # PUT /twitter_accounts/1.json
   def update
-    @twitter_account = TwitterAccount.find(params[:id])
+    @twitter_account = Tweeter.find(params[:id])
 
     respond_to do |format|
       if @twitter_account.update_attributes(params[:twitter_account])
@@ -72,7 +72,7 @@ class TwitterAccountsController < ApplicationController
   # DELETE /twitter_accounts/1
   # DELETE /twitter_accounts/1.json
   def destroy
-    @twitter_account = TwitterAccount.find(params[:id])
+    @twitter_account = Tweeter.find(params[:id])
     @twitter_account.destroy
 
     respond_to do |format|

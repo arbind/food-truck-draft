@@ -9,7 +9,7 @@ class TwitterService
       return nil if tuser.nil?
 
       # create or updates the twitter presence
-      twitter_presence = TwitterAccount.materialize_from_twitter(tuser.to_hash)
+      twitter_presence = Tweeter.materialize_from_twitter(tuser.to_hash)
       # create or update the timeline
       timeline = Twitter.user_timeline(screen_name) 
       twitter_presence.update_timeline(timeline)

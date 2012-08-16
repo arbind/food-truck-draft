@@ -1,0 +1,156 @@
+.section {
+
+  .tweeter {
+    width: 866px;
+    margin: 0 auto;
+    border: 1px solid red;
+    .page_container {
+      width: 837px;
+      padding: 54px 14px 15px;
+      background: url(/assets/twitter-wash-white-30.png);
+      border: 1px solid blue;
+      .profile_card {
+        clear: both;
+        background-color: white;
+        zoom: 1;
+        color: #333;
+        font-size: 14px;
+        line-height: 16px;
+        margin-bottom: 10px;
+        font-family: "Helvetica Neue",Arial,sans-serif;
+        text-shadow: 0 1px 0 white;
+        -webkit-border-radius: 6px;
+           -moz-border-radius: 6px;
+            -ms-border-radius: 6px;
+             -o-border-radius: 6px;
+                border-radius: 6px;
+        -webkit-background-clip: padding-box;
+           -moz-background-clip: padding-box;
+            -ms-background-clip: padding-box;
+             -o-background-clip: padding-box;
+                background-clip: padding-box;
+        .header {
+          padding: 12px;
+          .profile {
+            overflow: hidden;
+            img {
+              float: left;
+              width: 128px;
+              height: 128px;
+              border: 0;
+              -webkit-border-radius: 6px;
+                 -moz-border-radius: 6px;
+                  -ms-border-radius: 6px;
+                   -o-border-radius: 6px;
+                      border-radius: 6px;
+            }
+            .id {
+              float: left;
+              width: 50%;
+              margin: 0 0 0 12px;
+              .fullname {
+                font-weight: bold;                
+                font-size: 30px;
+                line-height: 1;
+                margin-bottom: 2px;
+                text-rendering: optimizeLegibility;
+                .yelp_ratings {
+                  img.yelp_rating {
+                    width: 84px;
+                    height: 17px;
+                  }
+                  padding: 10px 0 0 0;
+                  font-size: 13px;
+                  line-height: 18px;
+                  margin: 0;
+                  text-align: center;
+                  text-shadow: rgba(255, 255, 255, 0.496094) 0px 1px 0px;
+                  display: inline-block;
+                  border: 0;
+                  cursor: pointer;
+                  -webkit-border-radius: 4px;
+                  -moz-border-radius: 4px;
+                  border-radius: 4px;
+                  -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+                  -moz-box-shadow: 0 1px 0 rgba(255,255,255,.5);
+                  box-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+                }
+              }
+              .username {
+                s {
+                  color: #BBB;
+                  text-decoration: none;
+                  font-size: 18px;
+                  line-height: 24px;
+                }
+                color: #777;                
+                font-size: 18px;
+                font-weight: normal;
+                line-height: 24px;
+                margin-bottom: 1px;
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+              }
+              p.bio {
+                color: #777;
+                word-wrap: break-word;
+                font: italic 13px/18px Georgia,"Times New Roman",serif;
+              }
+              .location-and-url {
+                color: #777;
+                font-size: 12px;
+                line-height: 18px;
+                font-family: "Helvetica Neue",Arial,sans-serif;
+                .url {
+                  a {
+                    color: #0084B4;
+                    text-decoration: none;
+                    outline: 0;
+                    &:hover {
+                      text-decoration: underline;
+                    }
+                    &:active {
+                      color: #0084B4;
+                      text-decoration: none;                        
+                    }
+                  }
+                }
+              }
+            }
+            .stats {
+              float: right;
+              margin: 0 0 0 12px;
+              color: #333;
+              font-size: 14px;
+              font-family: "Helvetica Neue",Arial,sans-serif;
+              ul {
+                list-style: none;
+                padding: 0;
+                margin: 5px 0 0;
+                line-height: 16px;
+                border: 0;
+                li {
+                  display: block;
+                  border: 0;
+                  color: #999;
+                  padding: 6px 12px 6px 0;
+                  font-size: 10px;
+                  line-height: 16px;
+                  text-transform: uppercase;
+                  border-top: 1px solid #E8E8E8;
+                  strong {
+                    color: #333;
+                    font-size: 14px;
+                    font-weight: bold;                  
+                  }
+                }
+              }            
+              ul>:first-child {
+                border-top: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

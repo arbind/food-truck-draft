@@ -1,22 +1,32 @@
 .section {
 
   .tweeter {
-    width: 866px;
+    width: 888px;
     margin: 0 auto;
-    border: 1px solid red;
+    padding: 12px;
+    -webkit-border-radius: 8px;
+       -moz-border-radius: 8px;
+        -ms-border-radius: 8px;
+         -o-border-radius: 8px;
+            border-radius: 8px;
     .page_container {
-      width: 837px;
-      padding: 54px 14px 15px;
+      width: 750  px;
+      padding: 8px;
+      margin: 0 auto;
       background: url(/assets/twitter-wash-white-30.png);
-      border: 1px solid blue;
+      -webkit-border-radius: 6px;
+         -moz-border-radius: 6px;
+          -ms-border-radius: 6px;
+           -o-border-radius: 6px;
+              border-radius: 6px;
       .profile_card {
         clear: both;
+        margin: 0;
         background-color: white;
         zoom: 1;
         color: #333;
         font-size: 14px;
         line-height: 16px;
-        margin-bottom: 10px;
         font-family: "Helvetica Neue",Arial,sans-serif;
         text-shadow: 0 1px 0 white;
         -webkit-border-radius: 6px;
@@ -35,9 +45,12 @@
             overflow: hidden;
             img {
               float: left;
+              margin: 8px 0 0 8px;
               width: 128px;
               height: 128px;
               border: 0;
+              filter:alpha(opacity=80);
+              opacity: 0.80;
               -webkit-border-radius: 6px;
                  -moz-border-radius: 6px;
                   -ms-border-radius: 6px;
@@ -49,32 +62,12 @@
               width: 50%;
               margin: 0 0 0 12px;
               .fullname {
+                width: 100%;
                 font-weight: bold;                
                 font-size: 30px;
                 line-height: 1;
-                margin-bottom: 2px;
+                margin: 0 0 2px 0;
                 text-rendering: optimizeLegibility;
-                .yelp_ratings {
-                  img.yelp_rating {
-                    width: 84px;
-                    height: 17px;
-                  }
-                  padding: 10px 0 0 0;
-                  font-size: 13px;
-                  line-height: 18px;
-                  margin: 0;
-                  text-align: center;
-                  text-shadow: rgba(255, 255, 255, 0.496094) 0px 1px 0px;
-                  display: inline-block;
-                  border: 0;
-                  cursor: pointer;
-                  -webkit-border-radius: 4px;
-                  -moz-border-radius: 4px;
-                  border-radius: 4px;
-                  -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-                  -moz-box-shadow: 0 1px 0 rgba(255,255,255,.5);
-                  box-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-                }
               }
               .username {
                 s {
@@ -118,17 +111,43 @@
             }
             .stats {
               float: right;
-              margin: 0 0 0 12px;
+              margin: 4px 4px 0 8px;
+              padding: 0;
               color: #333;
               font-size: 14px;
               font-family: "Helvetica Neue",Arial,sans-serif;
               ul {
                 list-style: none;
                 padding: 0;
-                margin: 5px 0 0;
+                margin: -10px 0 0 0;
                 line-height: 16px;
                 border: 0;
                 li {
+                  img.indicator {
+                    width:14px;
+                    height:14px;
+                    border:0;
+                    outline:0;
+                    margin: 0px 4px 0px 0px;
+
+                    -webkit-border-radius: 50%;
+                    -moz-border-radius: 50%;
+                    -ms-border-radius: 50%;
+                    -o-border-radius: 50%;
+                    border-radius: 50%;
+                  }
+                  img.indicator.red {
+                    background-color: red;
+                  }
+                  img.indicator.blue {
+                    background-color: blue;
+                  }
+                  img.indicator.green {
+                    background-color: green;
+                  }
+                  img.indicator.yellow {
+                    background-color: yellow;
+                  }
                   display: block;
                   border: 0;
                   color: #999;
@@ -142,6 +161,24 @@
                     font-size: 14px;
                     font-weight: bold;                  
                   }
+                  .yelp {
+                    .ratings {
+                      display: inline-block;
+                      cursor: pointer;
+                      img {
+                        display: inline-block;
+                        width: 84px;
+                        height: 17px;
+                        margin: 0;
+                        padding: 0;
+                        background-color: transparent;
+                      }
+                    }
+                    .logo {
+                      margin: 0 0 0 2px;
+                      display: inline-block;
+                    }
+                  } 
                 }
               }            
               ul>:first-child {

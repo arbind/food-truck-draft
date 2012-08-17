@@ -17,7 +17,7 @@ end
 # utils
 gem 'sass'
 gem 'haml'
-# gem 'hpricot'
+gem 'hpricot'
 # gem 'httparty'
 gem 'jquery-rails'
 

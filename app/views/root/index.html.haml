@@ -35,17 +35,13 @@
     .section
       .tweeter{style: "background-color:##{@tweeter.profile_background_color}; background-image: url(#{@tweeter.profile_background_image_url}); background-repeat: #{@tweeter.profile_background_tile ? 'repeat' : 'no'}; "}
         .page_container
-          .field= "twitter_id = #{@tweeter.twitter_id}"
           .profile_card
             .header
               .profile
                 %img{src:"#{@tweeter.profile_image_url_bigger}"}
                 .id
                   .fullname
-                    = "#{@tweeter.name}"
-                    .yelp_ratings
-                      %img.yelp_rating{src:'http://s3-media3.ak.yelpcdn.com/assets/2/www/img/5ef3eb3cb162/ico/stars/stars_3_half.png'}
-
+                    = "#{@tweeter.name}"  
                   .username= "<s>@</s>#{@tweeter.screen_name}".html_safe
                   %p.bio= "#{@tweeter.description}"
                   .location-and-url
@@ -56,32 +52,51 @@
                       %a{href:@tweeter.url}
                       = "#{@tweeter.url}"
                       = @tweeter.geo_enabled ? "(Geo Enabled!)" : "(Not Geo Enabled)"
+                  .location-and-url
+                    %span.location
+                      = "Yelp address"
+                    %span.divider ·
+                    %span.url
+                      %a{href:"yelp website"}
+                      = "Yelp website"
                 .stats
                   %ul
                     %li
+                      .yelp
+                        .ratings
+                          %img{src:'http://s3-media3.ak.yelpcdn.com/assets/2/www/img/5ef3eb3cb162/ico/stars/stars_3_half.png'}
+                        .logo.yelp_logo_50x25
+                    %li
+                      %img.indicator{src:"/assets/transparent-indicator.png"}
                       %strong= 365
                       reviews
                     %li
+                      %img.indicator{src:"/assets/transparent-indicator.png"}
                       %strong= @tweeter.statuses_count
                       tweets
                     %li
-                      %strong= @tweeter.friends_count
-                      following
-                    %li
+                      %img.indicator{src:"/assets/transparent-indicator.png"}
                       %strong= @tweeter.followers_count
                       followers
-          .yelp{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
-            .review{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
-              %h3 yelp reviews
+                    %li
+                      %img.indicator{src:"/assets/transparent-indicator.png"}
+                      %strong= 5123456
+                      likes
+                    / %li
+                    /   %img.indicator{src:"/assets/transparent-indicator.png"}
+                    /   %strong= @tweeter.friends_count
+                    /   Twitter friends
+        .timeline.hidden{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
           .tweet.status{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
-            %h3 Last tweet:
+            = @tweeter.timeline.first['text']
+
+          %h3 More tweets
+          - @tweeter.timeline.each do |timeline|
             .tweet{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
-              = @tweeter.timeline.first['text']
-            .timeline{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
-              %h3 More tweets
-              - @tweeter.timeline.each do |timeline|
-                .tweet{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
-                  = timeline['text']
+              = timeline['text']
+      .yelp{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
+        .review{style:'border:1px solid black; background-color: white; margin: 20px 20px;'}
+          %h3 yelp reviews
 
           .field= "profile_background_color = #{@tweeter.profile_background_color}"
           .field= "profile_background_image_url = #{@tweeter.profile_background_image_url}"
@@ -235,5 +250,5 @@
   }
 
   $(function() {
-    / showTwitterFeed('rylyz')
+    // showTwitterFeed('rylyz')
   });

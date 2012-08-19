@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @nizer.name %>
+</p>
+
+<p>
+  <b>Value:</b>
+  <%= @nizer.value %>
+</p>
+
+<p>
+  <b>Approved:</b>
+  <%= @nizer.approved %>
+</p>
+
+
+<%= link_to 'Edit', edit_nizer_path(@nizer) %> |
+<%= link_to 'Back', nizers_path %>

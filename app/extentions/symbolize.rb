@@ -6,6 +6,6 @@ end
 
 class Symbol 
   def symbolize
-    self
+    self.to_s.symbolize
   end
 end

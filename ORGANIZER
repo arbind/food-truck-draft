@@ -1,0 +1,26 @@
+Organizer Structure
+name:value [ sub organizers ]
+
+Meal Organizers
+meal:breakfast
+meal:lunch
+meal:dinner
+
+Cuisine Organizers
+cuisine:hot dog
+cuisine:chineese
+cuisine:italian
+cuisine:indian
+
+State Organizers
+state:ny [ City Organizers]
+state:ca [ City Organizers]
+
+Metro Organizers
+state:ny [ City Organizers]
+state:ca [ City Organizers]
+
+
+City Organizers
+city:New York
+city:Pasadena

@@ -1,0 +1,39 @@
+<h1>Listing crafts</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Phone number</th>
+    <th>Geo coordinate</th>
+    <th>Yelp</th>
+    <th>Twitter</th>
+    <th>Facebook</th>
+    <th>Googleplus</th>
+    <th>Geo coordinate</th>
+    <th>Geo coordinate history</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @crafts.each do |craft| %>
+  <tr>
+    <td><%= craft.name %></td>
+    <td><%= craft.phone_number %></td>
+    <td><%= craft.geo_coordinate %></td>
+    <td><%= craft.yelp_id %></td>
+    <td><%= craft.twitter_id %></td>
+    <td><%= craft.facebook_id %></td>
+    <td><%= craft.googleplus_id %></td>
+    <td><%= craft.geo_coordinate %></td>
+    <td><%= craft.geo_coordinate_history %></td>
+    <td><%= link_to 'Show', craft %></td>
+    <td><%= link_to 'Edit', edit_craft_path(craft) %></td>
+    <td><%= link_to 'Destroy', craft, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Craft', new_craft_path %>

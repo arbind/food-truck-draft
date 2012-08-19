@@ -3,10 +3,12 @@ class Biz
   field :phone_number
   field :location
   field :geo_coordinate, type => Array
+  field :geo_coordinate, type => Array
 
   field :yelp_id
-  field :twitter_username
-  field :facebook_username
+  field :twitter_id
+  field :facebook_id
+  field :googleplus_id
 
   index [[ :geo_coordinate, Mongo::GEO2D ]]
 

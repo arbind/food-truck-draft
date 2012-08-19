@@ -1,0 +1,49 @@
+GEOCODING
+
+optionally add the following to any model that needs geo coding capability:
+
+Class MyGeoEnabledClass
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  include Geocoder::Model::Mongoid
+
+  field :address, default: nil # required (can be aliased - see geocoder gem)
+  field :coordinates, :type => Array, default: [nil, nil] (can be aliased - see geocoder gem)
+
+  # mongoid stores [long, lat] - which is backwards from normal convention
+  # geocorder knows this, but expects [lat, lng]
+
+  geocoded_by :address               # can also be an IP address
+  reverse_geocoded_by :coordinates
+
+  after_validation :geocode          # auto-fetch coordinates
+  after_validation :reverse_geocode  # auto-fetch address
+
+  alias_method :ip_address, :address
+  alias_method :ip_address=, :address=
+
+  def latitude() coordinates.last end
+  alias_method :lat, :latitude
+
+  def latitude=(lat) coordinates[1] = lat end
+  alias_method :lat=, :latitude=
+
+  def longitude() coordinates.first end
+  alias_method :lng, :longitude
+  alias_method :long, :longitude
+
+  def longitude=(lng) coordinates[0] = lng end
+  alias_method :lng=, :longitude=
+  alias_method :long=, :longitude=
+
+  def geopoint() [lat, lng] end # this is opposite of how mongoid stores it!
+  alias_method :lat_lng, :geopoint
+  alias_method :lat_long, :geopoint
+  alias_method :geo_coordinate, :geopoint
+
+  def geopoint=(latlng) lat=latlng[0]; lng=latlng[1] end
+  alias_method :lat_lng=, :geopoint=
+  alias_method :lat_long=, :geopoint=
+  alias_method :geo_coordinate=, :geopoint=
+
+end

@@ -1,3 +1,8 @@
+.intent-to-follow-on-twitter {
+  display: inline-block;
+  margin:  0 0 0 4px;
+  padding: 0 0 0 0;
+}
 .section {
 
   .tweeter {
@@ -9,17 +14,17 @@
         -ms-border-radius: 8px;
          -o-border-radius: 8px;
             border-radius: 8px;
-    .page_container {
+    .canvas {
       width: 750  px;
       padding: 8px;
-      margin: 0 auto;
+      margin: 8px auto;
       background: url(/assets/twitter-wash-white-30.png);
       -webkit-border-radius: 6px;
          -moz-border-radius: 6px;
           -ms-border-radius: 6px;
            -o-border-radius: 6px;
               border-radius: 6px;
-      .profile_card {
+      .card {
         clear: both;
         margin: 0;
         background-color: white;
@@ -39,6 +44,8 @@
             -ms-background-clip: padding-box;
              -o-background-clip: padding-box;
                 background-clip: padding-box;
+              }
+      .profile.card {
         .header {
           padding: 12px;
           .profile {
@@ -61,7 +68,7 @@
               float: left;
               width: 50%;
               margin: 0 0 0 12px;
-              .fullname {
+              h2.fullname {
                 width: 100%;
                 font-weight: bold;                
                 font-size: 30px;
@@ -69,7 +76,7 @@
                 margin: 0 0 2px 0;
                 text-rendering: optimizeLegibility;
               }
-              .username {
+              h3.username {
                 s {
                   color: #BBB;
                   text-decoration: none;
@@ -80,7 +87,7 @@
                 font-size: 18px;
                 font-weight: normal;
                 line-height: 24px;
-                margin-bottom: 1px;
+                margin: 0 0 1px 0;
                 font-family: 'Helvetica Neue', Arial, sans-serif;
               }
               p.bio {

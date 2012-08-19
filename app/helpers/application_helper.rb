@@ -330,4 +330,14 @@ module ApplicationHelper
   def init_query_location
   end
 
+  # Twitter Buttons
+  def twitter_follow_button(username, show_count=false)
+    button_html = ""
+    button_html << "<a href='https://twitter.com/#{username}' data-show-count='#{show_count}' class='twitter-follow-button'>Follow @#{username}</a>"      
+    button_html << "<script type='text/javascript'>"
+    button_html << "  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='//platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','twitter-wjs');"
+    button_html << "</script>"
+    button_html.html_safe
+  end
+
 end

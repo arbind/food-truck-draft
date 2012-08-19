@@ -1,0 +1,33 @@
+28 days
+
+Chumed
+Signups
+Deactivated
+Resurrection
+Net active
+
+Give each a different experience to help them become more active.
+
+
+use email as training wheels -
+to get new users to come back and better understand your prouduct.
+then as they engage, turn down the emails.
+
+must cature referrer source for each signup and login and visit
+bind unique referrer logging to uid - 
+so you can do referrer analytics.
+
+* closing comments on Growth
+o understand flow of users in and out of product
+o contribute fundamental understanding of why uses use and enjoy your product
+o optimize acqisition and retention channels
+o identify and bild new growth channels
+o Develop a culture around testing and iteration - there are no sacred cows in your product
+o relentlessly focus on that which matters most
+o create a culture around moving fast and getting stuff done
+o Be data informed but don't make decisions solely based on data.
+
+to decide your feature
+user feedback
+your own intuition
+cross reference with data

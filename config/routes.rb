@@ -1,5 +1,11 @@
 FoodTruck::Application.routes.draw do
 
+  resources :organizers
+
+  resources :categories
+
+  resources :crafts
+
   resources :meals
 
   resources :cuisines

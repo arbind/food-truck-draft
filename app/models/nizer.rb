@@ -13,8 +13,8 @@ class Nizer
 
   has_and_belongs_to_many :crafts
 
-  has_and_belongs_to_many :nizers, :class_name => 'Nizer', :inverse_of => :parents
-  has_and_belongs_to_many :parents, :class_name => 'Nizer', :inverse_of => :nizers
+  has_and_belongs_to_many :subnizers, :class_name => 'Nizer', :inverse_of => :parents
+  has_and_belongs_to_many :parents, :class_name => 'Nizer', :inverse_of => :subnizers
 
   # some handy scopes
   scope :ok, where(approved: true)
@@ -54,87 +54,104 @@ class Nizer
 
 
   # factory methods
-  def self.materialize(name, knd) Nizer.find_or_create_by(name: name.downcase, kind: knd.symbolize) end
+  def self.materialize(nizer_name, knd) Nizer.find_or_create_by(nizer_name: nizer_name.downcase, kind: knd.symbolize) end
 
-  def self.materialize_meal(name) materialize(name, :meal) end
-  def self.materialize_cuisine(name) materialize(name, :cuisine) end
+  def self.materialize_meal(nizer_name) materialize(nizer_name, :meal) end
+  def self.materialize_cuisine(nizer_name) materialize(nizer_name, :cuisine) end
 
-  def self.materialize_tag(name) materialize(name, :tag) end
-  def self.materialize_keyword(name) materialize(name, :keyword) end
-  def self.materialize_category(name) materialize(name, :category) end
+  def self.materialize_tag(nizer_name) materialize(nizer_name, :tag) end
+  def self.materialize_keyword(nizer_name) materialize(nizer_name, :keyword) end
+  def self.materialize_category(nizer_name) materialize(nizer_name, :category) end
 
-  def self.materialize_country(name) materialize(name, :country) end
+  def self.materialize_country(nizer_name) materialize(nizer_name, :country) end
   # /factory methods
 
 
   # scopes on children
-  def ok() nizers.ok end
-  def not_ok() nizers.not_ok end
+  def ok() subnizers.ok end
+  def not_ok() subnizers.not_ok end
 
-  def subcategories() nizers.categories end
+  def subcategories() subnizers.categories end
 
-  def colleges() nizers.colleges end
-  def cities() nizers.cities end
-  def states() nizers.states end
-  def metros() nizers.metros end
-  def counties() nizers.counties end
-  def neighborhoods() nizers.neighborhoods end
-  def festivals() nizers.festivals end
+  def colleges() subnizers.colleges end
+  def cities() subnizers.cities end
+  def states() subnizers.states end
+  def metros() subnizers.metros end
+  def counties() subnizers.counties end
+  def neighborhoods() subnizers.neighborhoods end
+  def festivals() subnizers.festivals end
   # /scopes on children
 
+  def remove (child_name_or_Nizer, child_knd=nil)
+    if child_knd.present?
+      child = subnizers.where(name: child_name_or_Nizer, kind: child_knd)
+    else
+      child = child_name_or_Nizer
+    end
+    if child.present?
+      subnizers.delete child
+      child.parents.delete self
+      child.save!
+      save!
+    end
+  end
+
   # add to children
-  def add(name, knd)
-    nizers.find_or_create_by(name: name.downcase, kind: knd.symbolize)
-    save!
+  def add(name_or_Nizer, knd=nil)
+    if (knd.nil? and name_or_Nizer.kind_of? Nizer)
+      subnizers << name_or_Nizer
+      name_or_Nizer = Nizer.find(name_or_Nizer.id)
+    else # assume name_or_Nizer is a string
+      subnizers.find_or_create_by(name: name_or_Nizer.downcase, kind: knd.symbolize)
+    end
   end
 
-  def add_subcategory(name)
-    return nil if name.nil?
+  def add_subcategory(child_name)
+    return nil if child_name.nil?
     raise "A subcategory can only be added to a category!" if :category != kind
-    add(name, :category)
+    add(child_name, :category)
   end
 
-  def add_festival(name)
-    return nil if name.nil?
+  def add_festival(child_name)
+    return nil if child_name.nil?
     raise "A festival can only be added to a location!" unless (:country!= kind or :state != kind or :city != kind or :metro != kind or :county != kind or :neighborhood != kind)
-    add(name, :category)
+    add(child_name, :category)
   end
 
-
-  def add_state(name)
-    return nil if name.nil?
+  def add_state(child_name)
+    return nil if child_name.nil?
     raise "A state can only be added to a country!" if :country != kind
-    add(name, :state)
+    add(child_name, :state)
   end
 
-  def add_college(name)
-    return nil if name.nil?
+  def add_college(child_name)
+    return nil if child_name.nil?
     raise "A college can only be added to a city!" if :city != kind
-    add(name, :edu)
+    add(child_name, :edu)
   end
 
-  def add_city(name)
-    return nil if name.nil?
+  def add_city(child_name)
+    return nil if child_name.nil?
     raise "A city can only be added to a state!" if :state != kind
-    add(name, :city)
+    add(child_name, :city)
   end
 
-  def add_metro(name)
-    return nil if name.nil?
+  def add_metro(child_name)
+    return nil if child_name.nil?
     raise "A metro can only be added to a state!" if :state != kind
-    add(name, :metro)
+    add(child_name, :metro)
   end
 
-  def add_county(name)
-    return nil if name.nil?
+  def add_county(child_name)
+    return nil if child_name.nil?
     raise "A county can only be added to a state!" if :state != kind
-    add(name, :county)
+    add(child_name, :county)
   end
 
-  def add_neighborhood(name)
-    return nil if name.nil?
+  def add_neighborhood(child_name)
+    return nil if child_name.nil?
     raise "A neighborhood can only be added to a state!" if :state != kind
-    add(name, :neighborhood)
+    add(child_name, :neighborhood)
   end
   # /add to children
 

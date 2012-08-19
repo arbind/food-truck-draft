@@ -9,12 +9,12 @@ class Nizer
   field :approved, type: Boolean, default: false
 
   field :address, default: nil
-  field :coordinates, :type => Array, default: [nil, nil] 
+  field :coordinates, :type => Array, default: [nil, nil] # does geocoder gem auto index this?
 
   has_and_belongs_to_many :crafts
 
-  has_and_belongs_to_many :subnizers, :class_name => 'Nizer', :inverse_of => :parents
-  has_and_belongs_to_many :parents, :class_name => 'Nizer', :inverse_of => :subnizers
+  has_and_belongs_to_many :sub_nizers, :class_name => 'Nizer', :inverse_of => :parents
+  has_and_belongs_to_many :parents, :class_name => 'Nizer', :inverse_of => :sub_nizers
 
   # some handy scopes
   scope :ok, where(approved: true)
@@ -25,6 +25,8 @@ class Nizer
 
   scope :roots, where(:parent_ids.size => 0)
 
+  scope :buckets, where(kind: :bucket)
+  scope :workflows, where(kind: :workflow)
   scope :categories, where(kind: :category)
 
   scope :tags, where(kind: :tag)
@@ -68,28 +70,31 @@ class Nizer
 
 
   # scopes on children
-  def ok() subnizers.ok end
-  def not_ok() subnizers.not_ok end
+  def ok() sub_nizers.ok end
+  def not_ok() sub_nizers.not_ok end
 
-  def subcategories() subnizers.categories end
+  def sub_buckets() sub_nizers.buckets end
+  def sub_workflows() sub_nizers.workflows end
+  def sub_categories() sub_nizers.categories end
 
-  def colleges() subnizers.colleges end
-  def cities() subnizers.cities end
-  def states() subnizers.states end
-  def metros() subnizers.metros end
-  def counties() subnizers.counties end
-  def neighborhoods() subnizers.neighborhoods end
-  def festivals() subnizers.festivals end
+
+  def colleges() sub_nizers.colleges end
+  def cities() sub_nizers.cities end
+  def states() sub_nizers.states end
+  def metros() sub_nizers.metros end
+  def counties() sub_nizers.counties end
+  def neighborhoods() sub_nizers.neighborhoods end
+  def festivals() sub_nizers.festivals end
   # /scopes on children
 
   def remove (child_name_or_Nizer, child_knd=nil)
     if child_knd.present?
-      child = subnizers.where(name: child_name_or_Nizer, kind: child_knd)
+      child = sub_nizers.where(name: child_name_or_Nizer, kind: child_knd)
     else
       child = child_name_or_Nizer
     end
     if child.present?
-      subnizers.delete child
+      sub_nizers.delete child
       child.parents.delete self
       child.save!
       save!
@@ -99,18 +104,31 @@ class Nizer
   # add to children
   def add(name_or_Nizer, knd=nil)
     if (knd.nil? and name_or_Nizer.kind_of? Nizer)
-      subnizers << name_or_Nizer
+      sub_nizers << name_or_Nizer
       name_or_Nizer = Nizer.find(name_or_Nizer.id)
     else # assume name_or_Nizer is a string
-      subnizers.find_or_create_by(name: name_or_Nizer.downcase, kind: knd.symbolize)
+      sub_nizers.find_or_create_by(name: name_or_Nizer.downcase, kind: knd.symbolize)
     end
   end
 
-  def add_subcategory(child_name)
+  def add_sub_category(child_name)
     return nil if child_name.nil?
-    raise "A subcategory can only be added to a category!" if :category != kind
+    raise "A sub category can only be added to a category!" if :category != kind
     add(child_name, :category)
   end
+
+  def add_sub_bucket(child_name)
+    return nil if child_name.nil?
+    raise "A sub bucket can only be added to a bucket!" if :bucket != kind
+    add(child_name, :bucket)
+  end
+
+  def add_sub_workflow(child_name)
+    return nil if child_name.nil?
+    raise "A sub workflow can only be added to a workflow!" if :workflow != kind
+    add(child_name, :workflow)
+  end
+
 
   def add_festival(child_name)
     return nil if child_name.nil?
@@ -172,17 +190,24 @@ class Nizer
   def longitude=(lng) coordinates[0] = lng end
   alias_method :lng=, :longitude=
   alias_method :long=, :longitude=
-
-  def geopoint() [lat, lng] end # this is opposite of how mongoid stores it!
-  alias_method :lat_lng, :geopoint
-  alias_method :lat_long, :geopoint
-  alias_method :geo_coordinate, :geopoint
-
-  def geopoint=(latlng) lat=latlng[0]; lng=latlng[1] end
-  alias_method :lat_lng=, :geopoint=
-  alias_method :lat_long=, :geopoint=
-  alias_method :geo_coordinate=, :geopoint=
   # /geocoding  aliases
+
+  # geo point hash representation
+  def geo_point() { latitude:lat, longitude:lng } end
+  def geo_point=(latlng_hash) {
+    lat   = latlng_hash[:latitude]   if latlng_hash[:latitude].present?
+    lat ||= latlng_hash[:lat]        if latlng_hash[:lat].present?
+
+    lng   = latlng_hash[:longitude]  if latlng_hash[:longitude].present?
+    lng ||= latlng_hash[:long]       if latlng_hash[:long].present?
+    lng ||= latlng_hash[:lng]        if latlng_hash[:lng].present?
+
+    self.lat = lat
+    self.lng = lng
+  end
+  alias_method :geo_coordinate, :geopoint
+  alias_method :geo_coordinate=, :geopoint=
+  # /geo point hash representation
 
 private
   def format_fields

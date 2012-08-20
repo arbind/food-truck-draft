@@ -1,5 +1,7 @@
 FoodTruck::Application.routes.draw do
 
+  get 'crafts/find'
+  get 'crafts/capture'
   resources :crafts
 
   resources :nizers

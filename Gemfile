@@ -18,13 +18,14 @@ end
 gem 'sass'
 gem 'haml'
 gem 'hpricot'
-# gem 'httparty'
+gem 'httparty'
 gem 'jquery-rails'
 
 # services
 gem 'yelpster'
 gem 'twitter'
 gem 'geocoder'
+gem 'koala' # facebook graph
 
 # Gems used only for assets and not required
 # in production environments by default.

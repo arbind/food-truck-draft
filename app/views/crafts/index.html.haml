@@ -1,0 +1,35 @@
+%h1 Listing crafts
+
+%table
+  %tr
+    %th Name
+    %th Phone number
+    %th Geo coordinate
+    %th Yelp
+    %th Twitter
+    %th Facebook
+    %th Googleplus
+    %th Geo coordinate
+    %th Geo coordinate history
+    %th 
+    %th 
+    %th 
+
+- @crafts.each do |craft| 
+  %tr
+    %td=  craft.name  
+    %td=  craft.phone_number  
+    %td=  craft.geo_coordinate  
+    %td=  craft.yelp_id  
+    %td=  craft.twitter_id  
+    %td=  craft.facebook_id  
+    %td=  craft.googleplus_id  
+    %td=  craft.geo_coordinate  
+    %td=  craft.geo_coordinate_history  
+    %td=  link_to 'Show', craft  
+    %td=  link_to 'Edit', edit_craft_path(craft)  
+    %td=  link_to 'Destroy', craft, confirm: 'Are you sure?', method: :delete  
+
+%br
+
+= link_to 'New Craft', new_craft_path 

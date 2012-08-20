@@ -244,7 +244,8 @@ module ApplicationHelper
     @target_interest[:location] = {}
 
     @subdomain = subdomain_as_sym
-
+    return nil if @subdomain.nil?
+    
     # subdomain_route_def = SUBDOMAINS[@subdomain]
     # @highly_rated = subdomain_route_def[:highly_rated]
 

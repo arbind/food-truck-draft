@@ -1,4 +1,4 @@
-class YelpBiz
+class YelpCraft
   include Merge
 
   attr_accessor :yelp_id
@@ -76,7 +76,7 @@ class YelpBiz
   end
 
   def fetch
-    YelpBiz::fetch(yelp_id)
+    YelpCraft::fetch(yelp_id)
   end
 
   def pull

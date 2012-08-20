@@ -1,0 +1,19 @@
+%h1 Find A Craft
+
+%form{action: :find, method: :get}
+  %input{type: :text, name: :look_for, value: @look_for}
+
+= link_to 'Back', crafts_path
+
+
+- if @capture_craft_url.present?
+  %div{onclick:"capture_craft('#{@capture_craft_url}')"}
+    open @look_for
+
+  :javascript
+    function capture_craft(url) {
+      capture_url = '/crafts/capture?url='+url
+      openNewWindow(capture_url)
+    }
+
+    $(capture_craft('#{@capture_craft_url}'));

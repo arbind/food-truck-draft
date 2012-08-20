@@ -1,5 +1,47 @@
 class Web
 
+  def self.looks_like_url?(url)
+    return false if url.nil?
+    url.to_s.match /(^https?\:\/\/|^www\.)[^\s<]+|[^\s<]+\.(com|net|org|us|me|co|info|ws|ca|biz|me|cc|tv|asia)[^\s<]*$/
+  end
+
+  def self.as_url(url_like)
+    u = URI.parse(url_like.to_s.downcase)
+    u = URI.parse("http://#{url_like.to_s.downcase}") if u.host.nil?
+    u.to_s
+  end
+
+
+  def self.http_get(host, path='/', params = {}, use_ssl = false, cookies = {}, port=nil)
+    # data_payload = Rack::Utils.escape(data)
+    href = href_for(host, path, params, use_ssl, port)
+    # +++ TODO cookies (session) see: http://dzone.com/snippets/custom-httphttps-getpost
+    HTTParty.get(href)
+  end
+
+
+  def self.href_for(host, path='/', params = {}, use_ssl = false, port=nil)
+    url = url_for(host, path, params, use_ssl, port)
+    return '' if url.nil?
+    url.to_s
+  end
+
+  def self.url_for(host, path='/', params = {}, use_ssl = false, port=nil)
+    url_port = port || (use_ssl ? 443: 80)
+    protocol = use_ssl ? 'https' : 'http'
+    if path.match(/^\//) # see if path starts with a /
+      url_path = path 
+    else
+      url_path = "/" << path 
+    end
+    href = "#{protocol}://#{host}:#{url_port}#{url_path}"
+    url = Addressable::URI.parse(href)
+    return nil if url.nil?
+    url.query_values ||= {}
+    url.query_values = url.query_values.merge(params) 
+    url
+  end
+
   def self.image_exists?(url)
     image_is_there = false
     begin
@@ -18,107 +60,84 @@ class Web
 
   # find social handles on a web page (try the home page)
   def self.social_pages_for_website(url)
+    doc = hpricot_doc(url)
     {
-      twitter_pages:  twitter_pages_for_website(url),
-      facebook_pages: facebook_pages_for_website(url)
+      twitter_pages:  twitter_pages_for_hpricot_doc(doc),
+      facebook_pages: facebook_pages_for_hpricot_doc(doc),
+      flicker_pages: facebook_pages_for_hpricot_doc(doc),
+      yelp_listings: yelp_listings_for_hpricot_doc(doc),
+      rss_feeds: rss_feeds_for_hpricot_doc(doc)
     }
   end
 
-  # twitter finder
-  def self.twitter_pages_for_website(url)
+  def self.social_crafts_for_website(url)
+    u = URI.parse(url.to_s.downcase)
+    u = URI.parse("http://#{url.to_s.downcase}") if u.host.nil?
+    return nil if u.host.nil?
+    web_service = u.host.split('.')[-2].symbolize # e.g. :facebook or :twitter or :yelp
+
+    hrefs = {}
+    hrefs[web_service] = [ url ]
+
     doc = hpricot_doc(url)
-    return nil if doc.nil?
-    tw_href_elements = doc.search("[@href*=twitter.com]")
-    tw_href_elements = tw_href_elements.map{ |e| e['href']} if tw_href_elements.present?
+    hrefs[:twitter]   = TwitterService.hrefs_in_hpricot_doc(doc) unless hrefs[:twitter].present?
+    hrefs[:facebook]  = FacebookService.hrefs_in_hpricot_doc(doc) unless hrefs[:facebook].present?
+    hrefs[:yelp]      = YelpService.hrefs_in_hpricot_doc(doc) unless hrefs[:yelp].present?
+    # hrefs[:flickr]    = FlickrService.hrefs_in_hpricot_doc(doc) unless hrefs[:flickr].present?
+    # hrefs[:rss]       = RssService.hrefs_in_hpricot_doc(doc) unless hrefs[:rss].present?
 
-    tw_elements = []
-    tw_elements += tw_href_elements if tw_href_elements.present?
-    tw_elements
+    social_crafts = {} # assume the first href found on a site is the primary url
 
-    # +++ TODO:
-    # grab username from the href
-    # handle multiple links
-    # look for like button or other references if first ref does not produce result
-  end
+    hrefs.each do |service, hrefs|
+      href = hrefs.shift
+      social_crafts[service] = {}
+      social_crafts[service][:href] = href
+      social_crafts[service][:other_hrefs] = hrefs
 
-  def self.username_from_twitter_page_url(twitter_page_url)
-    return nil if twitter_page_url.nil?
-
-    username = nil
-    begin
-      u = URI.parse(twitter_page_url.downcase)
-      u = URI.parse("http://#{twitter_page_url.downcase}") if u.host.nil?
-      return nil unless ['www.twitter.com', 'twitter.com'].include?(u.host)
-      flat = twitter_page_url.downcase.gsub(/\/\//, '')
-      tokens = flat.split('/')
-      return nil unless tokens.present?
-
-      case tokens.size
-        when 2
-          username = tokens[1] if twitter_username_is_valid?(tokens[1])
-        when 3
-          username = tokens[2] if ("#!" == tokens[1] and twitter_username_is_valid?(tokens[2]) )
-        else
-          # username = nil
+      svc_class_name = service.to_s.capitalize + "Service" # e.g. "TwitterService"
+      begin
+        svc_class = Kernel.const_get(svc_class_name.to_sym)
+puts "svc_clas= #{svc_class}"
+        craft = svc_class.craft_for_href(href)
+puts "craft = #{craft}"
+        social_crafts[service][:craft] = craft
+      rescue Exception => e
+        puts e.message
+        puts e
+        # could be a web page - not a web service like twitter or facebook
+        # +++ TODO scrape info from this webpage an create a craft?
       end
-    rescue Exception => e
-      puts e.message
-      # return nil
     end
-    username
+    social_crafts
   end
 
-  def self.twitter_username_is_valid?(username)
-    return false if username.nil?
-    username_match = username.match /[A-Za-z0-9_]+/ 
-    username_match.present? and username_match.to_s == username
+
+
+
+  def self.hrefs_in_hpricot_doc(doc, text_found_in_href, href_atts = [ 'href' ])
+    attributes_in_hpricot_doc(doc, text_found_in_href, href_atts)
   end
 
-  # facebook finder
-  def self.facebook_pages_for_website(url)
-    doc = hpricot_doc(url)
-    return nil if doc.nil?
-
-    fb_href_elements = (doc.search("[@href*=facebook.com]"))
-    fb_div_elements = (doc.search("[@data-href*=facebook.com/]"))
-
-    fb_href_elements = fb_href_elements.map{ |e| e['href']} if fb_href_elements.present?
-    fb_div_elements = fb_div_elements.map{ |e| e['data-href']} if fb_div_elements.present?
-
-    fb_elements  = []
-    fb_elements +=fb_href_elements if fb_href_elements.present?
-    fb_elements += fb_div_elements if fb_div_elements.present?
-    fb_elements
-  end
-
-  def self.pagename_from_facebook_page_url(facebook_page_url)
-    return nil if facebook_page_url.nil?
-    pagename = nil
-    begin
-      u = URI.parse(facebook_page_url.downcase)
-      u = URI.parse("http://#{facebook_page_url.downcase}") if u.host.nil?
-      return nil unless ['www.facebook.com', 'facebook.com'].include?(u.host)
-      flat = facebook_page_url.downcase.gsub(/\/\//, '')
-      tokens = flat.split('/')
-      return nil unless tokens.present?
-      return nil unless 2 == tokens.size
-      pagename = tokens[1] if facebook_pagename_is_valid?(tokens[1])
-    rescue Exception => e
-      puts e.message
-      # return nil
+  def self.attributes_in_hpricot_doc(doc, text_found_in_href, href_att)
+    return nil unless ( doc.present? and text_found_in_href.present? and href_att.present? )
+    href_list = []
+    href_atts = *href_att
+    href_atts.each do |att|
+      # search all elements where att contains text_found_in_href: e.g. <a href="www.twitter.com/awesome_one">...</a>
+      element_list = doc.search("[@#{att}*=#{text_found_in_href}]") #
+      if element_list.present?
+        values = element_list.map{ |e| e["#{att}"]} 
+        href_list += values if values.present?
+      end
     end
-    pagename
-  end
-
-  def self.facebook_username_is_valid?(username)
-    return false if username.nil?
-    username_match = username.match /^[a-z\d.]{5,}$/i 
-    username_match.present? and username_match.to_s == username
-  end
-
-  class << self
-    # class method name aliases
-    alias_method :facebook_pagename_is_valid?, :facebook_username_is_valid?
+    href_map = {}
+    unique_hrefs= []
+    href_list.each do |href|
+      next if href_map[href.downcase]
+      href_map[href.downcase] = true
+      unique_hrefs << href # save href, preserving order, and filtering out duplicates
+    end
+    unique_hrefs
   end
 
 end

@@ -1,4 +1,4 @@
-class Tweeter
+class TwitterCraft
   include Mongoid::Document
   include Mongoid::Timestamps
 
@@ -43,7 +43,7 @@ class Tweeter
 
   def self.materialize_from_twitter(user_hash)
     twitter_id = user_hash.delete(:id)
-    account = Tweeter.find_or_initialize_by(twitter_id: twitter_id)
+    account = TwitterCraft.find_or_initialize_by(twitter_id: twitter_id)
 
     user_hash[:is_protected] = user_hash.delete(:protected)
     user_hash[:twitter_account_created_at] = user_hash.delete(:created_at)
@@ -79,6 +79,6 @@ class Tweeter
 
   def self.pull(screen_name) TwitterService.pull(screen_name) end
 
-  def pull() Tweeter::pull(screen_name) end
+  def pull() TwitterCraft::pull(screen_name) end
   
 end

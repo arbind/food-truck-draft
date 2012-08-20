@@ -1,0 +1,18 @@
+%p id="notice"
+  = notice
+
+%p
+  %b Name:
+  = @craft.name
+
+%p
+  %b Phone number:
+  = @craft.phone_number
+
+%p
+  %b Geo coordinate:
+  = @craft.geo_coordinate
+
+
+= "#{link_to 'Edit', edit_craft_path(@craft)} |"
+= "#{link_to 'Back', crafts_path}"

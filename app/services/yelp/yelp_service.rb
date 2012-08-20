@@ -4,14 +4,70 @@ class YelpService
   V2_MAX_RESULTS_LIMIT = 20
   V2_MAX_RADIUS_FILTER = 40000 #in meters (~25 miles)
 
+
+  # webpage scraping
+  def self.craft_for_href(href)
+    id = id_from_href(href)
+    craft = fetch(id) unless id.nil?
+  end
+
+  def self.hrefs_in_webpage(url)
+    doc = hpricot_doc(url)
+    hrefs_in_hpricot_doc(doc)
+  end
+
+  def self.hrefs_in_hpricot_doc(doc)
+    Web.hrefs_in_hpricot_doc(doc, 'yelp.com')
+  end
+
+
+  def self.id_from_href(href)
+    return nil if href.nil?
+
+    listing_id = nil
+    begin
+      u = URI.parse(href.downcase)
+      u = URI.parse("http://#{href.downcase}") if u.host.nil?
+      return nil unless ['www.yelp.com', 'yelp.com'].include?(u.host)
+      flat = href.downcase.gsub(/\/\//, '')
+      tokens = flat.split('/')
+      return nil unless tokens.present?
+
+      case tokens.size
+        when 3
+          biz = tokens[1]
+          user_id = tokens[2]
+          listing_id = user_id if ("biz" == biz and id_is_valid?(user_id) )
+        else
+          # listing_id = nil
+      end
+    rescue Exception => e
+      puts e.message
+      # return nil
+    end
+    listing_id
+  end
+
+  def self.id_is_valid?(id) yelp_username_is_valid?(id) end
+
+  def self.yelp_username_is_valid?(id)
+    return false if id.nil?
+    true # +++ create regex for valid flicker user/page names
+  end
+  # /webpage scraping
+
+
+
+
+  # Yelp API
   def self.fetch(id_or_phone_number)
     phone_number = phone_number_10_digits(id_or_phone_number)
     if phone_number
       response = v1_biz_for_phone_number(phone_number) # returns nil if phone number is invalid and a yelp_id would be an invalid phone number
-      biz = YelpBiz::materialize_V1_API(response)
+      biz = YelpCraft::materialize_V1_API(response)
     else
       response = biz_for_id(id_or_phone_number) # if phone number is invalid
-      biz = YelpBiz::materialize_V2_API(response)
+      biz = YelpCraft::materialize_V2_API(response)
     end
     biz
   end
@@ -168,6 +224,7 @@ class YelpService
     end
     response = client.search(request)
   end
+  # /Yelp API
 
 private
 

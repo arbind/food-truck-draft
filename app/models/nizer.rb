@@ -5,6 +5,7 @@ class Nizer
 
   field :kind, type: Symbol # lowercased and underscored - e.g.  :yo_yo instead of :"Yo Yo"
   field :name, type: String # downcased - e.g.  "santa monica" instead of "Santa Monica"
+  field :aliases, type: Array, default: nil
 
   field :approved, type: Boolean, default: false
 
@@ -193,8 +194,8 @@ class Nizer
   # /geocoding  aliases
 
   # geo point hash representation
-  def geo_point() { latitude:lat, longitude:lng } end
-  def geo_point=(latlng_hash) {
+  def geo_point() latitude:lat, longitude:lng end
+  def geo_point=(latlng_hash)
     lat   = latlng_hash[:latitude]   if latlng_hash[:latitude].present?
     lat ||= latlng_hash[:lat]        if latlng_hash[:lat].present?
 
@@ -205,8 +206,8 @@ class Nizer
     self.lat = lat
     self.lng = lng
   end
-  alias_method :geo_coordinate, :geopoint
-  alias_method :geo_coordinate=, :geopoint=
+  alias_method :geo_coordinate, :geo_point
+  alias_method :geo_coordinate=, :geo_point=
   # /geo point hash representation
 
 private

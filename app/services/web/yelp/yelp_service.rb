@@ -4,7 +4,6 @@ class YelpService
   V2_MAX_RESULTS_LIMIT = 20
   V2_MAX_RADIUS_FILTER = 40000 #in meters (~25 miles)
 
-
   # webpage scraping
   def self.craft_for_href(href)
     id = id_from_href(href)
@@ -19,7 +18,6 @@ class YelpService
   def self.hrefs_in_hpricot_doc(doc)
     Web.hrefs_in_hpricot_doc(doc, 'yelp.com')
   end
-
 
   def self.id_from_href(href)
     return nil if href.nil?
@@ -57,17 +55,15 @@ class YelpService
   # /webpage scraping
 
 
-
-
-  # Yelp API
+  # Yelp API Integration
   def self.fetch(id_or_phone_number)
     phone_number = phone_number_10_digits(id_or_phone_number)
     if phone_number
-      response = v1_biz_for_phone_number(phone_number) # returns nil if phone number is invalid and a yelp_id would be an invalid phone number
-      biz = YelpCraft::materialize_V1_API(response)
+      response = biz_for_phone_number(phone_number)
+      biz = YelpCraft::materialize_from_V2_API(response)
     else
-      response = biz_for_id(id_or_phone_number) # if phone number is invalid
-      biz = YelpCraft::materialize_V2_API(response)
+      response = biz_for_id(id_or_phone_number)
+      biz = YelpCraft::materialize_from_V2_API(response)
     end
     biz
   end
@@ -77,6 +73,18 @@ class YelpService
     query = v2({yelp_business_id: yelp_id})
     request = Yelp::V2::Business::Request::Id.new(query)
     response = client.search(request)
+  end
+
+  def self.biz_for_phone_number(number)
+    # there is no phone number search in v2, lets use v1
+    response = self.v1_biz_for_phone_number(number) # a v1 response
+    if response
+      # v1 and v2 yelp id's do not match
+      # but we can use the v2 search with v1 yelp id to get the correct v2 version
+      # (don't want the same biz in our cache with two times = each with different yelp_ids!)
+      v1_yelp_id = response['id'] # v1 yelp_id = '53UyLtU4F7seRkPfL6TY6Q'
+      response = biz_for_id(v1_yelp_id) if v1_yelp_id # a v2 response: v2 yelp_id = 'grill-em-all-los-angeles'
+    end
   end
 
   def self.scroll_through_trucks(city, state)
@@ -161,11 +169,65 @@ class YelpService
     end
     response = client.search(request)
   end
+  # /Yelp API
+
+private
+
+  def initialize()  @yelp_client = Yelp::Client.new end
+
+  def self.client() YelpService.instance.yelp_client end
+
+  def self.v1(query={}) SECRETS[:YELP][:V1].merge(query) end
+  def self.v2(query={}) SECRETS[:YELP][:V2].merge(query) end
 
 
-  # V1 Yelp Web Service API -- Deprecated - but still useful because it has phone number search and neighborhood lookup
+  def self.phone_number_10_digits(anything) # +++ TODO move this to Util class
+    return nil if anything.nil?
+
+    phone_number = "#{anything}".gsub(/[\(\)\-\s]/, '') # (345) 789-2234  -> 3457892234
+    return nil if phone_number.nil?
+
+    phone_number = nil unless phone_number.match(/^\d{10}$/) # make sure there are exactly 10 digits
+    phone_number
+  end
+
+  def self.raise_if_response_is_invalid(response)
+    raise "NilResponseFromYelp" if response.blank?
+    raise "NoMessageFromYelp" if response['message'].blank?
+    msg = response['message']
+    code = msg['code']
+    raise "#{msg['text']} Sent To yelp" unless code.zero?
+    text = msg['text']
+  end
+
+  def self.biz_from_response(response)
+    list = biz_list_from_response(response)
+    puts "Got back #{list.size} bizes from Yelp. picking 1st one" if list.size > 1
+    list.first
+  end
+
+  def self.biz_list_from_response(response)
+    list = []
+    list = response['businesses'] if response.present?
+    list
+  end
+
+  def self.hood_from_response(response)
+    list = hood_list_from_response(response)
+    puts "Got back #{list.size} neighborhoods from Yelp. picking 1st one" if list.size > 1
+    list.first
+  end
+
+  def self.hood_list_from_response(response)
+    list = []
+    list = response['neighborhoods'] if response.present?
+    list
+  end
+
+  # keep V1 API private since it is depricated
+  # -- Deprecated V1 Yelp Web Service API  - but still useful because it has phone number search and neighborhood lookup
   def self.v1_biz_for_phone_number(number)
-    response = v1_biz_list_for_phone(number)
+    response = v1_search_for_phone_number(number)
     biz_list = biz_list_from_response(response)
     return nil if (biz_list.nil? or biz_list.size.zero?)
     biz_list.first
@@ -223,60 +285,6 @@ class YelpService
       request = Yelp::V1::Review::Request::Location.new(query)
     end
     response = client.search(request)
-  end
-  # /Yelp API
-
-private
-
-  def initialize()  @yelp_client = Yelp::Client.new end
-
-  def self.client() YelpService.instance.yelp_client end
-
-  def self.v1(query={}) SECRETS[:YELP][:V1].merge(query) end
-  def self.v2(query={}) SECRETS[:YELP][:V2].merge(query) end
-
-
-  def self.phone_number_10_digits(anything) # +++ TODO move this to Util class
-    return nil if anything.nil?
-
-    phone_number = "#{anything}".gsub(/[\(\)\-\s]/, '') # (345) 789-2234  -> 3457892234
-    return nil if phone_number.nil?
-
-    phone_number = nil unless phone_number.match(/^\d{10}$/) # make sure there are exactly 10 digits
-    phone_number
-  end
-
-  def self.raise_if_response_is_invalid(response)
-    raise "NilResponseFromYelp" if response.blank?
-    raise "NoMessageFromYelp" if response['message'].blank?
-    msg = response['message']
-    code = msg['code']
-    raise "#{msg['text']} Sent To yelp" unless code.zero?
-    text = msg['text']
-  end
-
-  def self.biz_from_response(response)
-    list = biz_list_from_response(response)
-    puts "Got back #{list.size} bizes from Yelp. picking 1st one" if list.size > 1
-    list.first
-  end
-
-  def self.biz_list_from_response(response)
-    list = []
-    list = response['businesses'] if response.present?
-    list
-  end
-
-  def self.hood_from_response(response)
-    list = hood_list_from_response(response)
-    puts "Got back #{list.size} neighborhoods from Yelp. picking 1st one" if list.size > 1
-    list.first
-  end
-
-  def self.hood_list_from_response(response)
-    list = []
-    list = response['neighborhoods'] if response.present?
-    list
   end
 
 end

@@ -40,6 +40,8 @@ class TwitterCraft
   field :default_profile_image
 
   field :timeline, default: []
+  alias_method :webservice_id, :twitter_id
+  alias_method :tweet_count, :statuses_count
 
   def self.materialize_from_twitter(user_hash)
     twitter_id = user_hash.delete(:id)

@@ -8,6 +8,7 @@ class FlikrCraft
   field :description
   field :location
   field :url
+  alias_method :webservice_id, :flickr_id
 
   def self.materialize_from_flickr(user_hash)
   end

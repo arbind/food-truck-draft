@@ -26,6 +26,7 @@ class FacebookCraft
   field :category
   field :link
   field :cover
+  alias_method :webservice_id, :facebook_id
 
   def self.materialize_from_facebook(user_hash)
 puts "11 #{user_hash[:id]}"

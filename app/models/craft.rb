@@ -78,3 +78,23 @@ private
 
 
 end
+
+
+
+# see for google maps stuff:
+# http://blog.joshsoftware.com/2011/04/13/geolocation-rails-and-mongodb-a-receipe-for-success/
+
+# see :
+# GlobalMaps4Rails
+
+# see:
+# http://stackoverflow.com/questions/6640697/how-do-i-query-objects-near-a-point-with-ruby-geocoder-mongoid
+
+
+# see:
+# http://stackoverflow.com/questions/6366870/how-to-search-for-nearby-users-using-mongoid-rails-and-google-maps
+
+# lat, lng = Geocoder.search('some location').first.coordinates
+# result = Business.near(:location => [lat, lng])
+
+# ‘rake db:mongoid:create_indexes’

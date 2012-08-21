@@ -1,37 +1,14 @@
-class FacebookService
+class FacebookService < WebCraftService
   include Singleton
-  # attr_reader :facebook_client <- add this in once integrated with the API
+  attr_reader :webservice_client
 
-  def self.pull(user_or_page_name)
-    begin
-puts 1
-      graph = Koala::Facebook::API.new
-puts 2
-      user_hash = graph.get_object("#{user_or_page_name}")
-puts 3
-      return nil if user_hash.nil?
+  def self.web_craft_class() FacebookCraft end
 
-      # create or updates the presence
-puts 4
-      presence = FacebookCraft.materialize_from_facebook(user_hash)
-puts 5
-      return presence
-    rescue Exception => e 
-      puts e.message
-      return nil
-    end
+  def self.fetch_remote_web_craft_hash(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
+    webcraft_hash = client.get_object("#{web_craft_id}")
   end
 
   # webpage scraping
-  def self.craft_for_href(href)
-    id = id_from_href(href)
-    craft = pull(id) unless id.nil?
-  end
-
-  def self.hrefs_in_webpage(url)
-    doc = hpricot_doc(url)
-    hrefs_in_hpricot_doc(doc)
-  end
   def self.hrefs_in_hpricot_doc(doc)
     Web.hrefs_in_hpricot_doc(doc, 'facebook.com', ['data-href', 'href'])
   end
@@ -73,6 +50,7 @@ puts 5
 
 
   private
-  def initialize()  end
+  def initialize() @webservice_client = Koala::Facebook::API.new end
+  def self.client() instance.webservice_client end
 
 end

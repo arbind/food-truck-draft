@@ -1,19 +1,6 @@
 =@url
-- if @primary_twitter_handle.present?
-  %a{href:@primary_twitter_page, target: :_blank}
-    .twitter.handle= "twitter: #{@primary_twitter_handle}"
-- if @primary_facebook_handle.present?
-  %a{href:@primary_facebook_page, target: :_blank}
-    .facebook.handle= "facebook page: #{@primary_facebook_handle}"
-- if @primary_flickr_handle.present?
-  %a{href:@primary_flickr_page, target: :_blank}
-    .flickr.handle= "flickr page: #{@primary_flickr_handle}"
-- if @primary_yelp_handle.present?
-  %a{href:@primary_yelp_listing, target: :_blank}
-    .yelp.handle= "yelp listing: #{@primary_yelp_handle}"
-- if @primary_rss_feed.present?
-  %a{href:@primary_rss_feed, target: :_blank}
-    .rss.handle= "rss feedd: #{@primary_rss_feed}"
+- @social_crafts.each do |service, hash|
+  = render "/crafts/social_crafts/#{service}" if hash[:craft].present?
 
 %hr
-%iframe{src:"#{@url}", width:'90%', height: '80%'}
+/ %iframe{src:"#{@url}", width:'90%', height: '80%'}

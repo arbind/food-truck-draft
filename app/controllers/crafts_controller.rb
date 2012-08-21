@@ -36,44 +36,12 @@ class CraftsController < ApplicationController
     @url = Web.as_url(params[:url])
     @social_crafts = Web.social_crafts_for_website(@url)
 
-    @social_pages = Web.social_pages_for_website(@url)
-
-    @twitter_pages = @social_pages[:twitter_pages]
-    if @twitter_pages.present?
-      @twitter_handles = @twitter_pages.map{ |link| Web.username_from_twitter_page_url(link) }
-      @primary_twitter_page =   @twitter_pages.first
-      @primary_twitter_handle = @twitter_handles.first
-    end
-
-    @facebook_pages = @social_pages[:facebook_pages]
-    if @facebook_pages.present?
-      @facebook_handles = @facebook_pages.map{ |link| Web.pagename_from_facebook_page_url(link) }
-      @primary_facebook_page = @facebook_pages.first
-      @primary_facebook_handle = @facebook_handles.first
-    end
-
-    @flickr_pages = @social_pages[:flickr_pages]
-    if @flickr_pages.present?
-      @flickr_handles = @flickr_pages.map{ |link| Web.username_from_flickr_page_url(link) }
-      @primary_flickr_page =   @flickr_pages.first
-      @primary_flickr_handle = @flickr_handles.first
-    end
-
-    puts @yelp_listings
-    @yelp_listings = @social_pages[:yelp_listings]
-    if @yelp_listings.present?
-      @yelp_handles = @yelp_listings.map{ |link| Web.username_from_yelp_listing_url(link) }
-      puts @yelp_handles
-      @primary_yelp_listing =   @yelp_listings.first
-      puts @primary_yelp_listing
-      @primary_yelp_handle = @yelp_handles.first
-      puts @primary_yelp_handle
-    end
-
-    @rss_feeds = @social_pages[:rss_feeds]
-    if @rss_feeds.present?
-      @primary_rss_feed =   @rss_feeds.first
-    end
+    # @twitter_craft = @social_crafts[:twitter][:craft] if @social_crafts[:twitter].present
+    # @facebook_craft = @social_crafts[facebook:][:craft] if @social_crafts[facebook:].present
+    # @yelp_craft = @social_crafts[:yelp][:craft] if @social_crafts[:yelp].present
+    # @flickr_craft = @social_crafts[flickr:][:craft] if @social_crafts[:flickr].present
+    # @you_tube_craft = @social_crafts[:you_tube][:craft] if @social_crafts[:you_tube].present
+    # @rss_craft = @social_crafts[:rss][:craft] if @social_crafts[:rss].present
 
     respond_to do |format|
       format.html # new.html.erb

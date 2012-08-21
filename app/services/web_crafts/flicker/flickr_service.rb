@@ -1,31 +1,14 @@
-class FlickrService
+class FlickrService < WebCraftService
   include Singleton
-  # attr_reader :flickr_client  <- add this in once integrated to the API?
+  attr_reader :webservice_client
 
-  def self.pull(user_or_page_name)
-    begin
-      user_hash = {}
-      return nil if user_hash.nil?
+  def self.web_craft_class() FlickrCraft end
 
-      # create or updates the presence
-      presence = FlickrCraft.materialize_from_facebook(user_hash)
-      return presence
-    rescue Exception => e 
-      puts e.message
-      return nil
-    end
+  def self.fetch_remote_web_craft_hash(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
+    webcraft_hash = {} # +++ todo
   end
 
   # webpage scraping
-  def self.craft_for_href(href)
-    id = id_from_href(href)
-    craft = pull(id) unless id.nil?
-  end
-  
-  def self.hrefs_in_webpage(url)
-    doc = hpricot_doc(url)
-    hrefs_in_hpricot_doc(doc)
-  end
   def self.hrefs_in_hpricot_doc(doc)
     Web.hrefs_in_hpricot_doc(doc, 'flickr.com')
   end
@@ -69,6 +52,7 @@ class FlickrService
 
 
   private
-  def initialize()  end
+  def initialize() @webservice_client = nil end # update with Flickr API client
+  def self.client() instance.webservice_client end
 
 end

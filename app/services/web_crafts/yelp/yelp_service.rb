@@ -1,20 +1,38 @@
-class YelpService
+class YelpService < WebCraftService
   include Singleton
-  attr_reader :yelp_client
+  attr_reader :webservice_client
+
   V2_MAX_RESULTS_LIMIT = 20
   V2_MAX_RADIUS_FILTER = 40000 #in meters (~25 miles)
 
+  def self.web_craft_class() YelpCraft end
+
+  def self.fetch_remote_web_craft_hash(web_craft_id)
+    phone_number = phone_number_10_digits(web_craft_id)
+    if phone_number
+      web_craft_hash = biz_for_phone_number(phone_number)
+    else
+      web_craft_hash = biz_for_id(web_craft_id)
+    end
+    return nil if web_craft_hash.nil?
+
+    # +++ todo
+    # if web_craft_hash['categories'].present? # flatten out yelp's category stuff
+    #   categories = web_craft_hash.delete('categories')
+    #   web_craft_hash['categories'] = categories.map {|c| [c['name'], c['category_filter']]}
+    # end
+
+    # +++ todo
+    # if web_craft_hash['reviews'].present?
+    #   reviews = web_craft_hash.delete('reviews')
+    #   web_craft_hash['reviews'] = reviews.map {|r| "review" }
+    # end
+
+    web_craft_hash
+  end
+
+
   # webpage scraping
-  def self.craft_for_href(href)
-    id = id_from_href(href)
-    craft = fetch(id) unless id.nil?
-  end
-
-  def self.hrefs_in_webpage(url)
-    doc = hpricot_doc(url)
-    hrefs_in_hpricot_doc(doc)
-  end
-
   def self.hrefs_in_hpricot_doc(doc)
     Web.hrefs_in_hpricot_doc(doc, 'yelp.com')
   end
@@ -56,17 +74,6 @@ class YelpService
 
 
   # Yelp API Integration
-  def self.fetch(id_or_phone_number)
-    phone_number = phone_number_10_digits(id_or_phone_number)
-    if phone_number
-      response = biz_for_phone_number(phone_number)
-      biz = YelpCraft::materialize_from_V2_API(response)
-    else
-      response = biz_for_id(id_or_phone_number)
-      biz = YelpCraft::materialize_from_V2_API(response)
-    end
-    biz
-  end
 
   # V2 Yelp API calls
   def self.biz_for_id(yelp_id)
@@ -173,9 +180,8 @@ class YelpService
 
 private
 
-  def initialize()  @yelp_client = Yelp::Client.new end
-
-  def self.client() YelpService.instance.yelp_client end
+  def initialize() @webservice_client = Yelp::Client.new end
+  def self.client() instance.webservice_client end
 
   def self.v1(query={}) SECRETS[:YELP][:V1].merge(query) end
   def self.v2(query={}) SECRETS[:YELP][:V2].merge(query) end

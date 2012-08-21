@@ -80,9 +80,10 @@ class Web
     hrefs[web_service] = [ url ]
 
     doc = hpricot_doc(url)
-    hrefs[:twitter]   = TwitterService.hrefs_in_hpricot_doc(doc) unless hrefs[:twitter].present?
-    hrefs[:facebook]  = FacebookService.hrefs_in_hpricot_doc(doc) unless hrefs[:facebook].present?
-    hrefs[:yelp]      = YelpService.hrefs_in_hpricot_doc(doc) unless hrefs[:yelp].present?
+    hrefs[:twitter]   = ::TwitterService.hrefs_in_hpricot_doc(doc) unless hrefs[:twitter].present?
+    hrefs[:facebook]  = ::FacebookService.hrefs_in_hpricot_doc(doc) unless hrefs[:facebook].present?
+    hrefs[:yelp]      = ::YelpService.hrefs_in_hpricot_doc(doc) unless hrefs[:yelp].present?
+    # hrefs[:you_tube]    = YouTubeService.hrefs_in_hpricot_doc(doc) unless hrefs[:you_tube].present?
     # hrefs[:flickr]    = FlickrService.hrefs_in_hpricot_doc(doc) unless hrefs[:flickr].present?
     # hrefs[:rss]       = RssService.hrefs_in_hpricot_doc(doc) unless hrefs[:rss].present?
 

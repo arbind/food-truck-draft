@@ -11,17 +11,16 @@ class Craft
 
   # geocoder fields
   field :address, default: nil
-  field :coordinates, :type => Array, default: [nil, nil] # does geocoder gem auto index this?
+  field :coordinates, type: Array, default: [nil, nil] # does geocoder gem auto index this?
   # mongoid stores [long, lat] - which is backwards from normal convention
   # geocorder knows this, but expects [lat, lng]
 
-  field :yelp_id
-  field :twitter_id
-  field :facebook_id
-  field :googleplus_id
-
   field :geo_location_history, :type => Array # for mobile crafts like a Food Truck
 
+  # add all nizer.name to search_tags - be sure to update list when binding to a new nizer
+  field :search_tags, type: Array, default: [], index: true 
+
+  has_many :web_crafts
   has_and_belongs_to_many :nizers # organizers
 
   geocoded_by :address

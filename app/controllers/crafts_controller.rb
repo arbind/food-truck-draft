@@ -34,14 +34,7 @@ class CraftsController < ApplicationController
   # GET /crafts/find.json
   def capture
     @url = Web.as_url(params[:url])
-    @social_crafts = Web.social_crafts_for_website(@url)
-
-    # @twitter_craft = @social_crafts[:twitter][:craft] if @social_crafts[:twitter].present
-    # @facebook_craft = @social_crafts[facebook:][:craft] if @social_crafts[facebook:].present
-    # @yelp_craft = @social_crafts[:yelp][:craft] if @social_crafts[:yelp].present
-    # @flickr_craft = @social_crafts[flickr:][:craft] if @social_crafts[:flickr].present
-    # @you_tube_craft = @social_crafts[:you_tube][:craft] if @social_crafts[:you_tube].present
-    # @rss_craft = @social_crafts[:rss][:craft] if @social_crafts[:rss].present
+    @social_crafts = Web.web_crafts_for_website(@url)
 
     respond_to do |format|
       format.html # new.html.erb

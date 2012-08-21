@@ -70,14 +70,23 @@ class Web
     }
   end
 
-  def self.social_crafts_for_website(url)
+  def self.web_crafts_for_website(url)
     u = URI.parse(url.to_s.downcase)
     u = URI.parse("http://#{url.to_s.downcase}") if u.host.nil?
     return nil if u.host.nil?
-    web_service = u.host.split('.')[-2].symbolize # e.g. :facebook or :twitter or :yelp
+    web_service = u.host.split('.')[-2].symbolize # e.g. :facebook or :twitter or :yelp or webpage domain or other
 
+    service = web_service
+    begin
+      svc_class_name = web_service.to_s.capitalize + "Service" # e.g. "FacebookService" or TwitterService" or "YelpService" or other
+      svc_class = Kernel.const_get(svc_class_name.to_sym)
+      # class was found for service e.g. "FacebookService" or TwitterService" or "YelpService" or other
+    rescue
+      service = :webpage # assume this is a webpage if no other service is found
+      # class was not found for service e.g. "GrillEmAllService"
+    end
     hrefs = {}
-    hrefs[web_service] = [ url ]
+    hrefs[service] = [ url ]
 
     doc = hpricot_doc(url)
     hrefs[:twitter]   = ::TwitterService.hrefs_in_hpricot_doc(doc) unless hrefs[:twitter].present?
@@ -98,15 +107,11 @@ class Web
       svc_class_name = service.to_s.capitalize + "Service" # e.g. "TwitterService"
       begin
         svc_class = Kernel.const_get(svc_class_name.to_sym)
-puts "svc_clas= #{svc_class}"
         craft = svc_class.craft_for_href(href)
-puts "craft = #{craft}"
         social_crafts[service][:craft] = craft
       rescue Exception => e
         puts e.message
         puts e
-        # could be a web page - not a web service like twitter or facebook
-        # +++ TODO scrape info from this webpage an create a craft?
       end
     end
     social_crafts

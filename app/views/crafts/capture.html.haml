@@ -1,6 +1,6 @@
 =@url
 - @social_crafts.each do |service, hash|
-  = render "/crafts/social_crafts/#{service}" if hash[:craft].present?
+  = render "/crafts/web_crafts/#{service}" if hash[:craft].present?
 
 %hr
 / %iframe{src:"#{@url}", width:'90%', height: '80%'}

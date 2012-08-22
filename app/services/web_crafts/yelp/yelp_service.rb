@@ -59,7 +59,7 @@ class YelpService < WebCraftService
       end
     rescue Exception => e
       puts e.message
-      # return nil
+      puts e.backtrace
     end
     listing_id
   end

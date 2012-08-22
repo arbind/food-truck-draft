@@ -35,7 +35,7 @@ class FacebookService < WebCraftService
       end
     rescue Exception => e
       puts e.message
-      # return nil
+      puts e.backtrace
     end
     pagename
   end

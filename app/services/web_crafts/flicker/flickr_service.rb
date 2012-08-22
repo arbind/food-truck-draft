@@ -2,8 +2,6 @@ class FlickrService < WebCraftService
   include Singleton
   attr_reader :webservice_client
 
-  def self.web_craft_class() FlickrCraft end
-
   def self.fetch_remote_web_craft_hash(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
     webcraft_hash = {} # +++ todo
   end
@@ -37,7 +35,7 @@ class FlickrService < WebCraftService
       end
     rescue Exception => e
       puts e.message
-      # return nil
+      puts e.backtrace
     end
     flickr_id
   end

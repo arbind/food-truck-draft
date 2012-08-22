@@ -8,24 +8,21 @@ class TwitterService < WebCraftService
     id = "#{web_craft_id}"
     twitter_user = Twitter.user(id)
     return nil if twitter_user.nil?
-    webcraft_hash = twitter_user.to_hash
-
-    webcraft_hash[:is_protected] = webcraft_hash.delete(:protected)
-    webcraft_hash[:twitter_account_created_at] = webcraft_hash.delete(:created_at)
+    web_craft_hash = twitter_user.to_hash
 
     #remove unneeded atts
-    webcraft_hash.delete(:status)
-    webcraft_hash.delete(:id_str)
-    webcraft_hash.delete(:contributors_enabled)
-    webcraft_hash.delete(:is_translatorfollowing)
-    webcraft_hash.delete(:follow_request_sent)
-    webcraft_hash.delete(:notifications)
+    web_craft_hash.delete(:status)
+    web_craft_hash.delete(:id_str)
+    web_craft_hash.delete(:contributors_enabled)
+    web_craft_hash.delete(:is_translatorfollowing)
+    web_craft_hash.delete(:follow_request_sent)
+    web_craft_hash.delete(:notifications)
 
     #locate url for _reasonably_small image: it seems to be a bigger than the _normal size
-    image_url = webcraft_hash[:profile_image_url]
-    webcraft_hash[:profile_image_url_bigger] = image_url # default
+    image_url = web_craft_hash[:profile_image_url]
+    web_craft_hash[:profile_image_url_bigger] = image_url # default
     bigger_image_url = image_url.gsub(/_normal\./, '_reasonably_small.') if image_url
-    webcraft_hash[:profile_image_url_bigger] = bigger_image_url if  Web.image_exists?(bigger_image_url)
+    web_craft_hash[:profile_image_url_bigger] = bigger_image_url if  Web.image_exists?(bigger_image_url)
 
     timeline = Twitter.user_timeline(id)
     if timeline
@@ -35,32 +32,11 @@ class TwitterService < WebCraftService
         tweet_hash.delete(:user)
         tweet_hash
       end
-      webcraft_hash[:timeline] = timeline
+      web_craft_hash[:timeline] = timeline
     end
-    webcraft_hash
+    web_craft_hash
   end
-
     
-
-  # def self.pull(screen_name)
-  #   begin
-  #     tuser = Twitter.user(screen_name)
-  #     return nil if tuser.nil?
-
-  #     # create or updates the twitter presence
-  #     twitter_presence = TwitterCraft.materialize_from_twitter(tuser.to_hash)
-  #     # create or update the timeline
-  #     timeline = Twitter.user_timeline(screen_name) 
-  #     twitter_presence.update_timeline(timeline)
-
-  #     return twitter_presence
-  #   rescue Exception => e 
-  #     puts e.message
-  #     return nil
-  #   end
-  # end
-
-
   # webpage scraping
   def self.hrefs_in_hpricot_doc(doc)
     Web.hrefs_in_hpricot_doc(doc, 'twitter.com')
@@ -89,7 +65,7 @@ class TwitterService < WebCraftService
       end
     rescue Exception => e
       puts e.message
-      # return nil
+      puts e.backtrace
     end
     screen_name
   end

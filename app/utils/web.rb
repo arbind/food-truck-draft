@@ -19,7 +19,6 @@ class Web
     HTTParty.get(href)
   end
 
-
   def self.href_for(host, path='/', params = {}, use_ssl = false, port=nil)
     url = url_for(host, path, params, use_ssl, port)
     return '' if url.nil?
@@ -95,26 +94,31 @@ class Web
     # hrefs[:you_tube]    = YouTubeService.hrefs_in_hpricot_doc(doc) unless hrefs[:you_tube].present?
     # hrefs[:flickr]    = FlickrService.hrefs_in_hpricot_doc(doc) unless hrefs[:flickr].present?
     # hrefs[:rss]       = RssService.hrefs_in_hpricot_doc(doc) unless hrefs[:rss].present?
-
-    social_crafts = {} # assume the first href found on a site is the primary url
+puts hrefs
+    web_crafts_map = {} # assume the first href found on a site is the primary url
+    web_crafts_map[:web_crafts] = [] # an array stores all the WebCrafts
 
     hrefs.each do |service, hrefs|
       href = hrefs.shift
-      social_crafts[service] = {}
-      social_crafts[service][:href] = href
-      social_crafts[service][:other_hrefs] = hrefs
+      web_crafts_map[service] = {}
+      web_crafts_map[service][:href] = href
+      web_crafts_map[service][:other_hrefs] = hrefs
 
       svc_class_name = service.to_s.capitalize + "Service" # e.g. "TwitterService"
       begin
         svc_class = Kernel.const_get(svc_class_name.to_sym)
-        craft = svc_class.craft_for_href(href)
-        social_crafts[service][:craft] = craft
+puts "web_craft = #{svc_class}.web_craft_for_href(#{href})"
+        web_craft = svc_class.web_craft_for_href(href)
+        if (web_craft)
+          web_crafts_map[:web_crafts] << web_craft
+          web_crafts_map[service][:web_craft] = web_craft
+        end
       rescue Exception => e
         puts e.message
         puts e
       end
     end
-    social_crafts
+    web_crafts_map
   end
 
 

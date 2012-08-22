@@ -5,7 +5,12 @@ class WebpageService < WebCraftService
   def self.web_craft_class() WebpageCraft end
 
   def self.fetch_remote_web_craft_hash(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
-    webcraft_hash = { web_craft_id: web_craft_id }
+    webcraft_hash = {
+      web_craft_id: web_craft_id,
+      name: nil, # web page title
+      description: nil,
+      keywords: nil
+    }
     # +++ todo
     webcraft_hash
   end

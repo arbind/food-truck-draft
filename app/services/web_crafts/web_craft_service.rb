@@ -9,14 +9,20 @@ class WebCraftService
   # fetch and pull
   def self.fetch(web_craft_id)
     begin
-      webcraft_hash = fetch_remote_web_craft_hash(web_craft_id)
-      if webcraft_hash[:web_craft_id].nil?
-        id = webcraft_hash.delete('id') || webcraft_hash.delete(:id)
-        webcraft_hash[:web_craft_id] = id
+      web_craft_hash = fetch_remote_web_craft_hash(web_craft_id)
+      return nil if web_craft_hash.nil?
+      if web_craft_hash[:web_craft_id].nil?
+        id = web_craft_hash.delete('id') || web_craft_hash.delete(:id)
+        web_craft_hash[:web_craft_id] = id
       end
-      webcraft_hash
-    rescue Exception => e 
+      # protect mongoid object created_at and updated_at fields
+      web_craft_hash[:web_craft_created_at] = web_craft_hash.delete(:created_at)
+      web_craft_hash[:web_craft_updated_at] = web_craft_hash.delete(:updated_at)
+
+      web_craft_hash
+    rescue Exception => e
       puts e.message
+      puts e.backtrace
       return nil
     end
   end
@@ -25,15 +31,18 @@ class WebCraftService
     begin
       web_craft_hash = fetch(web_craft_id)
       web_craft = web_craft_class.materialize(web_craft_hash) if web_craft_hash
+puts "web_craft = #{web_craft}"
+      web_craft
     rescue Exception => e 
       puts e.message
+      puts e.backtrace
       nil
     end
   end
   # /fetch and pull
 
   # webpage scraping
-  def self.craft_for_href(href)
+  def self.web_craft_for_href(href)
     id = id_from_href(href)
     craft = pull(id) unless id.nil?
   end

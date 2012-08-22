@@ -2,6 +2,8 @@ class RssService < WebCraftService
   include Singleton
   attr_reader :webservice_client
 
+  def initialize() @provider = :rss end
+
   # def self.web_craft_class() RssCraft end
 
   # webpage scraping

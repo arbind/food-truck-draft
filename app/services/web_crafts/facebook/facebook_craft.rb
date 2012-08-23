@@ -22,6 +22,11 @@ class FacebookCraft < WebCraft
   field :category
   field :cover
   alias_method :facebook_id, :web_craft_id
+  # normalize attributes for WebCraft
+  alias_method :link, :href  # facebook specifies it href as link=
+  alias_method :link=, :href=
+  alias_method :about, :description
+  alias_method :about=, :description=
 
   def self.provider_key() 'fb' end
   

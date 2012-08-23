@@ -2,7 +2,7 @@ class FlickrService < WebCraftService
   include Singleton
   attr_reader :webservice_client
 
-  def self.fetch_remote_web_craft_hash(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
+  def self.web_fetch(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
     webcraft_hash = {} # +++ todo
   end
 

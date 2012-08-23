@@ -62,9 +62,24 @@ class Craft
   alias_method :geo_coordinate=, :geo_point=
   # /geo point hash representation
 
-  def materialize(provider_id_username_or_href)
+
+  def bind(web_craft)
+    web_craft_list = *web_craft 
+    web_craft_list.each do |web_craft|
+      self.web_crafts << web_craft
+
+      self.provider_id_tags << web_craft.web_craft_id if web_craft.web_craft_id.present?
+      self.provider_username_tags << web_craft.username if web_craft.username.present?
+      self.href_tags << web_craft.href if web_craft.href.present?
+      self.href_tags << web_craft.website if web_craft.website.present?
+      # +++ set address / location
+    end
+    save
+  end
+
+  def self.materialize(provider_id_username_or_href)
     web_craft = nil
-    if looks_like_href(web_craft_screen_names) # look for web_craft by href
+    if Web.looks_like_href?(provider_id_username_or_href) # look for web_craft by href
       web_craft = WebCraft.where(hrefs: provider_id_username_or_href).first
     else # look for web_craft by screen name or social id
       web_craft = WebCraft.where(provider_username_tags: provider_id_username_or_href).or(provider_id_tags: provider_id_username_or_href).first
@@ -77,7 +92,7 @@ class Craft
     return nil unless web_crafts.present? # do not create a new craft if there are no web_crafts
 
     #see if an already existing craft was found with any of these web_crafts
-    crafts = web_crafts.all.collect(&:craft).reject{|i| i.nil?} # collect all the parent crafts for the web_crafts
+    crafts = web_crafts.collect(&:craft).reject{|i| i.nil?} # collect all the parent crafts for the web_crafts
     return crafts.first if crafts.present?  # return the parent craft if any webcraft was found
 
     # we have some web_crafts, and none of them have a parent craft, lets create a new one
@@ -99,9 +114,7 @@ private
     return true
   end
 
-
 end
-
 
 
 # see for google maps stuff:

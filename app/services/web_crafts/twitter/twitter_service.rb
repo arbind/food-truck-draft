@@ -4,11 +4,36 @@ class TwitterService < WebCraftService
 
   def self.web_craft_class() TwitterCraft end
 
-  def self.fetch_remote_web_craft_hash(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
+  def self.raw_fetch(web_craft_id, fetch_timeline=true) # get the user and their timeline
     id = "#{web_craft_id}"
     twitter_user = Twitter.user(id)
-    return nil if twitter_user.nil?
-    web_craft_hash = twitter_user.to_hash
+    if twitter_user
+      web_craft_hash = twitter_user.to_hash
+    else
+      web_craft_hash = nil
+    end
+
+    if(true===fetch_timeline and web_craft_hash.present?)
+      timeline = Twitter.user_timeline(id)
+      if timeline
+        timeline = timeline.map do |status|
+          tweet_hash = status.to_hash
+          # tweet_hash[:tweet_id] = tweet_hash.delete(:id);
+          tweet_hash.delete(:user)
+          tweet_hash
+        end
+        web_craft_hash[:timeline] = timeline
+      end
+    end
+    web_craft_hash
+  end
+
+  def self.web_fetch(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
+    web_craft_hash = raw_fetch(web_craft_id)
+    return nil if web_craft_hash.nil?
+
+    #normalize atts
+    web_craft_hash[:href] = "http://twitter.com/#{web_craft_hash[:screen_name]}"
 
     #remove unneeded atts
     web_craft_hash.delete(:status)
@@ -24,16 +49,6 @@ class TwitterService < WebCraftService
     bigger_image_url = image_url.gsub(/_normal\./, '_reasonably_small.') if image_url
     web_craft_hash[:profile_image_url_bigger] = bigger_image_url if  Web.image_exists?(bigger_image_url)
 
-    timeline = Twitter.user_timeline(id)
-    if timeline
-      timeline = timeline.map do |status|
-        tweet_hash = status.to_hash
-        tweet_hash[:tweet_id] = tweet_hash.delete(:id);
-        tweet_hash.delete(:user)
-        tweet_hash
-      end
-      web_craft_hash[:timeline] = timeline
-    end
     web_craft_hash
   end
     

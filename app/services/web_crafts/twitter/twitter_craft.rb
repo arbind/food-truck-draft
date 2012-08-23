@@ -32,6 +32,12 @@ class TwitterCraft < WebCraft
   field :timeline, default: []
   alias_method :twitter_id, :web_craft_id
   alias_method :twitter_id=, :web_craft_id=
+  # normalize attributes to WebCraft 
+  alias_method :url, :website  # twitter specifies website as url=
+  alias_method :url=, :website=
+  alias_method :screen_name, :username # twitter uses screen_name for username
+  alias_method :screen_name=, :username=
+  # convenience aliases
   alias_method :tweet_count, :statuses_count
   alias_method :tweet_count=, :statuses_count=
   alias_method :protected, :is_protected

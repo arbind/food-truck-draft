@@ -7,14 +7,21 @@ class YelpService < WebCraftService
 
   def self.web_craft_class() YelpCraft end
 
-  def self.fetch_remote_web_craft_hash(web_craft_id)
+  def self.raw_fetch(web_craft_id)
     phone_number = phone_number_10_digits(web_craft_id)
     if phone_number
       web_craft_hash = biz_for_phone_number(phone_number)
     else
       web_craft_hash = biz_for_id(web_craft_id)
     end
+  end
+
+  def self.web_fetch(web_craft_id)
+    web_craft_hash = raw_fetch(web_craft_id)
     return nil if web_craft_hash.nil?
+    # normalize attributes
+    # +++ todo check if host is yelp, if so, set href - else set website?
+    web_craft_hash['href'] = web_craft_hash.delete('url') 
 
     # +++ todo
     # if web_craft_hash['categories'].present? # flatten out yelp's category stuff

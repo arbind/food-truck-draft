@@ -5,6 +5,7 @@ class WebCraft
 
   field :name
   field :description
+  field :website
   field :location
   field :username, index: true
   field :href, index: true
@@ -16,16 +17,18 @@ class WebCraft
   field :search_tags, type: Array, default: [], index: true
 
   belongs_to :craft
+  
+  scope :yelp_crafts,     where(provider: :yelp)
+  scope :flickr_crafts,   where(provider: :flickr)
+  scope :webpage_crafts,  where(provider: :webpage)
+  scope :twitter_crafts,  where(provider: :twitter)
+  scope :facebook_crafts, where(provider: :facebook)
+  scope :you_tube_crafts, where(provider: :you_tube)
+
   alias_method :user_name, :username
   alias_method :user_name=, :username=
-  alias_method :screen_name, :username
-  alias_method :screen_name=, :username=
-  alias_method :link, :href
-  alias_method :link=, :href=
-  alias_method :url, :href
-  alias_method :url=, :href=
-  alias_method :about, :description
-  alias_method :about=, :description=
+
+  before_save :format_attributes
 
   # convert classname to provider name: e.g. TwitterCraft -> :twitter
   def self.provider() name[0..-6].symbolize end
@@ -38,7 +41,6 @@ class WebCraft
     wc_id = web_craft_hash[:web_craft_id] || web_craft_hash['web_craft_id']
     return nil if wc_id.nil?
 
-puts "finding webcraft for class: #{name}!!!!!!!!!!!!!!!!!!!!!!"
     web_craft = find_or_initialize_by(web_craft_id: wc_id)
     web_craft.update_attributes(web_craft_hash) if web_craft
 
@@ -72,4 +74,11 @@ puts "finding webcraft for class: #{name}!!!!!!!!!!!!!!!!!!!!!!"
     web_craft_hash[:search_tags] = []
   end
 
+  private
+  def format_attributes
+    self.web_craft_id = "#{web_craft_id}" unless web_craft_id.kind_of? String
+    # urlify
+    self.website = website.downcase.urlify! unless website.nil?
+    self.href = href.downcase.urlify! unless website.nil?
+  end
 end

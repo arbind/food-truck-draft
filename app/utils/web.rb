@@ -1,16 +1,15 @@
 class Web
 
-  def self.looks_like_url?(url)
+  def self.looks_like_href?(url)
     return false if url.nil?
     url.to_s.match /(^https?\:\/\/|^www\.)[^\s<]+|[^\s<]+\.(com|net|org|us|me|co|info|ws|ca|biz|me|cc|tv|asia)[^\s<]*$/
   end
 
-  def self.as_url(url_like)
+  def self.as_href(url_like)
     u = URI.parse(url_like.to_s.downcase)
     u = URI.parse("http://#{url_like.to_s.downcase}") if u.host.nil?
     u.to_s
   end
-
 
   def self.http_get(host, path='/', params = {}, use_ssl = false, cookies = {}, port=nil)
     # data_payload = Rack::Utils.escape(data)

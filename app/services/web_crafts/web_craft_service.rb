@@ -2,22 +2,27 @@ class WebCraftService
 
   def self.web_craft_class() raise "#{name}.#{__method__} subclass hook not implemented!" end
 
-  def self.fetch_remote_web_craft_hash(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
+  def self.web_fetch(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
     raise "#{name}.#{__method__} subclass hook not implemented!"
   end
 
   # fetch and pull
   def self.fetch(web_craft_id)
     begin
-      web_craft_hash = fetch_remote_web_craft_hash(web_craft_id)
+      web_craft_hash = web_fetch(web_craft_id)
       return nil if web_craft_hash.nil?
+
       if web_craft_hash[:web_craft_id].nil?
         id = web_craft_hash.delete('id') || web_craft_hash.delete(:id)
         web_craft_hash[:web_craft_id] = id
       end
+
       # protect mongoid object created_at and updated_at fields
-      web_craft_hash[:web_craft_created_at] = web_craft_hash.delete(:created_at)
-      web_craft_hash[:web_craft_updated_at] = web_craft_hash.delete(:updated_at)
+      prefix = web_craft_class.name.downcase
+      web_craft_hash[:"#{prefix}_created_at"] = web_craft_hash.delete(:created_at)
+      web_craft_hash[:"#{prefix}_updated_at"] = web_craft_hash.delete(:updated_at)
+
+      # do any post process transformations
 
       web_craft_hash
     rescue Exception => e
@@ -31,7 +36,6 @@ class WebCraftService
     begin
       web_craft_hash = fetch(web_craft_id)
       web_craft = web_craft_class.materialize(web_craft_hash) if web_craft_hash
-puts "web_craft = #{web_craft}"
       web_craft
     rescue Exception => e 
       puts e.message

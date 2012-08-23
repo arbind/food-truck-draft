@@ -19,6 +19,8 @@ class YelpCraft < WebCraft
   field :is_closed
   field :categories
   alias_method :yelp_id, :web_craft_id
+  alias_method :url, :href  # yelp specifies href as url=http://www.yelp.com/biz/grill-em-all-los-angeles
+  alias_method :url=, :href=
 
   # aliases for API V2 and V1 backwards compatibility
   alias_method :photo_url, :image_url

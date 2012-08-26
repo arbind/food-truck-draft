@@ -1,6 +1,6 @@
-  .craft.streamline{
+.craft.streamline{
   height: 56px;
-height: 60px;
+  height: 60px;
   margin: 0 auto;
   padding: 0px;
   .canvas {
@@ -95,24 +95,42 @@ height: 60px;
                  -o-border-radius: 6px;
                     border-radius: 6px;
           }
-          h2.name {
+          .name-activity {
             float: left;
-            font-weight: bold;                
-            font-size: 30px;
-            line-height: 56px;
-            text-rendering: optimizeLegibility;
+            height: 56px;
             width: 380px;
+            h2.name {
+              margin: 0;
+              padding: 3px 0 0 0;
+              font-size: 28px;
+              line-height: 32px;
+              font-weight: bold;                
+              text-rendering: optimizeLegibility;
+            }
+            .last-activity {
+              display: block;
+              img{
+                float:left;
+                width: 16px;
+                height:14px;
+                padding: 0;
+              }
+              span{
+                display: inline-block;
+                float:left;
+                margin: 0;
+                padding: 0 0 0 3px;
+                color: #0084B4;
+                font-weight: normal;
+                font-size: 14px;
+                line-height: 14px;
+              }
+            }
           }
           .yelp{
-            float: left;
-            height: 25px;
-            padding: 12px 0 16px 0;
-          }
-          .intent-to-follow-on-twitter{
             float: right;
-            margin-right: 5px;
-            height: 20px;
-            padding: 18px 0;
+            height: 30px;
+            padding: 8px 8px 18px 0;
           }
         }
       }

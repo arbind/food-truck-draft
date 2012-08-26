@@ -113,9 +113,6 @@ class Craft
 
 
   # Derive the Craft's Brand
-  def profile_image_url
-    x = twitter.profile_image_url if twitter.present?
-  end
   def name
     x = twitter.name if twitter.present?
     x ||= yelp.name if yelp.present?
@@ -126,6 +123,23 @@ class Craft
     x = twitter.description if twitter.present?
     x ||= yelp.description if yelp.present?
     x ||= facebook.description if facebook.present?
+  end
+
+  def last_tweet_html
+    if twitter.present? and twitter.oembed.present?
+      x = twitter.oembed['html'].html_safe
+    end
+  end
+
+  def how_long_ago_was_last_tweet
+    return @how_long_ago_was_last_tweet if @how_long_ago_was_last_tweet.present?
+
+    if twitter.present? and twitter.timeline.present? and twitter.timeline.first.present? and twitter.timeline.first["created_at"].present?      
+      last_tweeted_at = twitter.timeline.first["created_at"]
+      x = Util.how_long_ago_was(last_tweeted_at)
+    end
+    x ||= nil
+    @how_long_ago_was_last_tweet = x
   end
 
   def website
@@ -146,6 +160,9 @@ class Craft
     x = address
   end
 
+  def profile_image_url
+    x = twitter.profile_image_url if twitter.present?
+  end
   def profile_background_color
     x = twitter.profile_background_color if twitter.present?
     x ||= 'grey'

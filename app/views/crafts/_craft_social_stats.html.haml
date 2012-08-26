@@ -10,11 +10,6 @@
   %ul
     - if yelp.present?
       %li
-        .yelp
-          .ratings
-            %img{src:yelp.rating_img_url_large}
-          %a.logo.yelp_logo_50x25{href:yelp.href, target: :_blank}                    
-      %li
         %img.indicator{src:"/assets/transparent-indicator.png"}
         %strong= yelp.review_count
         Yelp reviews
@@ -32,6 +27,7 @@
         %img.indicator{src:"/assets/transparent-indicator.png"}
         %strong= facebook.likes
         FB likes
+
       / %li
       /   %img.indicator{src:"/assets/transparent-indicator.png"}
       /   %strong= twitter.friends_count

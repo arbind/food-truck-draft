@@ -30,6 +30,8 @@ class TwitterCraft < WebCraft
   field :default_profile_image
 
   field :timeline, default: []
+  field :oembed, type: Hash, default: {}
+  
   alias_method :twitter_id, :web_craft_id
   alias_method :twitter_id=, :web_craft_id=
   # normalize attributes to WebCraft 

@@ -1,22 +1,22 @@
 class RootController < ApplicationController
 
   def index
-    @look_for = params[:look_for]
-    @place = params[:place]
-    @radius = params[:radius] || 100 # miles
+    @look_for = params[:q] || params[:look_for]
+    @radius = params[:r] || params[:radius] || 100 # miles
 
-    @curent_user_place = 'la, ca' if request.location.coordinates.first.zero?
-    @curent_user_place ||= request.location.address
+    puts "query_place: #{@query_place}"
+    puts "query_coordinates: #{@query_coordinates}"
+    puts "user_place: #{@user_place}"
+    puts "user_coordinates: #{@user_coordinates}"
+    puts "domain_place: #{@domain_place}"
+    puts "domain_coordinates: #{@domain_coordinates}"
+    puts "url_path_place: #{@url_path_place}"
+    puts "url_path_coordinates: #{@url_path_coordinates}"
+    puts "geo_place: #{@geo_place}"
+    puts "geo_coordinates: #{@geo_coordinates}"
 
-    @coordinates = Geocoder.coordinates(@place) if @place.present?
-      
-    if @coordinates.nil? or @coordinates.first.zero?
-      @place = @curent_user_place # no place specified, use visitors current location
-      @coordinates = Geocoder.coordinates(@curent_user_place)
-    end
-
-    @address = Geocoder.address(@coordinates) if @coordinates
-    @crafts = Craft.near(@coordinates, @radius) if @coordinates
+    @crafts = Craft.near(@geo_coordinates, @radius) if @geo_coordinates
+    @crafts ||= Craft.near(@geo_place, @radius) if @geo_place
     if @look_for.present?
       @crafts = @crafts.where(search_tags: @look_for)  if @crafts.present?
       @crafts ||= Craft.where(search_tags: @look_for)
@@ -29,7 +29,23 @@ class RootController < ApplicationController
   end
 
   def route_subdomain
-    @crafts = Craft.near(request.location, 75)
+    @look_for = params[:q] || params[:look_for]
+    @radius = params[:r] || params[:radius] || 100 # miles
+
+    puts "query_place: #{@query_place}"
+    puts "query_coordinates: #{@query_coordinates}"
+    puts "user_place: #{@user_place}"
+    puts "user_coordinates: #{@user_coordinates}"
+    puts "domain_place: #{@domain_place}"
+    puts "domain_coordinates: #{@domain_coordinates}"
+    puts "url_path_place: #{@url_path_place}"
+    puts "url_path_coordinates: #{@url_path_coordinates}"
+    puts "geo_place: #{@geo_place}"
+    puts "geo_coordinates: #{@geo_coordinates}"
+
+
+    @crafts = Craft.near(@geo_coordinates, @radius) if @geo_coordinates
+    @crafts ||= Craft.near(@geo_place, @radius) if @geo_place
     # view_path   = "root/#{@route_to}/index" if @route_to.present?
     view_path = "root/index"
     respond_to do |format|

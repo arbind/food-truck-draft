@@ -24,8 +24,7 @@ module ApplicationHelper
   def lookup_food_truck(nickname)
     kw = lookup_keyword_for_food_truck(nickname)
     FOOD_TRUCK_NAMES[kw]
-  end    
-
+  end
 
   # CUISINE lookups
   def lookup_keyword_for_cuisine(nickname)
@@ -111,7 +110,8 @@ module ApplicationHelper
 
   def lookup_city(nickname)
     kw = lookup_keyword_for_city(nickname)
-    STATES_FOR_CITY[kw]
+    kw = nickname if STATES_FOR_CITY[kw].nil?
+    kw
   end
 
   def lookup_states_for_city(nickname)
@@ -293,6 +293,8 @@ module ApplicationHelper
       return @subdomain
     end
 
+    # assume @subdomain to be a location.
+
     @metro_kw = lookup_keyword_for_metro(@subdomain)
     if @metro_kw
       @target_interest[:area]     = :metro
@@ -321,20 +323,126 @@ module ApplicationHelper
   end
 
   def init_location
-    init_current_location
+    init_user_location
     init_query_location
+    init_subdomain_location
+    init_url_path_location
+
+    if @url_path_place.present?
+      @geo_place = @url_path_place
+      @geo_coordinates = @url_path_coordinates
+    elsif @subdomain_place.present?
+      @geo_place = @subdomain_place
+      @geo_coordinates = @subdomain_coordinates
+    elsif @query_place.present?
+      @geo_place = @query_place
+      @geo_coordinates = @query_coordinates
+    else
+      @geo_place = @user_place
+      @geo_coordinates = @user_coordinates
+    end
+    return true
   end
 
-  def init_current_location
+  def place_from_target_location
+    return nil unless @target_interest.present?
+    return nil unless @target_interest[:location].present?
+    a = []
+    a << @target_interest[:location][:city] if @target_interest[:location][:city].present?
+    a << @target_interest[:location][:state] if @target_interest[:location][:state].present?
+    if a.present?
+      return a.join(', ')
+    else
+      return nil
+    end
+  end
+
+  def init_subdomain_location
+    @subdomain_place = place_from_target_location
+    if @subdomain_place
+      @subdomain_coordinates = Geocoder.coordinates(@subdomain_place)
+    end
+  end
+
+  def init_url_path_location
+    @url_path_place = place_from_target_location
+    if @url_path_place
+      @url_path_coordinates = Geocoder.coordinates(@url_path_place)
+    end
+  end
+
+
+  def init_user_location
+    # see if current user coordinates are specified (overrides previous value in session)
+    @user_coordinates = params[:uc] || params[:user_coordinates]
+    if @user_coordinates and @user_coordinates.kind_of?(Array) and @user_coordinates.first.present? and not @user_coordinates.first.zero?
+      @user_place = Geocoder.address(@user_coordinates)
+      if @user_place.present?
+        session[:user_place] = @user_place
+        session[:user_coordinates] = @user_coordinates
+        return true 
+      end
+    end
+
+    # else see if user's place (address, landmark, college name, etc.) is specified (overrides previous value in session)
+    @user_place = params[:up] || params[:user_place]
+    if @user_place
+      @user_coordinates = Geocoder.coordinates(@user_place)
+      if @user_coordinates.present? and @user_coordinates.first.present? and not @user_coordinates.first.zero?
+        session[:user_place] = @user_place
+        session[:user_coordinates] = @user_coordinates
+        return true 
+      end
+    end
+
+    # See if we already calculated user's location and put it in the session
+    @user_place = session[:user_place]
+    @user_coordinates = session[:user_coordinates]
+    return true if @user_place.present? and @user_coordinates.present?
+
+    # else use the user's ip address to get location
+    if request.location
+      @user_place = request.location.address
+      @user_coordinates = request.location.coordinates
+      if @user_place.present? and @user_coordinates.present? and @user_coordinates.first.present? and not @user_coordinates.first.zero?
+        session[:user_place] = @user_place
+        session[:user_coordinates] = @user_coordinates
+        return true 
+      end
+    end
+
+    #else default user's location to santa monica ;)
+    @user_place = 'Santa Monica, CA'
+    @user_coordinates = [34.0194543, -118.4911912]
+    session[:user_place] = @user_place
+    session[:user_coordinates] = @user_coordinates
+    return true
   end
 
   def init_query_location
+    # see if coordinates are specified for where to search
+    @query_coordinates = params[:qc] || params[:query_coordinates]
+    if @query_coordinates and @query_coordinates.kind_of?(Array) and @query_coordinates.first.present? and not @query_coordinates.first.zero?
+      @query_place = Geocoder.address(@query_coordinates)
+      return true if @query_place.present?
+    end
+
+    # see if a place is specified for where to search
+    @query_place = params[:qp] || params[:query_place]
+    if @query_place
+      @query_coordinates = Geocoder.coordinates(@query_place)
+      return true if @query_coordinates.present? and @query_coordinates.first.present? and not @query_coordinates.first.zero?
+    end
   end
 
   # Twitter Buttons
-  def twitter_follow_button(username, show_count=false)
+  def twitter_follow_button(username, show_screen_name = true, show_count=false, size=:large)
     button_html = ""
-    button_html << "<a href='https://twitter.com/#{username}' data-show-count='#{show_count}' class='twitter-follow-button'>Follow @#{username}</a>"      
+    button_html << "<a href='https://twitter.com/#{username}'"
+    button_html << " data-show-count='#{show_count}'"
+    button_html << " data-show-screen-name='#{show_screen_name}'"
+    button_html << " data-size='large'" if :large == size
+    button_html << " class='twitter-follow-button'>Follow @#{username}</a>"      
     button_html << "<script type='text/javascript'>"
     button_html << "  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='//platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','twitter-wjs');"
     button_html << "</script>"

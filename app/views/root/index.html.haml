@@ -5,12 +5,9 @@
 
 #locator
   %form{action: root_path, method: :get}
-    %input.med{type: :text, name: :place, value: @place, placeholder: 'adress, city, state or zip'}
-    .place-address= "[geo-center: #{@address}] [radius: #{@radius} mi] YO" 
+    %input.med{type: :text, name: :qp, value: @query_place, placeholder: 'adress, city, state or zip'}
+    .place-address= "[place: #{@geo_place}] [coordinates: #{@geo_coordinates}] [radius: #{@radius} mi]"
     %button.off-screen{type: :submit}
-
-#gmap{style:'width:250px; height:250px'}
-  Google Map!
 
 #wrapper
   #main

@@ -5,6 +5,14 @@ class Util
 
   # rylyz utils
 
+  def self.how_long_ago_was(time_data)
+    # http://jigyasamakkar.com/ruby-on-rails-views-time-ago-in-words-for-string-time/
+    time = time_data
+    time = time_data.to_time if time_data.kind_of? String # convert string to time if needed
+    time = time + (-Time.zone_offset(Time.now.zone))
+    "#{time_ago_in_words(time)} ago"
+  end    
+
   def self.create_key(*tokens) tokens.join('.') end
 
   # ActionView::Helpers::NumberHelper utils

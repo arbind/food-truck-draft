@@ -23,6 +23,21 @@ class TwitterService < WebCraftService
           tweet_hash
         end
         web_craft_hash[:timeline] = timeline
+
+        if timeline.first.present?
+          oembed_id = timeline.first[:id]
+          puts oembed_id
+          puts timeline.first
+          oembed_url = "https://api.twitter.com/1/statuses/oembed.json?id=#{oembed_id}&omit_script=true&hide_thread=false&maxwidth=250" if oembed_id.present?
+          begin
+            oembed_party = HTTParty.get oembed_url
+            oembed_hash = oembed_party.parsed_response if oembed_party.parsed_response.present?
+            web_craft_hash[:oembed] = oembed_hash if oembed_hash.present?
+          rescue Exception => e
+            puts e.message
+            puts e.backtrace
+          end
+        end
       end
     end
     web_craft_hash

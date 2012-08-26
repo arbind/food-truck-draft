@@ -12,11 +12,13 @@
       .header
         .id
           %img.logo{src:"#{craft.profile_image_url}"}
-          %h2.name.ellipsis
-            = "#{craft.name}"
-          - if twitter.present?
-            .intent-to-follow-on-twitter
-              = twitter_follow_button(twitter.screen_name, false)
+          .name-activity
+            %h2.name.ellipsis
+              = "#{craft.name}"
+            - if craft.how_long_ago_was_last_tweet
+              .last-activity
+                %img{src:'/assets/twitter/twitter-bird.png'}
+                %span= craft.how_long_ago_was_last_tweet
           - if yelp.present?
             .yelp
               .logo
@@ -32,6 +34,8 @@
             %a{href:craft.website}
             = "#{craft.website}"
             %span.divider ·
+        .last-tweet
+          = craft.last_tweet_html
         .location
           .address
             = "#{craft.location}"

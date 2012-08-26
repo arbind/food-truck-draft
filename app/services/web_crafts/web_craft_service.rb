@@ -16,6 +16,22 @@ class WebCraftService
         id = web_craft_hash.delete('id') || web_craft_hash.delete(:id)
         web_craft_hash[:web_craft_id] = id
       end
+      # grab location info if we can
+      if (web_craft_hash['location'].present? and web_craft_hash['location'].kind_of? Hash)
+        l_hash = {}
+        l = web_craft_hash.delete('location')
+        l_hash[:address] = l[:address] || l['address']
+        if l_hash[:address].present?
+          a = l_hash[:address]
+          a = *a # proceses address as an array incase addresss is an array for street 1, 2
+          l_hash[:address] = a.join(', ') 
+        end
+        l_hash[:city] = l[:city] || l['city']
+        l_hash[:state] = l[:state_code] || l['state_code'] || l[:state] || l['state']
+        l_hash[:zip] = l[:zip] || l['zip'] || l[:zipcode] || l['zipcode'] || l[:postal_code] || l['postal_code']
+        l_hash[:country] = l[:country] || l['country']
+        web_craft_hash[:location_hash] = l_hash
+      end
 
       # protect mongoid object created_at and updated_at fields
       prefix = web_craft_class.name.downcase

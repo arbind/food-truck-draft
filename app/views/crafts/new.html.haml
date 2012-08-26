@@ -1,6 +1,9 @@
-%h1 Find A Craft
+%h1 Find A Craft On the Web
 
-%form{action: :find, method: :put}
-  %input{type: :text, name: :look_for}
-
+%form{action: crafts_path, method: :post}
+  %label Search For:
+  %input{type: :text, name: :look_for, value: @look_for, placeholder: '@twitter_handle, url or search term'}
+  %label Near:
+  %input.med{type: :text, name: :place, value: @place, placeholder: 'adress, city, state or zip (optional)'}
+  %button{type: :submit}
 = link_to 'Back', crafts_path

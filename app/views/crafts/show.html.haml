@@ -1,18 +1,29 @@
-%p id="notice"
-  = notice
+= render '/crafts/craft', craft: @craft
+%table
+  %tr
+    %th Provider  
+    %th Name
+    %th Address
+    %th Geo
+    %th LocationHash
+    %th Location
+    %th Coo
+    %th href
+    %th website
+  - @craft.web_crafts.each do |web_craft|
+    %tr
+      %td= web_craft.provider
+      %td= web_craft.name
+      %td= web_craft.address
+      %td= web_craft.coordinates
+      %td= web_craft.location_hash
+      %td= web_craft[:location]
+      %td= web_craft[:coordinates]
+      %td= web_craft.href
+      %td= web_craft.website
 
-%p
-  %b Name:
-  = @craft.name
-
-%p
-  %b Phone number:
-  = @craft.phone_number
-
-%p
-  %b Geo coordinate:
-  = @craft.geo_coordinate
-
-
-= "#{link_to 'Edit', edit_craft_path(@craft)} |"
-= "#{link_to 'Back', crafts_path}"
+%a{href:edit_craft_path(@craft)}
+  Edit
+  |
+%a{href:crafts_path}
+  Back

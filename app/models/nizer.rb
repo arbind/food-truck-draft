@@ -45,8 +45,7 @@ class Nizer
   scope :cuisines, where(kind: :cuisine)
   scope :festivals, where(kind: :festival)
 
-  index({ kind: 1, name: 1 }, { unique: true, name: "kind_name_index" })
-  # index({ geo_point: "2d" }, { min: -200, max: 200 })
+  index([ [:kind, 1], [:name, 1] ], { unique: true, name: "kind_name_index" })
 
   # geocoder hooks
   geocoded_by :address                    # can also be an IP address

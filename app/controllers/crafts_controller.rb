@@ -2,7 +2,18 @@ class CraftsController < ApplicationController
   # GET /crafts
   # GET /crafts.json
   def index
-    @crafts = Craft.all
+    @look_for = params[:look_for]
+    @place = params[:place]
+    @radius = params[:radius] || 50 # miles
+    if @look_for.present? and @near.present?
+      @crafts = Craft.near(@place, @radius).where(search_tags: @look_for)
+    elsif @look_for.present?
+      @crafts = Craft.where(search_tags: @look_for)
+    elsif @place.present?
+      @crafts = Craft.near(@place, @radius)
+    else
+      @crafts = nil
+    end
 
     respond_to do |format|
       format.html # index.html.erb
@@ -10,25 +21,6 @@ class CraftsController < ApplicationController
     end
   end
 
-  # GET /crafts/find
-  # GET /crafts/find.json
-  def find
-    @look_for = params[:look_for]
-
-    if (Web.looks_like_url?(@look_for))
-      u = URI.parse(@look_for.downcase)
-      u = URI.parse("http://#{@look_for.downcase}") if u.host.nil?
-      @capture_craft_url =@look_for if u.host
-      session[u.host] = @capture_path
-    else
-      # see if we can parse the search term and find it
-    end
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @craft }
-    end
-  end
 
   # GET /crafts/find
   # GET /crafts/find.json
@@ -72,11 +64,21 @@ class CraftsController < ApplicationController
   # POST /crafts
   # POST /crafts.json
   def create
-    @craft = Craft.new(params[:craft])
+    @look_for = params[:look_for]
+    @near = params[:near]
+
+    if (@look_for.looks_like_url?)
+      u = URI.parse(@look_for.downcase)
+      u = URI.parse("http://#{@look_for.downcase}") if u.host.nil?
+      capture_craft_url =@look_for if u.host
+      @craft = Craft.materialize(capture_craft_url)
+    else
+      # see if we can parse the search term and find it
+    end
 
     respond_to do |format|
-      if @craft.save
-        format.html { redirect_to @craft, notice: 'Craft was successfully created.' }
+      if @craft
+        format.html { redirect_to @craft, notice: 'Craft was materialized.' }
         format.json { render json: @craft, status: :created, location: @craft }
       else
         format.html { render action: "new" }

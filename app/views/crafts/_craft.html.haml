@@ -1,0 +1,40 @@
+- yelp = craft.yelp
+- flickr = craft.flickr
+- twitter = craft.twitter
+- webpage = craft.webpage
+- facebook = craft.facebook
+- you_tube = craft.you_tube
+- google_plus = craft.google_plus
+
+.craft{style: "background-color:##{craft.profile_background_color}; background-image: url(#{craft.profile_background_image_url}); background-repeat: #{craft.profile_background_tile ? 'repeat' : 'no'}; "}
+  .canvas
+    .profile.card
+      .header
+        .id
+          %img.logo{src:"#{craft.profile_image_url}"}
+          %h2.name.ellipsis
+            = "#{craft.name}"
+          - if twitter.present?
+            .intent-to-follow-on-twitter
+              = twitter_follow_button(twitter.screen_name, false)
+          - if yelp.present?
+            .yelp
+              .logo
+                %a.logo.yelp_logo_50x25{href:yelp.href, target: :_blank}                    
+              .rating
+                %img.star.rating{src:yelp.rating_img_url_large}
+              .reviews
+                = "#{yelp.review_count} reviews"
+      .info
+        %p.bio
+          = "#{craft.description}"
+          .url
+            %a{href:craft.website}
+            = "#{craft.website}"
+            %span.divider ·
+        .location
+          .address
+            = "#{craft.location}"
+            = craft.geo_enabled ? "(Geo Enabled!)" : "(Not Geo Enabled)"
+          .map
+        = render '/crafts/craft_social_stats', craft: craft

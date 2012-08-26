@@ -11,7 +11,6 @@ class FacebookCraft < WebCraft
   field :is_published
   field :website
   field :about
-  field :location
   field :parking
   field :public_transit
   field :payment_options

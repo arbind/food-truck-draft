@@ -1,35 +1,16 @@
-%h1 Listing crafts
+%h1 Search for Existing Crafts
 
-%table
-  %tr
-    %th Name
-    %th Phone number
-    %th Geo coordinate
-    %th Yelp
-    %th Twitter
-    %th Facebook
-    %th Googleplus
-    %th Geo coordinate
-    %th Geo coordinate history
-    %th 
-    %th 
-    %th 
+%form{action: crafts_path, method: :get}
+  %label Search For:
+  %input{type: :text, name: :look_for, value: @look_for, placeholder: '@twitter_handle, url or search term'}
+  %label Near:
+  %input.med{type: :text, name: :place, value: @place, placeholder: 'adress, city, state or zip (optional)'}
+  %button{type: :submit}
 
-- @crafts.each do |craft| 
-  %tr
-    %td=  craft.name  
-    %td=  craft.phone_number  
-    %td=  craft.geo_coordinate  
-    %td=  craft.yelp_id  
-    %td=  craft.twitter_id  
-    %td=  craft.facebook_id  
-    %td=  craft.googleplus_id  
-    %td=  craft.geo_coordinate  
-    %td=  craft.geo_coordinate_history  
-    %td=  link_to 'Show', craft  
-    %td=  link_to 'Edit', edit_craft_path(craft)  
-    %td=  link_to 'Destroy', craft, confirm: 'Are you sure?', method: :delete  
-
-%br
-
-= link_to 'New Craft', new_craft_path 
+#wrapper
+  #main
+    / - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
+    - if @crafts.present?
+      - @crafts.each do |craft|
+        .section
+          = render '/crafts/craft', craft: craft

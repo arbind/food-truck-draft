@@ -1,11 +1,25 @@
-:javascript
-  $(document).ready(function(){
-    $('body').pageScroller({ navigation: '#nav' });
+#header
+  %h1 FOOD TRUCKS
+  %h2 AWESOME FOOD
+=render 'crafts/crafts_nav'
 
-    $('a.next').live('click mousedown', function(ev){ pageScroller.next(); ev.preventDefault(); });
-    $('a.prev').live('click mousedown', function(ev){ pageScroller.prev(); ev.preventDefault(); });
-  });
+#locator
+  %form{action: root_path, method: :get}
+    %input.med{type: :text, name: :place, value: @place, placeholder: 'adress, city, state or zip'}
+    .place-address= "[geo-center: #{@address}] [radius: #{@radius} mi] YO" 
+    %button.off-screen{type: :submit}
 
+#gmap{style:'width:250px; height:250px'}
+  Google Map!
+
+#wrapper
+  #main
+    / - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
+    - if @crafts.present?
+      %h2= "#{Util.pluralize(@crafts.size, 'Food Truck')} are around #{request.location.address} #{request.ip}."
+      - @crafts.each do |craft|
+        .section
+          = render '/crafts/craft', craft: craft
 
 %h1 index
 = request.host
@@ -17,28 +31,6 @@
 .x= "City of #{@target_interest[:location][:city_kw]}"
 .x= "State of #{@target_interest[:location][:state_kw]}"
 .x= "around #{@target_interest[:location][:metro_kw]}" 
-
-
-#nav.pageScrollerNav.standardNav.right.light
-  %ul
-    %li
-      %a{href:"#"} 1 quizLink
-      %a{href:"#"} 2 quizLink
-
-#header
-  %h1 FOOD TRUCK
-  %h2 AWESOME FOOD
-
-#wrapper
-  #main
-    / - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
-    .section
-      - if @tweeter.present?
-        = render 'tweeter'
-    .section
-      .toolbar
-        .button
-          %a.button.red.next{href:'#'} preview
 
 
 

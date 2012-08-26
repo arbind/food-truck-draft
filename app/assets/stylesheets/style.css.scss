@@ -11,7 +11,7 @@
     height:100%;
     outline:none;
     font-family:georgia,garamond,serif;
-    background: #FAFBFC url(./image/texture/light02.jpeg);
+    background: #FAFBFC url(/assets/textures/light02.jpeg);
     color: #008;
   }
 
@@ -30,7 +30,7 @@
     line-height:30px;
     width: 95%;
     padding: 8px 10px;
-    background: #FAFBFC url(./image/texture/light00.jpeg);
+    background: #FAFBFC url(/assets/textures/light00.jpeg);
   }
   textarea{
     resize: none;
@@ -40,27 +40,26 @@
     height: 16px;
   }
   #main, #header{
-    width: 960px;
-    margin: 0;
-    background: #cba;
+    width: 100%;
     border: 0;
+    margin: 0;
     padding:0;
   }
 
   #main {
     border: 0;
-    background: #FAFBFC url(./image/texture/blue09.jpeg);
+    background: #FAFBFC url(/assets/textures/light02.jpeg);
   }
   #header {
     position: fixed;
-    top:0;
+    bottom:0;
     left:0;
     padding:0;
     margin:0;
     border: 0;
-    border-bottom: 3  px solid #225;
+    border-top: 3  px solid #225;
     text-align: center;
-    background:#222 url(./image/texture/dark02.jpeg);
+    background:#222 url(/assets/textures/dark02.jpeg);
     z-index: 10000;
   }
 
@@ -93,7 +92,7 @@
     content: "\25C4  "; /* &#9668; */ 
   }
 
-  .prompt, .info, .prompt-action {
+  .prompt,.prompt-action {
     border: 0;
     margin: 0 0 12px 0; 
     padding: 12px 20px 20px 20px;
@@ -111,11 +110,11 @@
     color: #800;
   }
 
-  .prompt, .info {
-    background: #FAFBFC url(./image/texture/light02.jpeg);
+  .prompt{
+    background: #FAFBFC url(/assets/textures/light02.jpeg);
   }
   .prompt-action {
-    background:#ff0 url(./image/texture/yellow00.jpeg);
+    background:#ff0 url(/assets/textures/yellow00.jpeg);
   }
   .hint {
     color: #888;
@@ -192,8 +191,7 @@
   }
 
   .section{
-    min-height: 500px;
-    padding: 120px 80px 12px 180px;
+    padding: 12px;
   }
  
   .section.center{
@@ -206,11 +204,12 @@
   
   .standardNav{
     position: fixed !important;
-    overflow: hidden;
-    top: 115px;
-    left: -20px;
+    overflow: scroll;
+    top: 5%;
+    right: 8px;
     padding: 5px;
     margin: 0;
+    max-height: 90%;
     z-index: 9999;
   }
 
@@ -230,23 +229,24 @@
 
     list-style: none;
 
-    -webkit-border-top-right-radius: 8px;
-    -moz-border-top-right-radius: 8px;
-    border-top-right-radius: 8px;
+    -webkit-border-top-left-radius: 8px;
+    -moz-border-top-left-radius: 8px;
+    border-top-left-radius: 8px;
 
-    -webkit-border-bottom-right-radius: 8px;
-    -moz-border-bottom-right-radius: 8px;
-    border-bottom-right-radius: 8px;
+    -webkit-border-bottom-left-radius: 8px;
+    -moz-border-bottom-left-radius: 8px;
+    border-bottom-left-radius: 8px;
 
     background: transparent;
-    -webkit-box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, .3);
-    -moz-box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, .3);
-    box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, .3);
+    -webkit-box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, .3);
+    -moz-box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, .3);
+    box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, .3);
 
   }
   
   .standardNav li{
     display: block;
+    max-width:280px;
   }
   
   .standardNav li a{
@@ -257,7 +257,7 @@
 
     display: block; 
     font-weight: bold;
-    padding: 8px 16px;
+    padding: 8px 8px;
     text-decoration: none;
     color: #008;
     font-size: 16px;
@@ -272,20 +272,20 @@
   }
   
   .standardNav li.active a{
-    -webkit-border-top-right-radius: 8px;
-    -moz-border-top-right-radius: 8px;
-    border-top-right-radius: 8px;
+    -webkit-border-top-left-radius: 8px;
+    -moz-border-top-left-radius: 8px;
+    border-top-left-radius: 8px;
 
-    -webkit-border-bottom-right-radius: 8px;
-    -moz-border-bottom-right-radius: 8px;
-    border-bottom-right-radius: 8px;
+    -webkit-border-bottom-left-radius: 8px;
+    -moz-border-bottom-left-radius: 8px;
+    border-bottom-left-radius: 8px;
 
-    -webkit-box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, .3);
-    -moz-box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, .3);
-    box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, .3);
+    -webkit-box-shadow: 0 2px 2px 0px rgba(0, 0, 0, .3);
+    -moz-box-shadow: 0 2px 2px 0px rgba(0, 0, 0, .3);
+    box-shadow: 0 2px 2px 0px rgba(0, 0, 0, .3);
 
     color: #008;
-    background: #FAFBFC url(./image/texture/light02.jpeg);
+    background: #FAFBFC url(/assets/textures/light02.jpeg);
     opacity:1;
     filter:alpha(opacity=100); /* For IE8 and earlier */
    } 

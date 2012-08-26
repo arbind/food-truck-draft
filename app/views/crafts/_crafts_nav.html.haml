@@ -1,0 +1,6 @@
+#nav.pageScrollerNav.standardNav.right.light
+  - if @crafts.present?
+    %ul
+      - @crafts.each do |craft|
+        %li
+          %a.ellipsis{href:"##{craft.name}"}= craft.name

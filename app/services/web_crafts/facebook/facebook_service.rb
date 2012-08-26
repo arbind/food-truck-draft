@@ -11,7 +11,6 @@ class FacebookService < WebCraftService
 
   def self.web_fetch(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
     web_craft_hash = raw_fetch(web_craft_id)
-    # normalize any attributes if needed
     
     # do any post process transformations
     website = web_craft_hash['website']

@@ -1,3 +1,13 @@
 .hidden {
   display: none;
 }
+.off-screen {
+  position: fixed;
+  left: -800px;
+  top: -800px;
+}
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

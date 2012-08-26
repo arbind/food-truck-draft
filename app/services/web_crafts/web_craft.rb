@@ -1,34 +1,44 @@
 class WebCraft
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Geocoder::Model::Mongoid
+
   field :web_craft_id, index: true
 
   field :name
   field :description
   field :website
-  field :location
   field :username, index: true
   field :href, index: true
 
+  field :location_hash
+  field :address, default: nil
+  field :coordinates, type: Array, default: [] # does geocoder gem auto index this?
+
   # field :id_tags, index: true # e.g. facebook_id, yelp_id, twitter_id etc. should be aliased to this field for a normalized id 
   # field :username_tags, index: true  # e.g. username, twitter_handle
-  
+
   field :href_tags, type: Array, default: [], index: true
   field :search_tags, type: Array, default: [], index: true
 
   belongs_to :craft
-  
+
   scope :yelp_crafts,     where(provider: :yelp)
   scope :flickr_crafts,   where(provider: :flickr)
   scope :webpage_crafts,  where(provider: :webpage)
   scope :twitter_crafts,  where(provider: :twitter)
   scope :facebook_crafts, where(provider: :facebook)
   scope :you_tube_crafts, where(provider: :you_tube)
+  scope :google_plus_crafts, where(provider: :google_plus)
+
+  geocoded_by :address
+  reverse_geocoded_by :coordinates
 
   alias_method :user_name, :username
   alias_method :user_name=, :username=
 
   before_save :format_attributes
+  before_save :geocode_this_location! # auto-fetch coordinates
 
   # convert classname to provider name: e.g. TwitterCraft -> :twitter
   def self.provider() name[0..-6].symbolize end
@@ -78,7 +88,30 @@ class WebCraft
   def format_attributes
     self.web_craft_id = "#{web_craft_id}" unless web_craft_id.kind_of? String
     # urlify
-    self.website = website.downcase.urlify! unless website.nil?
-    self.href = href.downcase.urlify! unless website.nil?
+    self.website = website.downcase.urlify! if website.looks_like_url?
+    self.href = href.downcase.urlify! if href.looks_like_url?
   end
+
+  def geocode_this_location!
+    puts "changes[:address].present? : #{changes[:address].present?}"
+
+    if self.lat.present? and (new? or changes[:coordinates].present?)
+      puts "coordinates changed!"
+      reverse_geocode # udate the address
+      # +++ add {time, coordinates, address} to geo_location_history
+    elsif location_hash.present? and not self.lat.present? and (new? or changes[:location_hash].present?)
+      puts "location_hash changed!"
+      l = []
+      (l << location_hash[:address]) if location_hash[:address].present?
+      (l << location_hash[:city]) if location_hash[:city].present?
+      (l << location_hash[:state]) if location_hash[:state].present?
+      (l << location_hash[:zip]) if location_hash[:zip].present?
+      (l << location_hash[:country]) if location_hash[:country].present?
+      self.address = l.join(', ') if l.present?
+      geocode # update lat, lng
+    end
+    return true
+  end
+
+  include GeoCoordinateAliases
 end

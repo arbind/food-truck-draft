@@ -1,0 +1,38 @@
+- yelp = craft.yelp
+- flickr = craft.flickr
+- twitter = craft.twitter
+- webpage = craft.webpage
+- facebook = craft.facebook
+- you_tube = craft.you_tube
+- google_plus = craft.google_plus
+
+.stats
+  %ul
+    - if yelp.present?
+      %li
+        .yelp
+          .ratings
+            %img{src:yelp.rating_img_url_large}
+          %a.logo.yelp_logo_50x25{href:yelp.href, target: :_blank}                    
+      %li
+        %img.indicator{src:"/assets/transparent-indicator.png"}
+        %strong= yelp.review_count
+        Yelp reviews
+    - if twitter.present?
+      %li
+        %img.indicator{src:"/assets/transparent-indicator.png"}
+        %strong= twitter.statuses_count
+        tweets
+      %li
+        %img.indicator{src:"/assets/transparent-indicator.png"}
+        %strong= twitter.followers_count
+        followers
+    - if facebook.present?
+      %li
+        %img.indicator{src:"/assets/transparent-indicator.png"}
+        %strong= facebook.likes
+        FB likes
+      / %li
+      /   %img.indicator{src:"/assets/transparent-indicator.png"}
+      /   %strong= twitter.friends_count
+      /   Twitter friends

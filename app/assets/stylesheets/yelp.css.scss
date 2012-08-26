@@ -1,4 +1,51 @@
-.yelp_mini_map_logo {
+.yelp {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  height: 25px;
+  cursor: normal;
+  .logo {
+    float: left;
+    display: inline-block;
+    margin: 0 3px 0 0;
+    padding: 0;
+    border: 0;
+    height: 25px;
+  }
+  .rating {
+    float: left;
+    display: inline-block;
+    margin: 0;
+    padding: 8px 0 2px 0;
+    border: 0;
+    height: 15px;
+    img.star.rating {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      height: 15px;
+      width: 83px;
+      background-color: transparent;
+    }
+  }
+  .reviews {
+    float: left;
+    display: inline-block;
+    margin: 0;
+    padding: 8px 3px 2px 3px;
+    border: 0;
+    height: 15px;
+    color: #999;
+    font-size: 11px;
+    line-height: 15px;
+  }
+}
+
+
+
+a.yelp_mini_map_logo {
   display: inline-block;
   width: 40px;
   height: 20px;
@@ -7,21 +54,21 @@
   margin: 0;
   padding: 0;
 }
-.yelp_logo_50x25 {
+a.yelp_logo_50x25 {
   display: inline-block;
   width: 50px;
   height: 25px;
   background-size:50px 25px;
-  background: transparent url('/assets/yelp/yelp_logo_50x25.png') no-repeat center center; 
+  background: transparent url('/assets/yelp/yelp_logo_50x25.png') no-repeat center center;
 } 
-.yelp_logo_75x38 {
+a.yelp_logo_75x38 {
   display: inline-block;
   width: 75px;
   height: 38px;
   background-size:75px 38px;
   background: transparent url('/assets/yelp/yelp_logo_75x38.png') no-repeat center center; 
 } 
-.yelp_logo_100x50 {
+a.yelp_logo_100x50 {
   display: inline-block;
   width: 100px;
   height: 50px;

@@ -5,7 +5,7 @@ class Craft
 
   # geocoder fields
   field :address, default: nil
-  field :coordinates, type: Array, default: [nil, nil] # does geocoder gem auto index this?
+  field :coordinates, type: Array, default: [] # does geocoder gem auto index this?
   # mongoid stores [long, lat] - which is backwards from normal convention
   # geocorder knows this, but expects [lat, lng]
 
@@ -18,12 +18,12 @@ class Craft
   field :href_tags, type: Array, default: [], index: true
   field :search_tags, type: Array, default: [], index: true
   
-  has_many :web_crafts
+  has_many :web_crafts, :dependent => :destroy
   has_and_belongs_to_many :nizers # organizers
 
   geocoded_by :address
   reverse_geocoded_by :coordinates
-  before_save :geocode_this_location # auto-fetch coordinates
+  before_save :geocode_this_location! # auto-fetch coordinates
 
   # geocoding  aliases
   alias_method :ip_address, :address
@@ -32,7 +32,7 @@ class Craft
   def latitude() coordinates.last end
   alias_method :lat, :latitude
 
-  def latitude=(lat) coordinates[1] = lat end
+  def latitude=(lat) coordinates ||= [0,0]; coordinates[1] = lat end
   alias_method :lat=, :latitude=
 
 
@@ -46,7 +46,7 @@ class Craft
   # /geocoding  aliases
 
   # geo point hash representation
-  def geo_point() latitude:lat, longitude:lng end
+  def geo_point() [latitude:lat, longitude:lng] end
   def geo_point=(latlng_hash)
     lat   = latlng_hash[:latitude]   if latlng_hash[:latitude].present?
     lat ||= latlng_hash[:lat]        if latlng_hash[:lat].present?
@@ -72,6 +72,8 @@ class Craft
       self.provider_username_tags << web_craft.username if web_craft.username.present?
       self.href_tags << web_craft.href if web_craft.href.present?
       self.href_tags << web_craft.website if web_craft.website.present?
+      self.address = web_craft.address if (:yelp==web_craft.provider || ( web_craft.address.present? and not self.address.present?) )
+      self.coordinates = web_craft.coordinates if (:yelp==web_craft.provider || ( web_craft.coordinates.present? and not self.coordinates.present?) )
       # +++ set address / location
     end
     save
@@ -79,7 +81,7 @@ class Craft
 
   def self.materialize(provider_id_username_or_href)
     web_craft = nil
-    if Web.looks_like_href?(provider_id_username_or_href) # look for web_craft by href
+    if provider_id_username_or_href.looks_like_url? # look for web_craft by href
       web_craft = WebCraft.where(hrefs: provider_id_username_or_href).first
     else # look for web_craft by screen name or social id
       web_craft = WebCraft.where(provider_username_tags: provider_id_username_or_href).or(provider_id_tags: provider_id_username_or_href).first
@@ -101,14 +103,77 @@ class Craft
     craft
   end
 
-  def web_craft_for_provider(provider) web_crafts.where(provider: provider).first end
+  def yelp() web_crafts.yelp_crafts.first end
+  def flickr() web_crafts.flickr_crafts.first end
+  def webpage() web_crafts.webpage_crafts.first end
+  def twitter() web_crafts.twitter_crafts.first end
+  def facebook() web_crafts.facebook_crafts.first end
+  def you_tube() web_crafts.you_tube_crafts.first end
+  def google_plus() web_crafts.google_plus_crafts.first end
 
+
+  # Derive the Craft's Brand
+  def profile_image_url
+    x = twitter.profile_image_url if twitter.present?
+  end
+  def name
+    x = twitter.name if twitter.present?
+    x ||= yelp.name if yelp.present?
+    x ||= facebook.name if facebook.present?
+  end
+
+  def description
+    x = twitter.description if twitter.present?
+    x ||= yelp.description if yelp.present?
+    x ||= facebook.description if facebook.present?
+  end
+
+  def website
+    # first see if there is a website specified
+    x = yelp.website if yelp.present?
+    x ||= twitter.website if twitter.present?
+    x ||= facebook.website if facebook.present?
+    # if not, look for an href to a service
+    x ||= twitter.href if twitter.present?
+    x ||= facebok.href if facebook.present?
+    x ||= yelp.href if yelp.present?
+  end
+  def geo_enabled
+    twitter.geo_enabled if twitter.present?
+  end
+
+  def location 
+    x = address
+  end
+
+  def profile_background_color
+    x = twitter.profile_background_color if twitter.present?
+    x ||= 'grey'
+  end
+  def profile_background_image_url
+    x = twitter.profile_background_image_url if twitter.present?
+    x ||= ''
+  end
+  def profile_background_tile
+    if twitter.present?
+      x = twitter.profile_background_tile 
+    else
+      x = false 
+    end
+  end
+  # Craft Branding
+
+
+  def web_craft_for_provider(provider) web_crafts.where(provider: provider).first end
 private
-  def geocode_this_location
-    if changes[:coordinates].present?
+  def geocode_this_location!
+    # +++ enable geocoder geo caching! so we are not geocoding both the webcraft and the craft
+    if self.lat.present? and (new? or changes[:coordinates].present?)
+      puts "coordinates changed!"
       reverse_geocode # udate the address
       # +++ add {time, coordinates, address} to geo_location_history
-    elsif changes[:address].present?
+    elsif address.present? and (new? or changes[:address].present?)
+      puts "address changed!"
       geocode # update lat, lng
     end
     return true

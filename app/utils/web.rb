@@ -1,10 +1,5 @@
 class Web
 
-  def self.looks_like_href?(url)
-    return false if url.nil?
-    url.to_s.match /(^https?\:\/\/|^www\.)[^\s<]+|[^\s<]+\.(com|net|org|us|me|co|info|ws|ca|biz|me|cc|tv|asia)[^\s<]*$/
-  end
-
   def self.as_href(url_like)
     u = URI.parse(url_like.to_s.downcase)
     u = URI.parse("http://#{url_like.to_s.downcase}") if u.host.nil?

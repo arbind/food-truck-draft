@@ -22,23 +22,26 @@
           - if yelp.present?
             .yelp
               .logo
-                %a.logo.yelp_logo_50x25{href:yelp.href, target: :_blank}                    
-              .rating
-                %img.star.rating{src:yelp.rating_img_url_large}
-              .reviews
-                = "#{yelp.review_count} reviews"
-      .info
+                %a.logo.yelp_logo_50x25{href:yelp.href, target: :_blank}
+              .rating-reviews
+                .rating
+                  %img.star.rating{src:yelp.rating_img_url_large}
+                .reviews
+                  = "#{yelp.review_count} reviews"
+    .info-wrapper
+      .about.card
         %p.bio
           = "#{craft.description}"
           .url
             %a{href:craft.website}
             = "#{craft.website}"
             %span.divider ·
-        .last-tweet
-          = craft.last_tweet_html
-        .location
-          .address
-            = "#{craft.location}"
-            = craft.geo_enabled ? "(Geo Enabled!)" : "(Not Geo Enabled)"
-          .map
+      .last-tweet.card
+        = craft.last_tweet_html
+      .location.card
+        .address
+          = "#{craft.location}"
+          = craft.geo_enabled ? "(Geo Enabled!)" : "(Not Geo Enabled)"
+        .map
+      .stats.card
         = render '/crafts/craft_social_stats', craft: craft

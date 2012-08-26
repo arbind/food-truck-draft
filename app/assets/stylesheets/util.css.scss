@@ -1,6 +1,12 @@
-.hidden {
-  display: none;
-}
+.left { float:left; }
+.right { float: right; }
+.pin-left { clear:left; float:left; }
+.pin-right { clear:right; float: right; }
+.clear-left { clear:left;}
+.clear-right { clear:right;}
+
+.hidden { display: none; }
+
 .off-screen {
   position: fixed;
   left: -800px;

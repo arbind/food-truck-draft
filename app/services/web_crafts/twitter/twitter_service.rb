@@ -6,6 +6,7 @@ class TwitterService < WebCraftService
 
   def self.raw_fetch(web_craft_id, fetch_timeline=true) # get the user and their timeline
     id = "#{web_craft_id}"
+    puts "Pulling id: #{id}"
     twitter_user = Twitter.user(id)
     if twitter_user
       web_craft_hash = twitter_user.to_hash
@@ -26,9 +27,9 @@ class TwitterService < WebCraftService
 
         if timeline.first.present?
           oembed_id = timeline.first[:id]
-          puts oembed_id
-          puts timeline.first
-          oembed_url = "https://api.twitter.com/1/statuses/oembed.json?id=#{oembed_id}&omit_script=true&hide_thread=false&maxwidth=250" if oembed_id.present?
+          maxwidth = 400
+          hide_thread = false
+          oembed_url = "https://api.twitter.com/1/statuses/oembed.json?id=#{oembed_id}&omit_script=true&hide_thread=#{hide_thread}&maxwidth=#{maxwidth}" if oembed_id.present?
           begin
             oembed_party = HTTParty.get oembed_url
             oembed_hash = oembed_party.parsed_response if oembed_party.parsed_response.present?

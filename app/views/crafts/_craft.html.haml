@@ -8,11 +8,11 @@
 
 .craft{style: "background-color:##{craft.profile_background_color}; background-image: url(#{craft.profile_background_image_url}); background-repeat: #{craft.profile_background_tile ? 'repeat' : 'no'}; "}
   .canvas
-    .profile.card
+    .craft-profile.card
       .header
         .id
           %img.logo{src:"#{craft.profile_image_url}"}
-          .name-activity
+          .name-and-activity
             %h2.name.ellipsis
               = "#{craft.name}"
             - if craft.how_long_ago_was_last_tweet
@@ -28,20 +28,16 @@
                   %img.star.rating{src:yelp.rating_img_url_large}
                 .reviews
                   = "#{yelp.review_count} reviews"
-    .info-wrapper
-      .about.card
         %p.bio
           = "#{craft.description}"
-          .url
-            %a{href:craft.website}
-            = "#{craft.website}"
-            %span.divider ·
-      .last-tweet.card
-        = craft.last_tweet_html
-      .location.card
-        .address
-          = "#{craft.location}"
-          = craft.geo_enabled ? "(Geo Enabled!)" : "(Not Geo Enabled)"
-        .map
-      .stats.card
+    .info-wrapper
+      .activity-info.card.right
+        %h3 Social Activity
+        = render '/crafts/craft_twitter_oembed', craft: craft
         = render '/crafts/craft_social_stats', craft: craft
+      .location-info.card.right
+        = render '/crafts/craft_location', craft: craft
+      .url
+        %a{href:craft.website}
+        = "#{craft.website}"
+        %span.divider ·

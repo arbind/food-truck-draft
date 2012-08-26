@@ -31,7 +31,7 @@ class TwitterCraft < WebCraft
 
   field :timeline, default: []
   field :oembed, type: Hash, default: {}
-  
+
   alias_method :twitter_id, :web_craft_id
   alias_method :twitter_id=, :web_craft_id=
   # normalize attributes to WebCraft 
@@ -47,4 +47,5 @@ class TwitterCraft < WebCraft
 
   def self.provider_key() '@' end
 
+  def id_for_fetching() screen_name end
 end

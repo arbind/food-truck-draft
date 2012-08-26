@@ -11,11 +11,19 @@ $(function(){
   }
   function closeInfo($craft) {
     var $info = $craft.find('.info-wrapper');
-    if( $info.is(":visible") ) $info.slideUp();
+    var $bio = $craft.find('p.bio');
+    if( $info.is(":visible") ) {
+      $info.slideUp();
+      $bio.slideUp();
+    }
   }
   function openInfo($craft) {
     var $info = $craft.find('.info-wrapper');
-    if( ! $info.is(":visible") )$info.slideDown();
+    var $bio = $craft.find('p.bio');
+    if( ! $info.is(":visible") ){
+      $info.slideDown();
+      $bio.slideDown();
+    }
     showMap($craft);
   }
 

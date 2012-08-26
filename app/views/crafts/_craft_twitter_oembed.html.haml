@@ -1,0 +1,8 @@
+- if craft.last_tweet_html.present?
+  .last-tweet
+    .oembed
+      = craft.last_tweet_html
+    - if craft.how_long_ago_was_last_tweet
+      .last-activity
+        %img{src:'/assets/twitter/twitter-bird.png'}
+        %span= craft.how_long_ago_was_last_tweet

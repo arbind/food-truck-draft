@@ -46,6 +46,7 @@ class WebCraft
 
   # get the service class for this craft: e.g. TwitterCraft -> TwitterService
   def self.web_craft_service_class() @@web_craft_service_class ||= Kernel.const_get("#{name[0..-6]}Service") end
+  def web_craft_service_class() self.class.web_craft_service_class end
 
   def self.materialize(web_craft_hash)
     wc_id = web_craft_hash[:web_craft_id] || web_craft_hash['web_craft_id']
@@ -65,9 +66,10 @@ class WebCraft
   def provider() self.class.provider end
   def provider_key() self.class.provider_key end
 
+  def id_for_fetching() web_craft_id end
   def fetch() web_craft_service_class.fetch(web_craft_id) end
   def pull
-    web_craft_hash = web_craft_service_class.fetch(web_craft_id)
+    web_craft_hash = web_craft_service_class.fetch(id_for_fetching)
     calculate_tags!(web_craft_hash)
     update_attributes(web_craft_hash)
   end

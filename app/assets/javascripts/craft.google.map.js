@@ -7,11 +7,15 @@ function init_gmap(centerLatitude, centerLongitude, $container) {
 
  if( $container.data('map') ) return; // if map already exists
 
- var options = {zoom: startZoom,
- center: new google.maps.LatLng(centerLatitude,centerLongitude),
- zoomControl: true,
- panControl: true,
- mapTypeId: google.maps.MapTypeId.ROADMAP };
+ var options = {
+    zoom: startZoom,
+    center: new google.maps.LatLng(centerLatitude,centerLongitude),
+    scrollwheel:false,
+    panControl: false,
+    zoomControl: true,
+    mapTypeControl: false,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+  };
 
  mapElement = $container.find('.map').get(0);
  map = new google.maps.Map(mapElement, options);

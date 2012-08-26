@@ -16,6 +16,16 @@ class Util
   def self.create_key(*tokens) tokens.join('.') end
 
   # ActionView::Helpers::NumberHelper utils
+
+  def self.short_human_number(number)
+    short = number_to_human(number)
+    tokens = short.split(' ')
+    return short if 1==tokens.size
+    tokens[1] = tokens[1].slice(0)
+    tokens[1] = 'K' if tokens[1].eql? 'T' # Convert Thousand to K
+    tokens.join
+  end
+
   def self.percentage(decimal, precision=0) @@number_helper.number_to_percentage(100*decimal, precision: precision) end
   def self.number_to_currency(*args) @@number_helper.number_to_currency(*args) end
   def self.number_to_human(*args) @@number_helper.number_to_human(*args) end

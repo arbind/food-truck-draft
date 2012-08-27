@@ -18,7 +18,11 @@ class Util
   # ActionView::Helpers::NumberHelper utils
 
   def self.short_human_number(number)
+    return '' if number.nil? or "#{number}".empty?
+
     short = number_to_human(number)
+    return '' if short.nil? or short.empty? 
+
     tokens = short.split(' ')
     return short if 1==tokens.size
     tokens[1] = tokens[1].slice(0)

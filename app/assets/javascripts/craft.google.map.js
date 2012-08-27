@@ -13,6 +13,7 @@ function init_gmap(centerLatitude, centerLongitude, $container) {
     scrollwheel:false,
     panControl: false,
     zoomControl: true,
+    zoomControlOptions: {style: google.maps.ZoomControlStyle.LARGE},
     mapTypeControl: false,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
   };

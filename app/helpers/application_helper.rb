@@ -44,7 +44,7 @@ module ApplicationHelper
   def lookup_keyword_for_meal(nickname)
     sym = nickname.symbolize
     kw = sym if MEALS[sym]
-  end    
+  end
 
   def lookup_meal(nickname)
     kw = lookup_keyword_for_meal(nickname)
@@ -328,15 +328,15 @@ module ApplicationHelper
     init_subdomain_location
     init_url_path_location
 
-    if @url_path_place.present?
+    if @query_place.present?
+      @geo_place = @query_place
+      @geo_coordinates = @query_coordinates
+    elsif @url_path_place.present?
       @geo_place = @url_path_place
       @geo_coordinates = @url_path_coordinates
     elsif @subdomain_place.present?
       @geo_place = @subdomain_place
       @geo_coordinates = @subdomain_coordinates
-    elsif @query_place.present?
-      @geo_place = @query_place
-      @geo_coordinates = @query_coordinates
     else
       @geo_place = @user_place
       @geo_coordinates = @user_coordinates

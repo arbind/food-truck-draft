@@ -1,3 +1,5 @@
+$craft_min_width: 680px;
+
 .cut {
   background-color: white;
   padding: 0;
@@ -24,7 +26,8 @@
   -webkit-transition: all 0.3s;
   -o-transition: all 0.3s;    
   overflow: hidden;
-  width: 888px;
+  min-width:   $craft_min_width;
+  width: 90%;
   margin: 0;
   padding: 0;
   -webkit-border-radius: 8px;
@@ -109,15 +112,17 @@
                     border-radius: 6px;
           }
           .name-and-activity {
+            margin-left:8px;
             float: left;
             height: 56px;
-            max-width: 450px;
+            width: 50%;
             h2.name {
               margin: 0;
               padding: 3px 0 0 0;
               font-size: 28px;
               line-height: 32px;
-              font-weight: bold;                
+              font-weight: bold;      
+              text-align: left;          
               text-rendering: optimizeLegibility;
               &:hover{ text-decoration: underline; }
             }
@@ -132,7 +137,8 @@
       }
       p.bio {
         display: none;
-        margin-left: 55px;
+        margin-left: 64px;
+        margin-right: 20px;
         color: #777;
         word-wrap: break-word;
         font: italic 16px/18px Georgia,"Times New Roman",serif;
@@ -156,6 +162,8 @@
       overflow:hidden;
       padding: 8px;
       color: #333;
+      min-width: 250px;
+      width: 75%;
       .address {
         color: #777;
         font-size: 12px;
@@ -164,8 +172,8 @@
       }
       .map {
         float:left;
-        width: 550px;
-        height:250px;
+        width: 98%;
+        height:350px;
       }
     }
     .activity-info {

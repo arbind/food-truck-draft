@@ -1,0 +1,41 @@
+!!! 5
+%html{ :lang => "en"}
+  %head
+    %title Food Trucks
+    = stylesheet_link_tag    "application", :media => "all"
+    :plain
+      <!--[if lt IE 7]>
+      #{stylesheet_link_tag "ie/application", :media => "all"}
+      <![endif]-->
+
+    = javascript_include_tag "application"
+    = javascript_include_tag "https://platform.twitter.com/widgets.js"
+    = javascript_include_tag "http://maps.google.com/maps/api/js?sensor=false"
+
+    = csrf_meta_tags
+  %body
+    #page-wrap
+      #inside
+
+        #header
+          #header-wrap
+            %h1 FOOD-TRUCK.us
+            #locator
+              %form{action: root_path, method: :get}
+                %input.med{type: :text, name: :qp, value: @query_place, placeholder: 'adress, city, state or zip'}
+                %button.off-screen{type: :submit}
+            %h2 title
+
+        #main-content
+          = yield
+
+        #footer
+          #footer-wrap
+            %p Footer stuff.
+
+
+
+      #light.white_content
+      #fade.black_overlay
+
+  

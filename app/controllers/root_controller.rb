@@ -1,19 +1,12 @@
 class RootController < ApplicationController
 
+  # @xxx_place and @xxx_coordinates are available for each of:
+  # query, user, subdomain, url and geo
+  # @geo_place and @geo_coordinates holds the highest priority (best guess of of which location to use) 
+
   def index
     @look_for = params[:q] || params[:look_for]
     @radius = params[:r] || params[:radius] || 100 # miles
-
-    puts "query_place: #{@query_place}"
-    puts "query_coordinates: #{@query_coordinates}"
-    puts "user_place: #{@user_place}"
-    puts "user_coordinates: #{@user_coordinates}"
-    puts "domain_place: #{@domain_place}"
-    puts "domain_coordinates: #{@domain_coordinates}"
-    puts "url_path_place: #{@url_path_place}"
-    puts "url_path_coordinates: #{@url_path_coordinates}"
-    puts "geo_place: #{@geo_place}"
-    puts "geo_coordinates: #{@geo_coordinates}"
 
     @crafts = Craft.near(@geo_coordinates, @radius) if @geo_coordinates
     @crafts ||= Craft.near(@geo_place, @radius) if @geo_place
@@ -31,18 +24,6 @@ class RootController < ApplicationController
   def route_subdomain
     @look_for = params[:q] || params[:look_for]
     @radius = params[:r] || params[:radius] || 100 # miles
-
-    puts "query_place: #{@query_place}"
-    puts "query_coordinates: #{@query_coordinates}"
-    puts "user_place: #{@user_place}"
-    puts "user_coordinates: #{@user_coordinates}"
-    puts "domain_place: #{@domain_place}"
-    puts "domain_coordinates: #{@domain_coordinates}"
-    puts "url_path_place: #{@url_path_place}"
-    puts "url_path_coordinates: #{@url_path_coordinates}"
-    puts "geo_place: #{@geo_place}"
-    puts "geo_coordinates: #{@geo_coordinates}"
-
 
     @crafts = Craft.near(@geo_coordinates, @radius) if @geo_coordinates
     @crafts ||= Craft.near(@geo_place, @radius) if @geo_place

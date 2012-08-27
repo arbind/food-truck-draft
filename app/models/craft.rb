@@ -46,17 +46,18 @@ class Craft
   # /geocoding  aliases
 
   # geo point hash representation
-  def geo_point() [latitude:lat, longitude:lng] end
+  def geo_point() [lat, lng] end
   def geo_point=(latlng_hash)
-    lat   = latlng_hash[:latitude]   if latlng_hash[:latitude].present?
-    lat ||= latlng_hash[:lat]        if latlng_hash[:lat].present?
+    lt   = latlng_hash[:latitude]   if latlng_hash[:latitude].present?
+    lt ||= latlng_hash[:lat]        if latlng_hash[:lat].present?
 
-    lng   = latlng_hash[:longitude]  if latlng_hash[:longitude].present?
-    lng ||= latlng_hash[:long]       if latlng_hash[:long].present?
-    lng ||= latlng_hash[:lng]        if latlng_hash[:lng].present?
+    ln   = latlng_hash[:longitude]  if latlng_hash[:longitude].present?
+    ln ||= latlng_hash[:long]       if latlng_hash[:long].present?
+    ln ||= latlng_hash[:lng]        if latlng_hash[:lng].present?
 
-    self.lat = lat
-    self.lng = lng
+    self.lat = lt
+    self.lng = ln
+    [lt, ln]
   end
   alias_method :geo_coordinate, :geo_point
   alias_method :geo_coordinate=, :geo_point=
@@ -117,18 +118,23 @@ class Craft
     x = twitter.name if twitter.present?
     x ||= yelp.name if yelp.present?
     x ||= facebook.name if facebook.present?
+    x
   end
 
   def description
     x = twitter.description if twitter.present?
     x ||= yelp.description if yelp.present?
     x ||= facebook.description if facebook.present?
+    x
   end
 
   def last_tweet_html
     if twitter.present? and twitter.oembed.present?
       x = twitter.oembed['html'].html_safe
+    else
+      x = nil
     end
+    x
   end
 
   def how_long_ago_was_last_tweet
@@ -151,6 +157,7 @@ class Craft
     x ||= twitter.href if twitter.present?
     x ||= facebok.href if facebook.present?
     x ||= yelp.href if yelp.present?
+    x
   end
   def geo_enabled
     twitter.geo_enabled if twitter.present?
@@ -166,10 +173,12 @@ class Craft
   def profile_background_color
     x = twitter.profile_background_color if twitter.present?
     x ||= 'grey'
+    x
   end
   def profile_background_image_url
     x = twitter.profile_background_image_url if twitter.present?
     x ||= ''
+    x
   end
   def profile_background_tile
     if twitter.present?
@@ -177,6 +186,7 @@ class Craft
     else
       x = false 
     end
+    x
   end
   # Craft Branding
 

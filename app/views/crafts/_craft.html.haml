@@ -36,6 +36,7 @@
         = render '/crafts/craft_twitter_oembed', craft: craft
         = render '/crafts/craft_social_stats', craft: craft
       .location-info.card.right
+        %h3 Approximate Location
         = render '/crafts/craft_location', craft: craft
       .url
         %a{href:craft.website}

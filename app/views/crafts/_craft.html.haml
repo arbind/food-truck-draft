@@ -6,7 +6,7 @@
 - you_tube = craft.you_tube
 - google_plus = craft.google_plus
 
-.craft{style: "background-color:##{craft.profile_background_color}; background-image: url(#{craft.profile_background_image_url}); background-repeat: #{craft.profile_background_tile ? 'repeat' : 'no'}; "}
+.craft{ 'data-map-center' => craft.geo_point.to_json, 'data-map-pins'=> craft.map_pins.to_json, style:"background-color:##{craft.profile_background_color}; background-image: url(#{craft.profile_background_image_url}); background-repeat: #{craft.profile_background_tile ? 'repeat' : 'no'};" }
   .canvas
     .craft-profile.card
       .header

@@ -1,7 +1,12 @@
 $(function(){
 
   function showMap($craft) {
-    init_gmap(34.023347, -118.2867908, $craft);
+    if( $craft.data('map') ) return; // if map already exists
+    var mapPins = $craft.data('map-pins') || {};
+    var mapCenter = $craft.data('map-center');
+    if (!mapCenter) return
+    // +++ calculate center of pins
+    init_gmap($craft, mapCenter, mapPins);
   };
 
   function toggleInfo($craft) {

@@ -5,3 +5,4 @@
     / GoogleMap 
   .location-footer
     = craft.geo_enabled ? "(Geo Enabled!)" : "(Not Geo Enabled)"
+    = craft.geo_point.to_json 

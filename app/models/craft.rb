@@ -35,7 +35,6 @@ class Craft
   def latitude=(lat) coordinates ||= [0,0]; coordinates[1] = lat end
   alias_method :lat=, :latitude=
 
-
   def longitude() coordinates.first end
   alias_method :lng, :longitude
   alias_method :long, :longitude
@@ -46,7 +45,7 @@ class Craft
   # /geocoding  aliases
 
   # geo point hash representation
-  def geo_point() [lat, lng] end
+  def geo_point() { lat:lat, lng:lng } end
   def geo_point=(latlng_hash)
     lt   = latlng_hash[:latitude]   if latlng_hash[:latitude].present?
     lt ||= latlng_hash[:lat]        if latlng_hash[:lat].present?
@@ -57,11 +56,23 @@ class Craft
 
     self.lat = lt
     self.lng = ln
-    [lt, ln]
+    { lat:lat, lng:lng }
   end
   alias_method :geo_coordinate, :geo_point
   alias_method :geo_coordinate=, :geo_point=
   # /geo point hash representation
+
+  def map_pins
+    {
+      "#{_id}" => {
+        name: name,
+        lat: lat,
+        lng: lng,
+        website: website, 
+        now_active: now_active?
+      }
+    }
+  end
 
 
   def bind(web_craft)
@@ -139,13 +150,28 @@ class Craft
 
   def how_long_ago_was_last_tweet
     return @how_long_ago_was_last_tweet if @how_long_ago_was_last_tweet.present?
-
-    if twitter.present? and twitter.timeline.present? and twitter.timeline.first.present? and twitter.timeline.first["created_at"].present?      
-      last_tweeted_at = twitter.timeline.first["created_at"]
-      x = Util.how_long_ago_was(last_tweeted_at)
-    end
+    x = Util.how_long_ago_was(last_tweeted_at) if last_tweeted_at.present?
     x ||= nil
     @how_long_ago_was_last_tweet = x
+  end
+
+  def now_active?
+    time = last_tweeted_at
+    return false if time.nil?
+
+    time = time + (-Time.zone_offset(Time.now.zone))
+    2.days.ago < time # consider this craft to be active if there was a tweet in the last 2 days
+  end
+
+  def last_tweeted_at
+    return @last_tweeted_at if @last_tweeted_at.present?
+    if twitter.present? and twitter.timeline.present? and twitter.timeline.first.present? and twitter.timeline.first["created_at"].present?      
+      @last_tweeted_at = twitter.timeline.first["created_at"]
+      @last_tweeted_at = @last_tweeted_at.to_time if @last_tweeted_at.present?
+    else
+      @last_tweeted_at = nil
+    end
+    @last_tweeted_at
   end
 
   def website

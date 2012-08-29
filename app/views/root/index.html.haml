@@ -1,35 +1,26 @@
+- @title = 'San Francisco'
+- @show_locator = true
+
 / - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
 - if @crafts.present?
   - @crafts.each do |craft|
     .section
       = render '/crafts/craft', craft: craft
 
+#geomap-wrapper{style:"position:fixed; top: 150px; left: 700px; right:0; border: 1px solid blue;"}
+  .geomap.cut
+
+:javascript
+  $(function(){
+    $('#geomap-wrapper').css('height', 3 * $('#geomap-wrapper').width() / 5);
+
+    $(window).resize(function () {
+      $('#geomap-wrapper').css('height', $('#geomap-wrapper').width()/2);
+    });
+  })
+
 #right-sidebar
-  =render 'crafts/crafts_nav'
-
-/ ----------------
-
-
-/ #header
-/   %h1 FOOD-TRUCK.us
-/   #locator
-/     %form{action: root_path, method: :get}
-/       %input.med{type: :text, name: :qp, value: @query_place, placeholder: 'adress, city, state or zip'}
-/       %button.off-screen{type: :submit}
-
-/ =render 'crafts/crafts_nav'
-
-/ #locator
-/   %h2= "#{Util.pluralize(@crafts.size, 'Food Truck')} are around #{request.location.address} #{request.ip}."
-/   .place-address= "[place: #{@geo_place}] [coordinates: #{@geo_coordinates}] [radius: #{@radius} mi]"
-
-/ #wrapper
-/   #main
-/     / - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
-/     - if @crafts.present?
-/       - @crafts.each do |craft|
-/         .section
-/           = render '/crafts/craft', craft: craft
+  / =render 'crafts/crafts_nav'
 
 / %h1 index
 / = request.host
@@ -42,78 +33,7 @@
 / .x= "State of #{@target_interest[:location][:state_kw]}"
 / .x= "around #{@target_interest[:location][:metro_kw]}" 
 
-
-
-
 / / (type="text/javascript" src="http://www.refmobworks.com/yelpreview?phone=2142191300")
-
-/ / http://www.refmobworks.com/yelp.jsp?phone=2142191300&email=
-/ / %script(type="text/javascript" src="http://www.refmobworks.com/yelpreview?phone=3236393817")
-
-/ / <link type="text/css" rel="stylesheet" media="screen" href="http://www.refmobworks.com/ybadge.css"/>
-/ / <div class="twtr-widget" id="twtr-widget-1">
-/ / <div class="twtr-doc" style="width: 250px; background: #C41200 none repeat scroll 0% !important;">
-/ / <div class="twtr-hd">
-/ / <table width="100%">
-/ / <tr width="100%">
-/ / <td align="center" width="100%">
-/ / <h4 style="background:#C41200 none repeat scroll 0% !important;">
-/ / <a linkindex="1" target="_blank" style="color: #FFFFFF;" href="http://www.yelp.com/biz/nom-nom-truck-los-angeles">Read My Reviews</a>
-/ / </h4>
-/ / </td>
-/ / </tr>
-/ / </table>
-/ / <div class="twtr-bd">
-/ / <div class="twtr-timeline" style="height: auto;"><div class="twtr-tweets">
-/ / <div class="twtr-reference-tweet">
-/ / <br>
-/ / <table width="90%">
-/ / <tr width="100%">
-/ / <td align="right" width="55%">
-/ / <img align="right" alt="yelp" src="http://s3-media3.ak.yelpcdn.com/assets/2/www/img/5ef3eb3cb162/ico/stars/stars_3_half.png"/>
-/ / </td>
-/ / <td align="left" width="45%">
-/ / <div class="overall">
-/ / <a linkindex="1" target="_blank" style="color: #C41200;" href="http://www.yelp.com/biz/nom-nom-truck-los-angeles">662 Reviews</a>
-/ / </div>
-/ / </td>
-/ / </tr>
-/ / </table>
-/ / <br>
-/ / <div class="twtr-tweet" id="tweet-id">
-/ / <div class="twtr-tweet-wrap">
-/ / <div class="twtr-avatar">
-/ / <div class="twtr-img">
-/ / <a linkindex="32" target="_blank" href="http://www.yelp.com/user_details?userid=OmjMNG77obZOKQ59o-Tx4Q">
-/ / <img alt="small business review" src="http://media1.ak.yelpcdn.com/upthumb/C1SCNgFdXHmjfz5lBwlWnw/ss"/>
-/ / </a>
-/ / </div>
-/ / </div>
-/ / <div class="twtr-tweet-text">
-/ / <p><img align="left" src="http://s3-media2.ak.yelpcdn.com/assets/2/www/img/f62a5be2f902/ico/stars/stars_small_4.png"</img>
-/ / <br>The food here is super quality.  Delicious bread, with the perfect proportion of vegetables and meat.  Even though the f
-/ / <a linkindex="34" class="twtr-hyperlink" target="_blank" href="http://www.yelp.com/biz/nom-nom-truck-los-angeles#hrid:4hiVJs9VowUcAo0UhvLzRQ">
-/ / ...read more</a>
-/ / </p></div></div></div><div class="twtr-tweet" id="tweet-id"><div class="twtr-tweet-wrap"><div class="twtr-avatar"><div class="twtr-img"><a linkindex="32" target="_blank" href="http://www.yelp.com/user_details?userid=iKPfwa7DXt6zTiIK18q07Q"><img alt="small business review" src="http://media1.ak.yelpcdn.com/upthumb/oi4ZaX6IBGpddVTxDlxnKw/ss"/></a></div></div><div class="twtr-tweet-text"><p><img align="left" src="http://s3-media3.ak.yelpcdn.com/assets/2/www/img/c7623205d5cd/ico/stars/stars_small_5.png"</img><br>I used to go to this truck every time it was at the Wine Yard in Thousand Oaks.  Then they stopped going there (I'm sure<a linkindex="34" class="twtr-hyperlink" target="_blank" href="http://www.yelp.com/biz/nom-nom-truck-los-angeles#hrid:ew1b9--Ud_xJfcFVI_xR6Q">...read more</a></p></div></div></div><div class="twtr-tweet" id="tweet-id"><div class="twtr-tweet-wrap"><div class="twtr-avatar"><div class="twtr-img"><a linkindex="32" target="_blank" href="http://www.yelp.com/user_details?userid=EceJqnLoIK0vv0MJ3GTA3Q"><img alt="small business review" src="http://media1.ak.yelpcdn.com/upthumb/i_t6pvgtVFAsl2W1Htk2kw/ss"/></a></div></div><div class="twtr-tweet-text"><p><img align="left" src="http://s3-media3.ak.yelpcdn.com/assets/2/www/img/c7623205d5cd/ico/stars/stars_small_5.png"</img><br>My favorite Banh Mi and Tacos!! The Vietnamese iced coffee is pretty amazing too! I have tried the Bun twice - the first<a linkindex="34" class="twtr-hyperlink" target="_blank" href="http://www.yelp.com/biz/nom-nom-truck-los-angeles#hrid:iqPRDlG_7zQeWDoorabSXQ">...read more</a></p></div></div></div></div></div></div><div class="twtr-ft"><div><a linkindex="0" target="_blank" style="font-size:10px;font-style:italic;padding-top:8px;color: #C41200;" href="http://www.refmobworks.com">Get this badge</a><span><a linkindex="32" target="_blank" href="http://yelp.com"><img align="left" alt="yelp" src="http://static1.px.yelp.com/static/200911301285253944/i/developers/Powered_By_Yelp_Red.png"/></a></span></div></div></div></div></div></div>
-
-
-
-
-
-
-/ / Begin Yelp Badge - get your own at http://www.yelp.com/bling
-/ / %div(style="line-height: 1px; font-family: arial; text-align: center; font-size: 12px;")
-/ /   %div(style="width: 200px;overflow: hidden;line-height: 100%;height: 40px;background-image: url(http://embed.yelpcdn.com/bling_borders?color=C41200&amp;width=200&amp;BGcolor=CCCCCC&amp;position=top&amp;height=40);")
-/ /     %a(href="http://www.yelp.com")
-/ /       %img(src="http://embed.yelpcdn.com/assets/2/www/img/325472601571/p.gif" style="height: 20px;width: 40px;margin-top: 2px;border: none;margin-left: 80;" alt="")
-/ /     %div(style="text-align:center")
-/ /       %a(href="http://www.yelp.com/user_details?userid=ucUxeeKbPfsdI2nqJdR20Q" style="color: #FFFFFF;")
-/ /         Recent reviews by ARBIND T.
-/ /   %iframe(width="200" height="295" frameborder="0" scrolling="no" src="http://www.yelp.com/blogbadgemap?v=2&amp;userid=ucUxeeKbPfsdI2nqJdR20Q&amp;width=200&amp;height=295&amp;uicolor=C41200&amp;textcolor=FFFFFF&amp;type=latest&amp;speed=5")
-/ /   %div(style="width: 200px;overflow: hidden;line-height: 100%;height: 15px;background-image: url(http://embed.yelpcdn.com/bling_borders?color=C41200&amp;width=200&amp;BGcolor=CCCCCC&amp;position=bottom&amp;height=15);")
-/ /     %a(href="http://www.yelp.com/bling" style="color: #FFFFFF;")
-/ /       What's this?
-/ / End Yelp Badge - get your own at http://www.yelp.com/bling
 
 / %script{:language=>'javascript', :src=>'http://widgets.twimg.com/j/2/widget.js'}
 / %script{:type=>"text/javascript"}

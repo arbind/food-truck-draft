@@ -1,5 +1,16 @@
 $(function(){
 
+  function showOnMainMap($craft) {
+    var mapPins = $craft.data('map-pins') || {};
+    if (!mapPins) return
+
+    var mapCenter = $craft.data('map-center');
+    if (!mapCenter) return
+
+    // +++ calculate center of pins
+    showOnMainMap(mapCenter, mapPins);
+  };
+
   function showMap($craft) {
     if( $craft.data('map') ) return; // if map already exists
     var mapPins = $craft.data('map-pins') || {};
@@ -30,6 +41,7 @@ $(function(){
       $bio.slideDown();
     }
     showMap($craft);
+    // showOnMainMap($craft);
   }
 
   $('.craft').live('click.once', function(ev){

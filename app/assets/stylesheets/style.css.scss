@@ -1,5 +1,5 @@
 // sass variables
-$content_min_width: 900px;
+$content_min_width: 1008px;
 $content_max_width: 1260px;
 
 $content_top: 150px;
@@ -8,6 +8,7 @@ $right_column_width: 220px;
 * {
   margin: 0;
   padding: 0;
+  border: 0;
 }
 
 body {
@@ -60,7 +61,7 @@ textarea{
   min-height: 800px;
 }
   
-#header {
+#header-wrap {
   position: fixed;
   overflow:hidden;
   width: 100%;
@@ -73,18 +74,34 @@ textarea{
   text-align: center;
   background:#222 url(/assets/textures/dark02.jpeg);
   z-index: 10000;
-  #header-wrap {
+  #header {
     min-width: $content_min_width;
     max-width: $content_max_width;
     margin: 0 auto;
-    h1 {
+    h1, h2, .info {
       display: inline-block;
       float:right;
       color: #DDF;
-      font-size: 36px;
-      line-height: 50px;
       text-shadow: 0px 1px 1px #4d4d4d;
-      margin: 20px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin-top: 20px;
+      line-height: 36px;
+      font-size: 36px;
+    }
+    h2 {
+      margin-top: 33px;
+      line-height: 20px;
+      font-size: 22px;
+      margin-right: 12px;
+    }
+    .info {
+      font-style: italic;
+      margin-top: 33px;
+      line-height: 22px;
+      font-size: 22px;
+      margin-right: 20px;
     }
   }
 }
@@ -103,13 +120,26 @@ textarea{
       color: #DDF;
       text-shadow: 0px 1px 1px #4d4d4d;
       margin: 20px;
-      width: 488px;
+      width: 88%;
       -webkit-border-radius: 10px;
       -moz-border-radius: 10px;
       -ms-border-radius: 10px;
       -o-border-radius: 10px;
       border-radius: 10px;
     }
+  }
+}
+
+#geomap-wrapper{
+  position:fixed;
+  top: 150px;
+  left: 700px;
+  right:0;
+  border: 1px solid blue;
+  min-height: 100px;
+  .geomap {
+    height: 90%;
+    width: 90%;
   }
 }
 
@@ -221,28 +251,23 @@ textarea{
 
 
 
-#footer {
-  background: #267f23;
-  text-align: center;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  color: white;
-}
-#footer {
+#footer-wrap {
   position: fixed;
   overflow:hidden;
+  background: #267f23;
+  text-align: center;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  color: white;
   width: 100%;
   min-height: 48px;
   bottom:0;
   left:0;
-  padding:0;
-  margin:0;
-  border: 0;
   border-top: 3px solid #225;
   text-align: center;
   background:#222 url(/assets/textures/dark02.jpeg);
   z-index: 10000;
-  #footer-wrap {
+  #footer {
     min-width: $content_min_width;
     max-width: $content_max_width;
     margin: 0 auto;

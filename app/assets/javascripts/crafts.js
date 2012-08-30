@@ -1,15 +1,24 @@
 $(function(){
 
-  function showOnMainMap($craft) {
+  function show_on_geomap($craft) {
     var mapPins = $craft.data('map-pins') || {};
     if (!mapPins) return
+    var geo_point = $craft.data('geo-point');
+    if (!geo_point) return;
 
-    var mapCenter = $craft.data('map-center');
-    if (!mapCenter) return
-
-    // +++ calculate center of pins
-    showOnMainMap(mapCenter, mapPins);
+    marker_info = {
+      lat: geo_point.lat,
+      lng: geo_point.lng,
+      name: 'xyz'
+    }
+    marker = $('body').drop_geomap_marker(marker_info);
+    $craft.data('map-marker', marker);
   };
+
+  function clear_from_geomap($craft) {
+    marker = $craft.data('map-marker');
+    if (marker) marker.setMap(null);
+  }
 
   function showMap($craft) {
     if( $craft.data('map') ) return; // if map already exists
@@ -31,6 +40,7 @@ $(function(){
     if( $info.is(":visible") ) {
       $info.slideUp();
       $bio.slideUp();
+      clear_from_geomap($craft);
     }
   }
   function openInfo($craft) {
@@ -39,9 +49,8 @@ $(function(){
     if( ! $info.is(":visible") ){
       $info.slideDown();
       $bio.slideDown();
+      show_on_geomap($craft);
     }
-    showMap($craft);
-    // showOnMainMap($craft);
   }
 
   $('.craft').live('click.once', function(ev){

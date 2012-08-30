@@ -46,8 +46,11 @@ $(function(){
         name: marker_settings.name,
         website: marker_settings.website
       }
+
+      geomap.panTo(point); //center the map on the new marker
       marker = new google.maps.Marker(marker_info);
 
+      // see for handlers: https://developers.google.com/maps/documentation/javascript/events
       google.maps.event.addListener(marker, 'click', function() {
         geomap.infoWindow.setContent(marker_settings.content);
         geomap.infoWindow.open(geomap, this);
@@ -56,7 +59,7 @@ $(function(){
       // google.maps.event.addListener(marker, 'click', function() {
       //   window.location = this.website;
       // });
-
+      return marker;
     }
     //public methods
     module.init_geomap = function ($container, geomap_center) {
@@ -99,52 +102,56 @@ $(function(){
       return $geomap.data('geomap');
     };
 
+
+
+    // jquery extentions
+    $.fn.show_geomap = function(geomap_center) {
+      console.log("Showing Map!!!!!!");
+      var $container, $geomap=null, geomap=null;
+      $container = $(this[0]); // our jQuery element
+      geomap = GEOMAP.geomap_for_container($container); // get the geomap if it already existing 
+      if (!geomap) geomap = GEOMAP.init_geomap($container, geomap_center); // initialize the geomap if one does not exist
+      if (geomap) { // if we have geomap, get its jQuery container and show it
+        $geomap = GEOMAP.$geomap_for_container($container);
+        $geomap.fadeIn();
+      }
+      return geomap;
+    }
+
+    $.fn.hide_geomap = function() {
+      var $container, $geomap=null;
+      $container = $(this[0]); // our jQuery element
+
+      geomap = GEOMAP.geomap_for_container($container); // get the geomap if it already existing 
+      if (!geomap) return false; // nothing to do if a geomap does not exist
+
+      $geomap = GEOMAP.$geomap_for_container($container);
+      $geomap.slideUp();
+      return true;
+    }
+
+    $.fn.geomap = function() {
+      var $container, geomap=null;
+      $container = $(this[0]); // our jQuery element
+      geomap = GEOMAP.geomap_for_container($container); // get the geomap if it already existing 
+      return geomap;
+    }
+
+    $.fn.drop_geomap_marker = function(marker_settings){
+      var $container, geomap=null;
+      $container = $(this[0]); // our jQuery element
+      geomap = $container.geomap();
+      marker = GEOMAP.drop_geomap_marker (geomap, marker_settings);
+      return marker;
+    }
+
     return module;
   }(jQuery));
 
 
-  $.fn.show_geomap = function(geomap_center) {
-    console.log("Showing Map!!!!!!");
-    var $container, $geomap=null, geomap=null;
-    $container = $(this[0]); // our jQuery element
-    geomap = GEOMAP.geomap_for_container($container); // get the geomap if it already existing 
-    if (!geomap) geomap = GEOMAP.init_geomap($container, geomap_center); // initialize the geomap if one does not exist
-    if (geomap) { // if we have geomap, get its jQuery container and show it
-      $geomap = GEOMAP.$geomap_for_container($container);
-      $geomap.fadeIn();
-    }
-    return geomap;
-  }
-
-  $.fn.hide_geomap = function() {
-    var $container, $geomap=null;
-    $container = $(this[0]); // our jQuery element
-
-    geomap = GEOMAP.geomap_for_container($container); // get the geomap if it already existing 
-    if (!geomap) return false; // nothing to do if a geomap does not exist
-
-    $geomap = GEOMAP.$geomap_for_container($container);
-    $geomap.slideUp();
-    return true;
-  }
-
-  $.fn.geomap = function() {
-    var $container, geomap=null;
-    $container = $(this[0]); // our jQuery element
-    geomap = GEOMAP.geomap_for_container($container); // get the geomap if it already existing 
-    return geomap;
-  }
-
-  $.fn.drop_geomap_marker = function(marker_settings){
-    var $container, geomap=null;
-    $container = $(this[0]); // our jQuery element
-    geomap = $container.geomap();
-    GEOMAP.drop_geomap_marker (geomap, marker_settings);
-  }
-
   $('body').show_geomap();
-  var marker = {lat: 34.0522342, lng: -118.2436849, name: 'Peet', now_active:true }
-  $('body').drop_geomap_marker(marker);
+  // var marker = {lat: 34.0522342, lng: -118.2436849, name: 'Peet', now_active:true }
+  // $('body').drop_geomap_marker(marker);
 })
   //       infoWindowOptions =  { maxWidth: 80 },
   //   infoWindow = new google.maps.InfoWindow(infoWindowOptions);

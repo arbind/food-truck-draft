@@ -1,0 +1,5 @@
+- if craft.twitter.present?
+  .twitter-timeline
+    - craft.twitter.timeline.each do |tweet|
+      .tweet
+        = tweet['text']

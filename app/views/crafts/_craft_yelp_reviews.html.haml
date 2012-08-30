@@ -1,0 +1,5 @@
+- if craft.yelp.present?
+  .yelp-reviews
+    - craft.yelp.reviews.each do |review|
+      .review
+        = review['excerpt']

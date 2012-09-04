@@ -30,25 +30,21 @@ $(function(){
   };
 
   function toggleInfo($craft) {
-    var $info = $craft.find('.info-wrapper');
+    var $info = $craft.find('.info');
     if( $info.is(":visible") ) closeInfo($craft); // hide info if it is already shown
     else openInfo($craft); // show info if it is hidden
   }
   function closeInfo($craft) {
-    var $info = $craft.find('.info-wrapper');
-    var $bio = $craft.find('p.bio');
+    var $info = $craft.find('.info');
     if( $info.is(":visible") ) {
       $info.slideUp();
-      $bio.slideUp();
       clear_from_geomap($craft);
     }
   }
   function openInfo($craft) {
-    var $info = $craft.find('.info-wrapper');
-    var $bio = $craft.find('p.bio');
+    var $info = $craft.find('.info');
     if( ! $info.is(":visible") ){
       $info.slideDown();
-      $bio.slideDown();
       show_on_geomap($craft);
     }
   }

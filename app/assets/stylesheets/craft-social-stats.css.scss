@@ -1,0 +1,55 @@
+.craft{
+  .social-stats {
+    display: inline-block;
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      line-height: 16px;
+      border: 0;
+      li {
+        display: block;
+        border: 0;
+        color: #999;
+        padding: 6px 12px;
+        font-size: 10px;
+        line-height: 16px;
+        text-transform: uppercase;
+        border-top: 1px solid #E8E8E8;
+        img.indicator {
+          width:14px;
+          height:14px;
+          border:0;
+          outline:0;
+          margin: 0px 4px 0px 0px;
+
+          -webkit-border-radius: 50%;
+          -moz-border-radius: 50%;
+          -ms-border-radius: 50%;
+          -o-border-radius: 50%;
+          border-radius: 50%;
+        }
+        img.indicator.red {
+          background-color: red;
+        }
+        img.indicator.blue {
+          background-color: blue;
+        }
+        img.indicator.green {
+          background-color: green;
+        }
+        img.indicator.yellow {
+          background-color: yellow;
+        }
+        strong {
+          color: #333;
+          font-size: 14px;
+          font-weight: bold;                  
+        }
+      }
+    }            
+    ul>:first-child {
+      border-top: 0;
+    }
+  }
+}

@@ -1,5 +1,26 @@
 - if craft.yelp.present?
-  .yelp-reviews
-    - craft.yelp.reviews.each do |review|
-      .review
-        = review['excerpt']
+  - yelp = craft.yelp
+  .yelp-reviews.right
+    - yelp.reviews.each do |review|
+      - user = review['user']
+      %blockquote.cut.yelp-review
+        .vcard.author
+          %a{href:"http://www.yelp.com/user_details?userid=#{user['id']}"}
+            %span.avatar
+              %img.phto{src:user['image_url']}
+            %span.fn
+              = user['name']
+            %span.star-rating
+              %img{src: review['rating_image_url']}
+            %a.yelp-follow-button{href: "http://www.yelp.com/following_user/add?dst_user_id=#{user['id']}&previous_url=#{u request.url}"}
+              %i
+              %span.label
+                Follow
+        .entry
+          = review['excerpt']
+        .footer
+          .how-long-ago
+            = Util.how_long_ago_was(Time.at(review['time_created']))
+          %a.view-details{href:"http://www.yelp.com/biz/#{yelp.yelp_id}#hrid:#{review['id']}"}
+            read more
+

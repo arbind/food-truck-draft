@@ -1,0 +1,38 @@
+.craft{
+  .bio {
+    display: inline-block;
+    max-width: 450px;
+    color: #777;
+    word-wrap: break-word;
+    .description {
+      font: italic 16px/18px Georgia,"Times New Roman",serif;
+      padding: 12px;
+    }
+    .footer {
+      position: relative;
+      height: 18px;
+      padding: 8px 12px;
+      .url {
+        display: inline-block;
+        font: italic 12px/16px Georgia,"Times New Roman",serif;
+        a {
+          color: #888;
+          text-decoration: none;
+          outline: 0;
+          &:hover {
+            text-decoration: underline;
+          }
+          &:active {
+            text-decoration: none;                        
+          }
+        }
+      }
+      .tweet-follow-button {
+        display: inline-block;
+        float: right;
+        width: 150px;
+        height: 20px;
+      }
+    }
+  }
+}

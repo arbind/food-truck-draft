@@ -1,0 +1,27 @@
+- yelp = craft.yelp
+- flickr = craft.flickr
+- twitter = craft.twitter
+- webpage = craft.webpage
+- facebook = craft.facebook
+- you_tube = craft.you_tube
+- google_plus = craft.google_plus
+
+.header
+  .id
+    %img.logo{src:"#{craft.profile_image_url}"}
+    .name-and-activity
+      %h2.name.ellipsis
+        = "#{craft.name}"
+      - if craft.how_long_ago_was_last_tweet
+        .last-activity
+          %img{src:'/assets/twitter/twitter-bird.png'}
+          %span= craft.how_long_ago_was_last_tweet
+    - if yelp.present?
+      .yelp
+        .logo
+          %a.logo.yelp_logo_50x25{href:yelp.href, target: :_blank}
+        .rating-reviews
+          .rating
+            %img.star.rating{src:yelp.rating_img_url_large}
+          .reviews
+            = "#{yelp.review_count} reviews"

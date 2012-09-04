@@ -7,17 +7,8 @@
     .section
       = render '/crafts/craft', craft: craft
 
-#geomap-wrapper{style:"position:fixed; top: 150px; left: 700px; right:0; border: 1px solid blue;"}
+#geomap-wrapper
   .geomap.cut
-
-:javascript
-  $(function(){
-    $('#geomap-wrapper').css('height', 3 * $('#geomap-wrapper').width() / 5);
-
-    $(window).resize(function () {
-      $('#geomap-wrapper').css('height', $('#geomap-wrapper').width()/2);
-    });
-  })
 
 #right-sidebar
   / =render 'crafts/crafts_nav'

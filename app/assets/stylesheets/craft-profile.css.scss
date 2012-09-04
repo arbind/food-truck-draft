@@ -1,0 +1,49 @@
+.craft {
+  .profile {
+    display: block;
+    .header {
+      clear: both;
+      margin: 0;
+      padding: 0;
+      .id {
+        height: 56px;
+        img.logo {
+          float: left;
+          margin: 4px;
+          width: 48px;
+          height: 48px;
+          border: 0;
+          filter:alpha(opacity=80);
+          opacity: 0.80;
+          -webkit-border-radius: 6px;
+             -moz-border-radius: 6px;
+              -ms-border-radius: 6px;
+               -o-border-radius: 6px;
+                  border-radius: 6px;
+        }
+        .name-and-activity {
+          margin-left:8px;
+          float: left;
+          height: 56px;
+          width: 50%;
+          h2.name {
+            margin: 0;
+            padding: 3px 0 0 0;
+            font-size: 28px;
+            line-height: 32px;
+            font-weight: bold;      
+            text-align: left;          
+            text-rendering: optimizeLegibility;
+            &:hover{ text-decoration: underline; }
+          }
+        }
+        .yelp{
+          float: right;
+          height: 32px;
+          margin: 3px 0;
+          padding: 0px 8px 18px 0;
+        }
+      }
+    }
+  }    
+}

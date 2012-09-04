@@ -449,4 +449,7 @@ module ApplicationHelper
     button_html.html_safe
   end
 
+#  follow button with iframe:
+#  %iframe.tweet-follow-button{allowtransparency:"true", frameborder:0, scrolling:"no", src:"//platform.twitter.com/widgets/follow_button.html#align=right&button=grey&screen_name=#{tweeter.screen_name}&show_count=false&show_screen_name=false&lang=en"}
+
 end

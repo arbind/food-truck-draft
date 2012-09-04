@@ -1,3 +1,43 @@
+a.yelp-follow-button {
+  position: absolute;
+  top: 1px;
+  right: 0;
+  text-align: right;
+  font: normal normal normal 11px/18px 'Helvetica Neue',Arial,sans-serif;
+  background: #EEE;
+  border: #CCC solid 1px;
+  height: 18px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  text-decoration:none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+       -o-user-select: none;
+          user-select: none;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+      -ms-border-radius: 3px;
+       -o-border-radius: 3px;
+          border-radius: 3px;
+  &:hover {
+    text-decoration:none;
+    border-color: #BBB;
+  }
+  i {
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: transparent url(/assets/yelp/yelp_logo_16x16.png);
+    background-size: 100%;
+  }
+  .label {
+    padding: 0 3px 0 19px;
+    font-weight: bold;  
+    color: #333;
+  }
+}
 .yelp {
   display: inline-block;
   margin: 0;
@@ -40,7 +80,8 @@
       margin: 0 3px;
       padding: 0;
       border: 0;
-      color: #999;
+      x_color: #999;
+      color: #C41200;
       font-size: 14px;
       line-height: 14px;
     }

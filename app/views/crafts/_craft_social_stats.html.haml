@@ -9,11 +9,12 @@
 .social-stats
   .cut
     %ul
-      - if yelp.present?
-        %li
-          %img.indicator{src:"/assets/transparent-indicator.png"}
-          %strong= Util.short_human_number(yelp.review_count)
-          Yelp reviews
+      / Yelp does not allow agregating or blending of their review count with other information  
+      / - if yelp.present?
+      /   %li
+      /     %img.indicator{src:"/assets/transparent-indicator.png"}
+      /     %strong= Util.short_human_number(yelp.review_count)
+      /     Yelp reviews
       - if twitter.present?
         %li
           %img.indicator{src:"/assets/transparent-indicator.png"}

@@ -1,0 +1,16 @@
+.stats.right
+  = render '/crafts/craft_social_stats', craft: craft
+.bio.cut.left
+  .description
+    = "#{craft.description}"
+  .footer
+    .url
+      %a{href:craft.website}
+        = "#{craft.website}"
+    - if craft.twitter
+      %iframe.tweet-follow-button{allowtransparency:"true", frameborder:0, scrolling:"no", src:"//platform.twitter.com/widgets/follow_button.html#align=right&button=grey&screen_name=#{craft.twitter.screen_name}&show_count=false&show_screen_name=false&lang=en"}
+  / .location
+  /   = "#{craft.location}"
+  /   .location-footer
+  /     = craft.geo_enabled ? "(Geo Enabled!)" : "(Not Geo Enabled)"
+  /     = craft.geo_point.to_json 

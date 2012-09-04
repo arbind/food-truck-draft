@@ -1,52 +1,6 @@
-- yelp = craft.yelp
-- flickr = craft.flickr
-- twitter = craft.twitter
-- webpage = craft.webpage
-- facebook = craft.facebook
-- you_tube = craft.you_tube
-- google_plus = craft.google_plus
-
 .craft{ 'data-geo-point' => craft.geo_point.to_json, 'data-map-pins'=> craft.map_pins.to_json, style:"background-color:##{craft.profile_background_color}; background-image: url(#{craft.profile_background_image_url}); background-repeat: #{craft.profile_background_tile ? 'repeat' : 'no'};" }
   .canvas
-    .craft-profile.card
-      .header
-        .id
-          %img.logo{src:"#{craft.profile_image_url}"}
-          .name-and-activity
-            %h2.name.ellipsis
-              = "#{craft.name}"
-            - if craft.how_long_ago_was_last_tweet
-              .last-activity
-                %img{src:'/assets/twitter/twitter-bird.png'}
-                %span= craft.how_long_ago_was_last_tweet
-          - if yelp.present?
-            .yelp
-              .logo
-                %a.logo.yelp_logo_50x25{href:yelp.href, target: :_blank}
-              .rating-reviews
-                .rating
-                  %img.star.rating{src:yelp.rating_img_url_large}
-                .reviews
-                  = "#{yelp.review_count} reviews"
-    .info-wrapper
-      .overview
-        .stats
-          = render '/crafts/craft_social_stats', craft: craft
-        %p.bio.cut
-          = "#{craft.description}"
-      .activity-info.card.right
-        %h3 Social Activity
-        = render '/crafts/craft_twitter_oembed', craft: craft
-      .activity-info.card.right
-        %h3 Yelp Reviews
-        = render '/crafts/craft_yelp_reviews', craft: craft
-      .activity-info.card.left
-        %h3 Tweets
-        = render '/crafts/craft_twitter_timeline', craft: craft
-      .location-info.card.right
-        %h3 Approximate Location
-        = render '/crafts/craft_location', craft: craft
-      .url
-        %a{href:craft.website}
-        = "#{craft.website}"
-        %span.divider ·
+    .profile.card
+      = render 'crafts/craft_header', craft: craft
+    .info
+      = render 'crafts/craft_info', craft: craft

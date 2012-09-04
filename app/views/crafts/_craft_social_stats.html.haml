@@ -15,20 +15,41 @@
       /     %img.indicator{src:"/assets/transparent-indicator.png"}
       /     %strong= Util.short_human_number(yelp.review_count)
       /     Yelp reviews
+
+      / - if twitter.present?
+      /   %li
+      /     %img.indicator{src:"/assets/transparent-indicator.png"}
+      /     %strong= Util.short_human_number(twitter.statuses_count)
+      /     tweets
+      /   %li
+      /     %img.indicator{src:"/assets/transparent-indicator.png"}
+      /     %strong= Util.short_human_number(twitter.followers_count)
+      /     followers
+      - if yelp.present?
+        %li
+          %img.indicator{src:"/assets/transparent-indicator.png"}
+          %strong= yelp.rating
+          yelp rating
       - if twitter.present?
         %li
           %img.indicator{src:"/assets/transparent-indicator.png"}
-          %strong= Util.short_human_number(twitter.statuses_count)
-          tweets
-        %li
-          %img.indicator{src:"/assets/transparent-indicator.png"}
-          %strong= Util.short_human_number(twitter.followers_count)
-          followers
+          %strong 1-5
+          twitter activity
       - if facebook.present?
         %li
           %img.indicator{src:"/assets/transparent-indicator.png"}
-          %strong= Util.short_human_number(facebook.likes)
-          FB likes
+          %strong 1-5
+          facebook activity
+      %li
+        %img.indicator{src:"/assets/transparent-indicator.png"}
+        %strong 1-5
+        local distance
+      /  facebook like button already shows # of likes
+      / - if facebook.present?
+      /   %li
+      /     %img.indicator{src:"/assets/transparent-indicator.png"}
+      /     %strong= Util.short_human_number(facebook.likes)
+      /     FB likes
 
       / %li
       /   %img.indicator{src:"/assets/transparent-indicator.png"}

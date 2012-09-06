@@ -22,8 +22,8 @@
             -  # Organize h1 and h2 for SEO readability by spiders
             .info= (request.host.match /^.*(\.[a-zA-Z]+$)/)[1]  # get the .com or whatever domain we are on
             %h1 FOOD-TRUCKS
-            - if @title
-              %h2= @title
+            - if @geo_city
+              %h2= @geo_city
             - if @show_locator
               #locator
                 %form{action: root_path, method: :get}

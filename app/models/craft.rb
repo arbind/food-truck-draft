@@ -17,7 +17,11 @@ class Craft
 
   field :href_tags, type: Array, default: [], index: true
   field :search_tags, type: Array, default: [], index: true
-  
+
+  # statuses
+  field :rejected, type: Boolean, default: false
+  field :approved, type: Boolean, default: false
+
   has_many :web_crafts, :dependent => :destroy
   has_and_belongs_to_many :nizers # organizers
 
@@ -73,7 +77,6 @@ class Craft
       }
     }
   end
-
 
   def bind(web_craft)
     web_craft_list = *web_craft 

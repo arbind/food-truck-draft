@@ -1,5 +1,8 @@
 %h1 Search for Existing Crafts
 
+%form#add{action: crafts_path, method: :post}
+  %input#look_for_yelp_listing{type: :hidden, name: :look_for, value: ''}
+
 %form{action: crafts_path, method: :get}
   %label Search For:
   %input{type: :text, name: :look_for, value: @look_for, placeholder: '@twitter_handle, url or search term'}
@@ -10,7 +13,32 @@
 #wrapper
   #main
     / - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
-    - if @crafts.present?
-      - @crafts.each do |craft|
-        .section
-          = render '/crafts/craft', craft: craft
+    - if @yelp_results.present?      
+      .yelp-results
+        .total= @yelp_results['total']
+        -  @yelp_results['businesses'].each do |biz|
+          .yelp-listing{:"data-yelp-id" => biz['id'], style: 'padding: 10px; border: 1px solid blue;'}
+            - if biz['is_closed']
+              .closed MIGHT BE CLOSED!
+            %img{src: biz['image_url'] }
+            .name= biz['name']
+            %img{src:biz['rating_img_url']}
+            .review-count= biz['review_count']
+            .address= "#{biz['location']['address']}, #{biz['location']['city']} #{biz['location']['state_code']}"
+            %a.href{href:biz['url']}
+              =biz['url']
+            .snippet
+              %img{src: biz['snippet_image_url']}
+              .text= biz['snippet_text']
+:javascript
+  $(function(){
+    $('a.href').on('click', function(event){
+      event.stopPropagation();
+      event.preventDefault();
+      var look_for = $(this).attr('href');
+      $('input[id="look_for_yelp_listing"]').attr('value', look_for);
+      alert( $('input[id="look_for_yelp_listing"]').attr('value') ) ;
+      $('#add').submit();
+      return false;
+    })
+  })

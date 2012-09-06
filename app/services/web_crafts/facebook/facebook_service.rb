@@ -19,6 +19,16 @@ class FacebookService < WebCraftService
     web_craft_hash
   end
 
+  # find the website of an account
+  def self.website_for_account(user_id_or_url)
+    user_id = Web.service_id_from_string_or_href(user_id_or_url, :facebook)
+    return nil if user_id.nil?
+
+    web_craft_hash = web_fetch(user_id)
+    web_craft_hash['website']
+  end 
+
+
   # webpage scraping
   def self.hrefs_in_hpricot_doc(doc)
     Web.hrefs_in_hpricot_doc(doc, 'facebook.com', ['data-href', 'href'])

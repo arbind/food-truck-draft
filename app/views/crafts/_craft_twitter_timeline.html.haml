@@ -1,7 +1,7 @@
 - if craft.twitter.present?
   - tweeter = craft.twitter
   .twitter-timeline.left
-    - craft.twitter.timeline.each do |tweet|
+    - craft.twitter.timeline[0..2].each do |tweet|
       %blockquote.cut.tweet
         .vcard.author
           %a{href:"https://twitter.com/#{tweeter.screen_name}"}

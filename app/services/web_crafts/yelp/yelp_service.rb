@@ -7,13 +7,20 @@ class YelpService < WebCraftService
 
   def self.web_craft_class() YelpCraft end
 
-  def self.raw_fetch(web_craft_id)
+  def self.raw_fetch(web_craft_id, scrape_website_url=true)
     phone_number = phone_number_10_digits(web_craft_id)
     if phone_number
       web_craft_hash = biz_for_phone_number(phone_number)
     else
       web_craft_hash = biz_for_id(web_craft_id)
     end
+    return nil if web_craft_hash.nil?
+    if (scrape_website_url)
+puts "qqqqqqq using url: #{web_craft_hash['url']}"
+      web_craft_hash['website'] = website_for_account(web_craft_hash['url'])
+puts "qqqqqqq got website: #{web_craft_hash['website']}"
+    end
+    web_craft_hash
   end
 
   def self.web_fetch(web_craft_id)
@@ -43,6 +50,16 @@ class YelpService < WebCraftService
   def self.hrefs_in_hpricot_doc(doc)
     Web.hrefs_in_hpricot_doc(doc, 'yelp.com')
   end
+
+  # find the website of a yelp listing
+  def self.website_for_account(user_id_or_url)
+    user_id = Web.service_id_from_string_or_href(user_id_or_url, :yelp, 'biz')
+    return nil if user_id.nil?
+
+    service_url = "http://www.yelp.com/biz/#{user_id}"
+    doc = Web.hpricot_doc(service_url)
+    website = doc.search("#bizUrl a[@href]").text.squish
+  end 
 
   def self.id_from_href(href)
     return nil if href.nil?
@@ -106,7 +123,7 @@ class YelpService < WebCraftService
     all_results = {}
     page = 1;
 
-    result = food_trucks_in_city(city, state, "truck", V2_MAX_RADIUS_FILTER, page)
+    result = food_trucks_in_city(city, state, "truck", page, V2_MAX_RADIUS_FILTER)
     all_results["page-#{page}"] = result
     return all_trucks if result.nil?
 
@@ -119,7 +136,7 @@ class YelpService < WebCraftService
     puts "total_pages: #{total_pages}"
     while total_pages > page and 1001 > all_trucks.size
       page += 1
-      result = food_trucks_in_city(city, state, "truck", V2_MAX_RADIUS_FILTER, page)
+      result = food_trucks_in_city(city, state, "truck", page, V2_MAX_RADIUS_FILTER)
       all_results["page-#{page}"] = result
       all_trucks.push *result['businesses']
       puts "#{result['total']} - #{all_trucks.size}"
@@ -127,7 +144,7 @@ class YelpService < WebCraftService
     all_trucks
   end
 
-  def self.food_trucks_in_city(city, state, term="truck", radius=V2_MAX_RADIUS_FILTER, page=1)
+  def self.food_trucks_in_city(city, state, term="food truck", page=1, radius=V2_MAX_RADIUS_FILTER)
     offset = V2_MAX_RESULTS_LIMIT*(page-1) # 1 + this ?
     query = {
       term: term,

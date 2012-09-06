@@ -1,4 +1,7 @@
 module ApplicationHelper
+  def href_for(path)
+    "//#{request.host}:#{request.port}#{path}"
+  end
 
   def subdomain_as_sym(host=request.host)
     return @subdomain if @subdomain
@@ -328,18 +331,26 @@ module ApplicationHelper
     init_subdomain_location
     init_url_path_location
 
-    if @query_place.present?
+    if @query_place.present? and @query_coordinates.present?
       @geo_place = @query_place
       @geo_coordinates = @query_coordinates
-    elsif @url_path_place.present?
+      @geo_city = @query_city
+      @geo_state = @query_state
+    elsif @url_path_place.present? and @url_path_coordinates.present?
       @geo_place = @url_path_place
       @geo_coordinates = @url_path_coordinates
-    elsif @subdomain_place.present?
+      @geo_city = @url_path_city
+      @geo_state = @url_path_state
+    elsif @subdomain_place.present? and @subdomain_coordinates.present?
       @geo_place = @subdomain_place
       @geo_coordinates = @subdomain_coordinates
+      @geo_city = @subdomain_city
+      @geo_state = @subdomain_state
     else
       @geo_place = @user_place
       @geo_coordinates = @user_coordinates
+      @geo_city = @user_city
+      @geo_state = @user_state
     end
     return true
   end
@@ -361,6 +372,7 @@ module ApplicationHelper
     @subdomain_place = place_from_target_location
     if @subdomain_place
       @subdomain_coordinates = Geocoder.coordinates(@subdomain_place)
+      @subdomain_city, @subdomain_state = city_state_for_address(@subdomain_place)
     end
   end
 
@@ -368,18 +380,21 @@ module ApplicationHelper
     @url_path_place = place_from_target_location
     if @url_path_place
       @url_path_coordinates = Geocoder.coordinates(@url_path_place)
+      @url_path_city, @url_path_state = city_state_for_address(@url_path_place)
     end
   end
-
 
   def init_user_location
     # see if current user coordinates are specified (overrides previous value in session)
     @user_coordinates = params[:uc] || params[:user_coordinates]
-    if @user_coordinates and @user_coordinates.kind_of?(Array) and @user_coordinates.first.present? and not @user_coordinates.first.zero?
+    if geo_coordinates_are_valid?(@user_coordinates)
       @user_place = Geocoder.address(@user_coordinates)
       if @user_place.present?
+        @user_city, @user_state = city_state_for_address(@user_place)
         session[:user_place] = @user_place
         session[:user_coordinates] = @user_coordinates
+        session[:user_city] = @user_city
+        session[:user_state] = @user_state
         return true 
       end
     end
@@ -388,42 +403,56 @@ module ApplicationHelper
     @user_place = params[:up] || params[:user_place]
     if @user_place
       @user_coordinates = Geocoder.coordinates(@user_place)
-      if @user_coordinates.present? and @user_coordinates.first.present? and not @user_coordinates.first.zero?
+      if geo_coordinates_are_valid?(@user_coordinates)
+        @user_city, @user_state = city_state_for_address(@user_place)
         session[:user_place] = @user_place
         session[:user_coordinates] = @user_coordinates
+        session[:user_city] = @user_city
+        session[:user_state] = @user_state
         return true 
       end
     end
 
-    # See if we already calculated user's location and put it in the session
+    # See if we already calculated the user's location and have it cached in the session
     @user_place = session[:user_place]
     @user_coordinates = session[:user_coordinates]
+    @user_city = session[:user_city]
+    @user_state = session[:user_state]
     return true if @user_place.present? and @user_coordinates.present?
 
-    # else use the user's ip address to get location
+    # else use the user's ip address to get location and cache it in the session
     if request.location
       @user_place = request.location.address
       @user_coordinates = request.location.coordinates
-      if @user_place.present? and @user_coordinates.present? and @user_coordinates.first.present? and not @user_coordinates.first.zero?
+      if @user_place.present? and geo_coordinates_are_valid?(@user_coordinates)
+        @user_city = request.location.city
+        @user_state = request.location.state
         session[:user_place] = @user_place
         session[:user_coordinates] = @user_coordinates
+        session[:user_city] = @user_city
+        session[:user_state] = @user_state
         return true 
       end
     end
 
-    #else default user's location to santa monica ;)
+    #else default user's location to santa monica ;) and cache it in the session
     @user_place = 'Santa Monica, CA'
+    @user_city = 'Santa Monica'
+    @user_state = 'CA'
     @user_coordinates = [34.0194543, -118.4911912]
     session[:user_place] = @user_place
     session[:user_coordinates] = @user_coordinates
+    session[:user_city] = @user_city
+    session[:user_state] = @user_state
     return true
   end
 
   def init_query_location
     # see if coordinates are specified for where to search
     @query_coordinates = params[:qc] || params[:query_coordinates]
-    if @query_coordinates and @query_coordinates.kind_of?(Array) and @query_coordinates.first.present? and not @query_coordinates.first.zero?
+    if geo_coordinates_are_valid?(@query_coordinates)
       @query_place = Geocoder.address(@query_coordinates)
+      @query_city, @query_state = city_state_for_address(@query_place)
       return true if @query_place.present?
     end
 
@@ -431,8 +460,41 @@ module ApplicationHelper
     @query_place = params[:qp] || params[:query_place]
     if @query_place
       @query_coordinates = Geocoder.coordinates(@query_place)
-      return true if @query_coordinates.present? and @query_coordinates.first.present? and not @query_coordinates.first.zero?
+      if geo_coordinates_are_valid? (@query_coordinates)
+        @query_city, @query_state = city_state_for_address(@query_place)
+        return true if geo_coordinates_are_valid?(@query_coordinates)
+      else
+        @query_coordinates = nil
+      end
+    else
+      @query_coordinates = nil
     end
+  end
+
+  def city_state_for_address(address)
+    # find the first token that has only 2 chars and assume it is a state
+    tokens = address.squish.split(',')
+    return nil unless tokens.present?
+
+    tokens.map!{|token| token.squish }
+    state_idx = -1
+    tokens.each_with_index {|token, idx| state_idx = idx if 2==token.size }
+
+    city = state = nil
+    case state_idx
+    when -1 # no state was found, assume the last token is the city
+      city = tokens[-1].titleize
+    when 0 # first token seems to be the state
+      state = tokens[0].upcase
+    else # at least 2 tokens found, grab the state and assume the one before is a city 
+      city = tokens[state_idx-1].titleize
+      state = tokens[state_idx].upcase
+    end
+    return [city, state]
+  end
+
+  def geo_coordinates_are_valid?(coordinates)
+    coordinates.present? and coordinates.kind_of?(Array) and 2 == coordinates.size  and -180 <= coordinates.first and coordinates.first <= 180 and -180 <= coordinates.second and coordinates.second <= 180
   end
 
   # Twitter Buttons

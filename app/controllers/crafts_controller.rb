@@ -2,24 +2,26 @@ class CraftsController < ApplicationController
   # GET /crafts
   # GET /crafts.json
   def index
-    @look_for = params[:look_for]
-    @place = params[:place]
-    @radius = params[:radius] || 50 # miles
-    if @look_for.present? and @near.present?
-      @crafts = Craft.near(@place, @radius).where(search_tags: @look_for)
-    elsif @look_for.present?
-      @crafts = Craft.where(search_tags: @look_for)
-    elsif @place.present?
-      @crafts = Craft.near(@place, @radius)
-    else
-      @crafts = nil
-    end
+    @look_for = params[:q] || params[:look_for] || "food truck"
+    @radius = params[:r] || params[:radius] || 100 # miles
+    @page = params[:page] || 1
 
+    # on click:
+    # 1. get website YelpService.website_for_yelp_listing(q)
+    # 2. load cratfs
+    # 3. auto verify
+    # 3. change/edit twitter handle/ facebook page / website url
+    # 4. verify
+
+    puts "=====================#{@geo_city}, #{@geo_state}, #{@look_for}, #{@page}"
+    # @yelp_results = YelpService.food_trucks_in_city(@geo_city, @geo_state, @look_for, @page)
+    @yelp_results = YelpService.food_trucks_in_city('santa monica', 'ca', @look_for, @page)
+    puts @yelp_results
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @crafts }
+      format.json { render json: nil }
     end
-  end
+ end
 
 
   # GET /crafts/find

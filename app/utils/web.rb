@@ -49,19 +49,42 @@ class Web
     image_is_there
   end
 
-  def self.hpricot_doc(url) doc = open(url) { |f| Hpricot(f) } end
+
+  def self.service_id_from_string_or_href(id_or_url, service, path="")
+    # Assumes that the id is at the end of a url
+    # usage:
+    # Web.service_id_from_string_or_href('http://www.facebook.com/arb', :facebook) -> arb
+    # Web.service_id_from_string_or_href('https://yelp.com/biz/arb', :yelp, 'biz') -> arb
+    # Web.service_id_from_string_or_href('arb', :yelp, 'biz') -> arb
+    return nil unless id_or_url.present?
+    return nil unless service.present?
+    svc = service.to_s.downcase
+    p = path
+    p << '/' if p.present? and '/' != p[-1]
+    # match the last token of a service url, or else the entire string itself
+    matches = (id_or_url.match /((^https?:\/\/www\.|^https?:\/\/)#{svc}\.com\/#{p.present? ? p : ""}|^)(\S*)/)
+    return nil if matches.nil? or matches.size < 4
+    user_id = matches[3]
+    return nil unless user_id.present?
+    return nil if user_id.match /^https?:/ #make sure the matched user id is not a url (didn't match on the service)
+    user_id.slice!(0) if ('twitter' == svc and '@' == user_id[0]) # @twitter_handles
+    user_id
+  end
+
+
+  def self.hpricot_doc(url) doc = open(url, 'User-Agent' => 'ruby') { |f| Hpricot(f) } end
 
   # find social handles on a web page (try the home page)
-  def self.social_pages_for_website(url)
-    doc = hpricot_doc(url)
-    {
-      twitter_pages:  twitter_pages_for_hpricot_doc(doc),
-      facebook_pages: facebook_pages_for_hpricot_doc(doc),
-      flicker_pages: facebook_pages_for_hpricot_doc(doc),
-      yelp_listings: yelp_listings_for_hpricot_doc(doc),
-      rss_feeds: rss_feeds_for_hpricot_doc(doc)
-    }
-  end
+  # def self.social_pages_for_website(url)
+  #   doc = hpricot_doc(url)
+  #   {
+  #     twitter_pages:  twitter_pages_for_hpricot_doc(doc),
+  #     facebook_pages: facebook_pages_for_hpricot_doc(doc),
+  #     flicker_pages: facebook_pages_for_hpricot_doc(doc),
+  #     yelp_listings: yelp_listings_for_hpricot_doc(doc),
+  #     rss_feeds: rss_feeds_for_hpricot_doc(doc)
+  #   }
+  # end
 
   def self.web_crafts_for_website(url)
     u = URI.parse(url.to_s.downcase)
@@ -69,25 +92,31 @@ class Web
     return nil if u.host.nil?
     web_service = u.host.split('.')[-2].symbolize # e.g. :facebook or :twitter or :yelp or webpage domain or other
 
+    website = nil
     service = web_service
     begin
       svc_class_name = web_service.to_s.capitalize + "Service" # e.g. "FacebookService" or TwitterService" or "YelpService" or other
       svc_class = Kernel.const_get(svc_class_name.to_sym)
       # class was found for service e.g. "FacebookService" or TwitterService" or "YelpService" or other
+      website = svc_class.website_for_account(url)
+puts "======== website: #{website}"
     rescue
       service = :webpage # assume this is a webpage if no other service is found
+      website = url
       # class was not found for service e.g. "GrillEmAllService"
     end
     hrefs = {}
     hrefs[service] = [ url ]
 
-    doc = hpricot_doc(url)
-    hrefs[:twitter]   = ::TwitterService.hrefs_in_hpricot_doc(doc) unless hrefs[:twitter].present?
-    hrefs[:facebook]  = ::FacebookService.hrefs_in_hpricot_doc(doc) unless hrefs[:facebook].present?
-    hrefs[:yelp]      = ::YelpService.hrefs_in_hpricot_doc(doc) unless hrefs[:yelp].present?
-    # hrefs[:you_tube]    = YouTubeService.hrefs_in_hpricot_doc(doc) unless hrefs[:you_tube].present?
-    # hrefs[:flickr]    = FlickrService.hrefs_in_hpricot_doc(doc) unless hrefs[:flickr].present?
-    # hrefs[:rss]       = RssService.hrefs_in_hpricot_doc(doc) unless hrefs[:rss].present?
+    if website.present?
+      doc = hpricot_doc(website)
+      hrefs[:twitter]   = ::TwitterService.hrefs_in_hpricot_doc(doc) unless hrefs[:twitter].present?
+      hrefs[:facebook]  = ::FacebookService.hrefs_in_hpricot_doc(doc) unless hrefs[:facebook].present?
+      hrefs[:yelp]      = ::YelpService.hrefs_in_hpricot_doc(doc) unless hrefs[:yelp].present?
+      # hrefs[:you_tube]    = YouTubeService.hrefs_in_hpricot_doc(doc) unless hrefs[:you_tube].present?
+      # hrefs[:flickr]    = FlickrService.hrefs_in_hpricot_doc(doc) unless hrefs[:flickr].present?
+      # hrefs[:rss]       = RssService.hrefs_in_hpricot_doc(doc) unless hrefs[:rss].present?
+    end
 puts hrefs
     web_crafts_map = {} # assume the first href found on a site is the primary url
     web_crafts_map[:web_crafts] = [] # an array stores all the WebCrafts

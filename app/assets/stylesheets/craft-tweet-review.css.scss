@@ -7,6 +7,7 @@
 }
 
 .tweet, .yelp-review {
+  position: relative;
   padding:12px;
   height: 162px;
   a{
@@ -77,8 +78,10 @@
     margin: 7px 5px 6px 0;
   }
   .footer {
-    position: relative;
+    position: absolute;
     padding-top: 2px;
+    width: 90%;
+    bottom: 8px;
     font: normal normal normal 12px/16px "Helvetica Neue",Arial,sans-serif;
     color:#999;
     .how-long-ago {

@@ -1,10 +1,11 @@
-$(document).ready(function(){
-  $('body').pageScroller({ 
-    navigation: '#nav',
-    scrollOffset: -150,
-    animationType: 'easeInOutExpo'
-  });
-});
+// disable page scroller for now
+// $(document).ready(function(){
+//   $('body').pageScroller({ 
+//     navigation: '#nav',
+//     scrollOffset: -150,
+//     animationType: 'easeInOutExpo'
+//   });
+// });
 
 // view-source:http://pagescroller.com/
 /*  AVAILABLE OPTIONS (Page Scroller PRO):

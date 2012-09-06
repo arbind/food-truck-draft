@@ -1,4 +1,3 @@
-- @title = 'San Francisco'
 - @show_locator = true
 
 / - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
@@ -6,7 +5,8 @@
   - @crafts.each do |craft|
     .section
       = render '/crafts/craft', craft: craft
-
+%a.add-a-craft{href: href_for(new_craft_path) }
+  add a new food truck
 #geomap-wrapper
   .geomap.cut
 

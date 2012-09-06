@@ -58,12 +58,6 @@ $(function(){
     openInfo($craft);
   });
 
-  $('body').live('click.once', function(ev){
-    $('.craft').each(function(idx, craft){
-      closeInfo($(craft));
-    });
-  });
-
   $('h2.name').live('click.once', function(ev){
     $crafts = $(this).parents('.craft') // should only be one really
     $crafts.each(function(idx, craft){

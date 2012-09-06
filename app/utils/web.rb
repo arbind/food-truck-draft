@@ -49,6 +49,35 @@ class Web
     image_is_there
   end
 
+  def self.domain_for_href(href)
+    link = href.to_s.downcase
+    u = URI.parse(link)
+    u = URI.parse("http://#{link}") if u.host.nil?
+    u.host
+  end
+
+  def self.href_domains_match?(url1, url2)
+    return false unless url1.present?
+    return false unless url2.present?
+    domain1 = domain_for_href(url1)
+    matches = domain1.match /(^www\.|^)(.*)$/
+    return false if matches.nil? or matches.size < 3
+    domain1 = matches[2]
+
+    domain2 = domain_for_href(url2)
+    matches = domain2.match /(^www\.|^)(.*)$/
+    return false if matches.nil? or matches.size < 3
+    domain2 = matches[2]
+
+    domain1.eql? domain2
+  end
+  def self.values_match?(value1, value2)
+    return true if value1.eql? value2
+    return false unless (value1.present? and value2.present?)
+    val1 = value1.downcase.gsub(/\s+/, '')
+    val2 = value2.downcase.gsub(/\s+/, '')
+    val1.eql? val2
+  end
 
   def self.service_id_from_string_or_href(id_or_url, service, path="")
     # Assumes that the id is at the end of a url
@@ -86,7 +115,7 @@ class Web
   #   }
   # end
 
-  def self.web_crafts_for_website(url)
+  def self.web_crafts_for_website(url, look_for={}) # i.e.: look_for = {name: 'truck'}
     u = URI.parse(url.to_s.downcase)
     u = URI.parse("http://#{url.to_s.downcase}") if u.host.nil?
     return nil if u.host.nil?
@@ -99,7 +128,6 @@ class Web
       svc_class = Kernel.const_get(svc_class_name.to_sym)
       # class was found for service e.g. "FacebookService" or TwitterService" or "YelpService" or other
       website = svc_class.website_for_account(url)
-puts "======== website: #{website}"
     rescue
       service = :webpage # assume this is a webpage if no other service is found
       website = url
@@ -141,6 +169,56 @@ puts "web_craft = #{svc_class}.web_craft_for_href(#{href})"
         puts e
       end
     end
+
+    yelp = web_crafts_map[:yelp][:web_craft]
+    puts "yelp = #{yelp}"
+    twitter = web_crafts_map[:twitter][:web_craft]
+    puts "twitter = #{twitter}"
+    fb = web_crafts_map[:facebook][:web_craft]
+    puts "fb = #{fb}"
+    web_crafts_map[:match] = {}
+
+    # calculate matches strengths
+    strength = :zero if yelp.nil? or twitter.nil?
+    strength ||= :high if yelp and twitter and href_domains_match?(yelp.website, twitter.website)
+    strength ||= :medium if yelp and twitter and values_match?(yelp.name, twitter.name)
+    strength ||= :low
+    web_crafts_map[:match][:yelp_twitter_match] = strength
+
+    strength = :zero if yelp.nil? or fb.nil?
+    strength ||= :high if yelp.nil? and fb.nil? and href_domains_match?(yelp.website, fb.website)
+    strength ||= :medium if yelp.nil? and fb.nil? and values_match?(yelp.name, fb.name)
+    strength ||= :low
+    web_crafts_map[:match][:yelp_facebook_match] ||= strength
+
+    strength = :zero if twitter.nil? or fb.nil?
+    strength ||= :high if twitter and fb and href_domains_match?(twitter.website, fb.website)
+    strength ||= :medium if twitter and fb and values_match?(twitter.name, fb.name)
+    strength ||= :low
+    web_crafts_map[:match][:twitter_facebook_match] ||= strength
+
+    if look_for.present?    
+      look_for.each do |keyword, field_names|
+        web_crafts_map[:match][keyword.symbolize] ||= {}
+        fields = *field_names
+        if yelp 
+          found = false
+          fields.each { |field| found ||= (""<<yelp[field].to_s).downcase.include?(keyword.downcase) }
+          web_crafts_map[:match][keyword.symbolize][:yelp] = found
+        end
+        if twitter 
+          found = false
+          fields.each { |field| found ||= (""<<twitter[field].to_s).downcase.include?(keyword.downcase) }
+          web_crafts_map[:match][keyword.symbolize][:twitter] = found
+        end
+        if fb 
+          found = false
+          fields.each { |field| found ||= (""<<fb[field].to_s).downcase.include?(keyword.downcase) }
+          web_crafts_map[:match][keyword.symbolize][:facebook] = found
+        end
+      end
+    end
+# puts web_crafts_map
     web_crafts_map
   end
 

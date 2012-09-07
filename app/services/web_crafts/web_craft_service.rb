@@ -64,6 +64,7 @@ class WebCraftService
   # webpage scraping
   def self.web_craft_for_href(href)
     id = id_from_href(href)
+    puts "id = #{id}"
     craft = pull(id) unless id.nil?
   end
 

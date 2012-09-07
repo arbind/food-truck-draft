@@ -51,6 +51,14 @@ class FacebookService < WebCraftService
           pages = tokens[1].downcase
           page_id = tokens[3]
           pagename = page_id if ( "pages" == pages and id_is_valid?(page_id) )
+        when 5 # facebook.com/pages/city-ST/PageName/some_id
+          puts 5
+          puts tokens
+          pages = tokens[1].downcase
+          puts pages
+          pagename = tokens[3] if ( 'pages' == pages and id_is_valid?(tokens[3]) )
+          puts pagename
+          puts tokens[3]
         else
           # username = nil
       end
@@ -65,7 +73,7 @@ class FacebookService < WebCraftService
   def self.id_is_valid?(id) facebook_username_is_valid?(id) end
   def self.facebook_username_is_valid?(id)
     return false if id.nil?
-    id_match = id.match /^[a-z\d.]{5,}$/i 
+    id_match = id.match /^[\S]+$/i 
     id_match.present? and id_match.to_s == id
   end
 

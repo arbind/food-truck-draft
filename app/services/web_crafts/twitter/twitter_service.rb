@@ -118,7 +118,7 @@ class TwitterService < WebCraftService
   def self.id_is_valid?(id) twitter_username_is_valid?(id) end
   def self.twitter_username_is_valid?(id)
     return false if id.nil?
-    id_match = id.match /[A-Za-z0-9_]+/ 
+    id_match = id.match /^[\S]+$/ 
     id_match.present? and id_match.to_s == id
   end
 

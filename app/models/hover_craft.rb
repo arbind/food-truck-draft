@@ -75,7 +75,9 @@ class HoverCraft
     end
 
     # see if a craft is already bound 
-    crafts = web_crafts.collect(&:craft).reject{|i| i.nil?} # collect all the parent crafts for the web_crafts
+    crafts_map = {}
+    web_crafts.map{|wc| crafts_map[wc.craft._id] = wc.craft if wc.craft.present?} # collect all the parent crafts for the web_crafts
+    crafts = crafts_map.values
     if 1==crafts.size  # return the parent craft if exactly 1 craft already exists
       puts "A craft #{crafts.first._id} previously exists for this HoverCraft #{_id}"
       self.craft_id = crafts.first._id

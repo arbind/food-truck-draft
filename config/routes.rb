@@ -1,6 +1,7 @@
 FoodTruck::Application.routes.draw do
 
   resources :crafts
+  resources :hover_crafts
 
   resources :nizers
 

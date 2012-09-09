@@ -1,6 +1,15 @@
 class Web
+  STRENGTH_zero = 0
+  STRENGTH_low = 1
+  STRENGTH_medium = 2
+  STRENGTH_high = 3
+  STRENGTH_auto_approve = 5
 
+  def domain_for_href(href)
+  end
+  
   def self.as_href(url_like)
+    return "" if url_like.to_s.empty?
     u = URI.parse(url_like.to_s.downcase)
     u = URI.parse("http://#{url_like.to_s.downcase}") if u.host.nil?
     u.to_s
@@ -50,27 +59,22 @@ class Web
   end
 
   def self.domain_for_href(href)
+    return "" if href.to_s.empty?
     link = href.to_s.downcase
     u = URI.parse(link)
     u = URI.parse("http://#{link}") if u.host.nil?
-    u.host
+    return "" if u.host.nil?
+    domain = (u.host.match /^(w{3}\.)?(.*)$/)[2].downcase
   end
 
   def self.href_domains_match?(url1, url2)
     return false unless url1.present?
     return false unless url2.present?
     domain1 = domain_for_href(url1)
-    matches = domain1.match /(^www\.|^)(.*)$/
-    return false if matches.nil? or matches.size < 3
-    domain1 = matches[2]
-
     domain2 = domain_for_href(url2)
-    matches = domain2.match /(^www\.|^)(.*)$/
-    return false if matches.nil? or matches.size < 3
-    domain2 = matches[2]
-
     domain1.eql? domain2
   end
+  
   def self.values_match?(value1, value2)
     return true if value1.eql? value2
     return false unless (value1.present? and value2.present?)
@@ -97,11 +101,16 @@ class Web
     return nil unless user_id.present?
     return nil if user_id.match /^https?:/ #make sure the matched user id is not a url (didn't match on the service)
     user_id.slice!(0) if ('twitter' == svc and '@' == user_id[0]) # @twitter_handles
+    user_id = user_id.split('/').last if user_id.present? # grab the last token
+    user_id = user_id.split('?').first if user_id.present? # strip off any url parameters
     user_id
   end
 
-
-  def self.hpricot_doc(url) doc = open(url, 'User-Agent' => 'ruby') { |f| Hpricot(f) } end
+  def self.hpricot_doc(url) 
+    doc = open(url, 'User-Agent' => 'ruby') { |f| Hpricot(f) } 
+  rescue
+    nil
+  end
 
   # find social handles on a web page (try the home page)
   # def self.social_pages_for_website(url)
@@ -115,7 +124,7 @@ class Web
   #   }
   # end
 
-  def self.web_crafts_for_website(url, look_for={}) # i.e.: look_for = {name: 'truck'}
+  def self.web_crafts_for_website(url)
     u = URI.parse(url.to_s.downcase)
     u = URI.parse("http://#{url.to_s.downcase}") if u.host.nil?
     return nil if u.host.nil?
@@ -138,28 +147,31 @@ class Web
 
     if website.present?
       doc = hpricot_doc(website)
-      hrefs[:twitter]   = ::TwitterService.hrefs_in_hpricot_doc(doc) unless hrefs[:twitter].present?
-      hrefs[:facebook]  = ::FacebookService.hrefs_in_hpricot_doc(doc) unless hrefs[:facebook].present?
-      hrefs[:yelp]      = ::YelpService.hrefs_in_hpricot_doc(doc) unless hrefs[:yelp].present?
-      # hrefs[:you_tube]    = YouTubeService.hrefs_in_hpricot_doc(doc) unless hrefs[:you_tube].present?
-      # hrefs[:flickr]    = FlickrService.hrefs_in_hpricot_doc(doc) unless hrefs[:flickr].present?
-      # hrefs[:rss]       = RssService.hrefs_in_hpricot_doc(doc) unless hrefs[:rss].present?
+      if doc
+        hrefs[:twitter]   = ::TwitterService.hrefs_in_hpricot_doc(doc) unless hrefs[:twitter].present?
+        hrefs[:facebook]  = ::FacebookService.hrefs_in_hpricot_doc(doc) unless hrefs[:facebook].present?
+        hrefs[:yelp]      = ::YelpService.hrefs_in_hpricot_doc(doc) unless hrefs[:yelp].present?
+        # hrefs[:you_tube]    = YouTubeService.hrefs_in_hpricot_doc(doc) unless hrefs[:you_tube].present?
+        # hrefs[:flickr]    = FlickrService.hrefs_in_hpricot_doc(doc) unless hrefs[:flickr].present?
+        # hrefs[:rss]       = RssService.hrefs_in_hpricot_doc(doc) unless hrefs[:rss].present?
+      end
     end
 puts hrefs
     web_crafts_map = {} # assume the first href found on a site is the primary url
     web_crafts_map[:web_crafts] = [] # an array stores all the WebCrafts
 
-    hrefs.each do |service, hrefs|
-      href = hrefs.shift
+    hrefs.each do |service, links|
+  puts "service: #{service} links: #{links}"
+      link = links.shift
       web_crafts_map[service] = {}
-      web_crafts_map[service][:href] = href
-      web_crafts_map[service][:other_hrefs] = hrefs
+      web_crafts_map[service][:href] = link
+      web_crafts_map[service][:other_hrefs] = links
 
       svc_class_name = service.to_s.capitalize + "Service" # e.g. "TwitterService"
       begin
         svc_class = Kernel.const_get(svc_class_name.to_sym)
-puts "web_craft = #{svc_class}.web_craft_for_href(#{href})"
-        web_craft = svc_class.web_craft_for_href(href)
+puts "web_craft = #{svc_class}.web_craft_for_href(#{link})"
+        web_craft = svc_class.web_craft_for_href(link)
         if (web_craft)
           web_crafts_map[:web_crafts] << web_craft
           web_crafts_map[service][:web_craft] = web_craft
@@ -170,59 +182,41 @@ puts "web_craft = #{svc_class}.web_craft_for_href(#{href})"
       end
     end
 
-    yelp = web_crafts_map[:yelp][:web_craft]
+    yelp = web_crafts_map[:yelp][:web_craft] if web_crafts_map[:yelp]
     puts "yelp = #{yelp}"
-    twitter = web_crafts_map[:twitter][:web_craft]
+    twitter = web_crafts_map[:twitter][:web_craft] if web_crafts_map[:twitter]
     puts "twitter = #{twitter}"
-    fb = web_crafts_map[:facebook][:web_craft]
+    fb = web_crafts_map[:facebook][:web_craft] if web_crafts_map[:facebook]
     puts "fb = #{fb}"
     web_crafts_map[:match] = {}
 
     # calculate matches strengths
-    strength = :zero if yelp.nil? or twitter.nil?
-    strength ||= :high if yelp and twitter and href_domains_match?(yelp.website, twitter.website)
-    strength ||= :medium if yelp and twitter and values_match?(yelp.name, twitter.name)
-    strength ||= :low
-    web_crafts_map[:match][:yelp_twitter_match] = strength
+    strength = STRENGTH_zero if yelp.nil? or twitter.nil?
+    strength ||= STRENGTH_zero if yelp.present? and twitter.nil?
+    strength ||= STRENGTH_zero if yelp.nil? and twitter.present?
 
-    strength = :zero if yelp.nil? or fb.nil?
-    strength ||= :high if yelp.nil? and fb.nil? and href_domains_match?(yelp.website, fb.website)
-    strength ||= :medium if yelp.nil? and fb.nil? and values_match?(yelp.name, fb.name)
-    strength ||= :low
-    web_crafts_map[:match][:yelp_facebook_match] ||= strength
+    strength ||= STRENGTH_zero if yelp and twitter and yelp.website and twitter.website and not href_domains_match?(yelp.website, twitter.website)
 
-    strength = :zero if twitter.nil? or fb.nil?
-    strength ||= :high if twitter and fb and href_domains_match?(twitter.website, fb.website)
-    strength ||= :medium if twitter and fb and values_match?(twitter.name, fb.name)
-    strength ||= :low
-    web_crafts_map[:match][:twitter_facebook_match] ||= strength
+    strength ||= STRENGTH_auto_approve if yelp and twitter and fb and 
+                  values_match?(yelp.name, twitter.name) and values_match?(yelp.name, fb.name) and
+                  href_domains_match?(yelp.website, twitter.website) and href_domains_match?(yelp.website, fb.website)
+    strength ||= STRENGTH_auto_approve if yelp and twitter and fb.nil? and 
+                  values_match?(yelp.name, twitter.name) and
+                  href_domains_match?(yelp.website, twitter.website)
 
-    if look_for.present?    
-      look_for.each do |keyword, field_names|
-        web_crafts_map[:match][keyword.symbolize] ||= {}
-        fields = *field_names
-        if yelp 
-          found = false
-          fields.each { |field| found ||= (""<<yelp[field].to_s).downcase.include?(keyword.downcase) }
-          web_crafts_map[:match][keyword.symbolize][:yelp] = found
-        end
-        if twitter 
-          found = false
-          fields.each { |field| found ||= (""<<twitter[field].to_s).downcase.include?(keyword.downcase) }
-          web_crafts_map[:match][keyword.symbolize][:twitter] = found
-        end
-        if fb 
-          found = false
-          fields.each { |field| found ||= (""<<fb[field].to_s).downcase.include?(keyword.downcase) }
-          web_crafts_map[:match][keyword.symbolize][:facebook] = found
-        end
-      end
-    end
-# puts web_crafts_map
+    strength ||= STRENGTH_high if yelp and twitter.nil? and fb and 
+                  values_match?(yelp.name, fb.name) and
+                  href_domains_match?(yelp.website, fb.website)
+
+    strength ||= STRENGTH_high if yelp and twitter and href_domains_match?(yelp.website, twitter.website)
+    strength ||= STRENGTH_medium if yelp and twitter and values_match?(yelp.name, twitter.name)
+    strength ||= STRENGTH_low
+    web_crafts_map[:status_strength] = strength
+
+    puts "Web strength = #{web_crafts_map[:status_strength]}"
+
     web_crafts_map
   end
-
-
 
 
   def self.hrefs_in_hpricot_doc(doc, text_found_in_href, href_atts = [ 'href' ])

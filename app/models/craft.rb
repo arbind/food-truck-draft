@@ -19,6 +19,7 @@ class Craft
   field :search_tags, type: Array, default: [], index: true
 
   # statuses
+  field :status_strength, type: Integer
   field :rejected, type: Boolean, default: false
   field :approved, type: Boolean, default: false
 
@@ -113,8 +114,16 @@ class Craft
     return crafts.first if crafts.present?  # return the parent craft if any webcraft was found
 
     # we have some web_crafts, and none of them have a parent craft, lets create a new one
-    craft = Craft.create
-    craft.bind(web_crafts)
+    puts "web_crafts_map[:status_strength] = #{web_crafts_map[:status_strength]}"
+    if Web::STRENGTH_low < web_crafts_map[:status_strength]
+      puts "creating craft"
+      craft = Craft.create
+      craft.bind(web_crafts)
+      craft.approved = true if Web::STRENGTH_auto_approve == web_crafts_map[:status_strength]
+    else
+      puts "no craft made"
+      craft = nil
+    end
     craft
   end
 

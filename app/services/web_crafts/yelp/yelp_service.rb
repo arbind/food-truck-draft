@@ -7,6 +7,32 @@ class YelpService < WebCraftService
 
   def self.web_craft_class() YelpCraft end
 
+  def self.hover_craft(biz_listing)
+    return nil unless biz_listing.present?
+    biz = biz_listing
+
+    yelp_id = biz['id']
+    name= biz['name']
+    href = biz['url']
+    website = website_for_account(yelp_id)
+    puts "website: #{website}"
+    if website
+      begin
+        u = URI.parse(website)
+        u = URI.parse("http://#{website}") unless u.host.present?
+        website = nil if u.host.nil? or 'yelp.com'.eql? u.host
+      rescue
+      end
+    end
+
+    hover_craft = {
+      yelp_id: yelp_id,
+      yelp_name: name,
+      yelp_href: href,
+      yelp_website: website
+    }
+  end
+
   def self.raw_fetch(web_craft_id, scrape_website_url=true)
     phone_number = phone_number_10_digits(web_craft_id)
     if phone_number
@@ -16,16 +42,14 @@ class YelpService < WebCraftService
     end
     return nil if web_craft_hash.nil?
     if (scrape_website_url)
-puts "qqqqqqq using url: #{web_craft_hash['url']}"
       web_craft_hash['website'] = website_for_account(web_craft_hash['url'])
-puts "qqqqqqq got website: #{web_craft_hash['website']}"
     end
     web_craft_hash
   end
 
   def self.web_fetch(web_craft_id)
     web_craft_hash = raw_fetch(web_craft_id)
-    return nil if web_craft_hash.nil?
+    return nil unless web_craft_hash.present?
     # normalize attributes
     # +++ todo check if host is yelp, if so, set href - else set website?
     web_craft_hash['href'] = web_craft_hash.delete('url') 
@@ -56,9 +80,19 @@ puts "qqqqqqq got website: #{web_craft_hash['website']}"
     user_id = Web.service_id_from_string_or_href(user_id_or_url, :yelp, 'biz')
     return nil if user_id.nil?
 
-    service_url = "http://www.yelp.com/biz/#{user_id}"
+    service_url = "http://www.yelp.com/biz/#{URI::encode user_id}"
+    puts "user_id_or_url: #{user_id_or_url}"
+    puts "service_url: #{service_url}"
     doc = Web.hpricot_doc(service_url)
-    website = doc.search("#bizUrl a[@href]").text.squish
+    elements = doc.search("#bizUrl a[@href]")
+    e = elements[0]
+    return nil if e.blank?
+    href = e['href']
+    return nil if href.blank?
+    params = Rack::Utils.parse_query URI(href).query
+    website = params['url']
+  rescue
+    ""
   end 
 
   def self.id_from_href(href)
@@ -118,37 +152,15 @@ puts "qqqqqqq got website: #{web_craft_hash['website']}"
     end
   end
 
-  def self.scroll_through_trucks(city, state)
-    all_trucks = []
-    all_results = {}
-    page = 1;
-
-    result = food_trucks_in_city(city, state, "truck", page, V2_MAX_RADIUS_FILTER)
-    all_results["page-#{page}"] = result
-    return all_trucks if result.nil?
-
-    all_trucks.push *result['businesses']
-
-    total_results = result['total'] || 0
-    puts "total_results: #{total_results}"
-
-    total_pages = 1 + (total_results / V2_MAX_RESULTS_LIMIT)
-    puts "total_pages: #{total_pages}"
-    while total_pages > page and 1001 > all_trucks.size
-      page += 1
-      result = food_trucks_in_city(city, state, "truck", page, V2_MAX_RADIUS_FILTER)
-      all_results["page-#{page}"] = result
-      all_trucks.push *result['businesses']
-      puts "#{result['total']} - #{all_trucks.size}"
-    end
-    all_trucks
+  def self.food_trucks_in_city(city, state, term="food truck, truck", page=1, radius=V2_MAX_RADIUS_FILTER)
+    search(city, state, term, page, radius)
   end
 
-  def self.food_trucks_in_city(city, state, term="food truck", page=1, radius=V2_MAX_RADIUS_FILTER)
+  def self.search(city, state, term, page=1, radius=V2_MAX_RADIUS_FILTER)
     offset = V2_MAX_RESULTS_LIMIT*(page-1) # 1 + this ?
     query = {
       term: term,
-      categories: ['streetvendors', 'foodstands'],
+      # categories: ['streetvendors', 'foodstands'],
       city: city,
       state: state,
       radius_filter: radius,

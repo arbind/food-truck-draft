@@ -1,0 +1,56 @@
+%h1= "#{@hover_crafts.count} Hover Crafts"
+
+%table.hover-craft
+  %tr.hover-craft-header
+    %th provider
+    %th name
+    %th site
+    %th user
+    %th food
+    %th truck
+    %th webcraft
+    %th cat
+    %th following
+  -@hover_crafts.each do |hover_craft|
+    %tr.hover-craft{id:"#{hover_craft.id}", class: "fit-#{hover_craft.fit_score}"}
+      %td
+        %p.fit_score
+          = hover_craft.fit_score
+        %p
+          %a.yelp_id{href: hover_craft[:yelp_href], target: :_blank}
+            = hover_craft[:yelp_href].present? ? "yelp": ":"
+        %p
+          %a.twitter_id{href:hover_craft[:twitter_href], target: :_blank}
+            = hover_craft[:twitter_href].present? ? "twitter": ":"
+        %p
+          %a.facebook_id{href: hover_craft[:facebook_href], target: :_blank}
+            = hover_craft[:facebook_href].present? ? "facebook": ":"
+      %td{class: "fit-#{hover_craft.fit_score_name}" }
+        %p.fit_score_name= "#{hover_craft[:fit_score_name]}"
+        %p.yelp_name= ":#{hover_craft[:yelp_name]}"
+        %p.twitter_name= ":#{hover_craft[:twitter_name]}"
+        %p.facebook_name= ":#{hover_craft[:facebook_name]}"
+      %td{class: "fit-#{hover_craft.fit_score_website}" }
+        %p.fit_score_website= "#{hover_craft[:fit_score_website]}"
+        %p.yelp_website= ":#{Web.domain_for_href hover_craft[:yelp_website]}"
+        %p.twitter_website= ":#{Web.domain_for_href hover_craft[:twitter_website]}"
+        %p.facebook_website= ":#{Web.domain_for_href hover_craft[:facebook_website]}"
+      %td{class: "fit-#{hover_craft.fit_score_username}" }
+        %p.fit_score_username= "#{hover_craft[:fit_score_username]}"
+        %p.yelp_username= ":#{hover_craft[:yelp_username]}"
+        %p.twitter_username= ":#{hover_craft[:twitter_username]}"
+        %p.facebook_username= ":#{hover_craft[:facebook_username]}"
+      %td{class: "fit-#{hover_craft.fit_score_food}" }
+        %p.fit_score_food= "#{hover_craft[:fit_score_food]}"
+      %td{class: "fit-#{hover_craft.fit_score_truck}" }
+        %p.fit_score_truck= "#{hover_craft[:fit_score_truck]}"
+      %td
+        %p.yelp_craft_id= ":#{hover_craft[:craft_id]}"
+        %p.yelp_craft_id= ":#{hover_craft[:yelp_craft_id]}"
+        %p.twitter_craft_id= ":#{hover_craft[:twitter_craft_id]}"
+        %p.facebook_craft_id= ":#{hover_craft[:facebook_craft_id]}"
+      %td
+        %p.yelp_categories= ":#{hover_craft[:yelp_categories]}"
+      %td
+        %p.twitter_following= ":#{hover_craft[:twitter_following]}"
+

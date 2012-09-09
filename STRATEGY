@@ -1,0 +1,28 @@
+POPULATING (Finding FOOD-TRUCKS)
+A. Yelp Based
+1. search yelp for 'food truck, truck'
+2. for each result, analyze hover craft to find high matches
+
+B. Twitter Based
+1. collect each confirmed food truck account
+2. for each account food truck is following, analyze hover craft to find high matches
+
+REAL-TIME UPDATES (Update location/scoring/tweets/reviews/ as they happen)
+1. for each metro create a Twitter account that follows all food trucks in a city
+2. poll home feed to see if any trucks have updates, if so, pull from that truck
+3. secondarily, poll each account based on its avg update frequency (poll faster for frequent updaters)
+
+SCORING
+1 Give priority to upcomming event
+2 vested yelp rating
+3 vested twitter friends score
+4 vested facebook like score
+5 twitter activity score
+6 facebook activity score
+
+YELP API:
+1. strictly follow Yelp's API policy
+
+SEO
+1. regenerate all pages after a REAL-TIME UPDATE
+2. generate site map and auto submit to search engines

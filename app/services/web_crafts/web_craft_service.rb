@@ -70,7 +70,12 @@ class WebCraftService
 
   def self.hrefs_in_webpage(url)
     doc = hpricot_doc(url)
-    hrefs_in_hpricot_doc(doc)
+    if doc
+      hrefs = hrefs_in_hpricot_doc(doc)
+    else
+      hrefs = []
+    end
+    hrefs
   end
 
   def self.hrefs_in_hpricot_doc(doc) raise "#{name}.#{__method__} subclass hook not implemented!" end

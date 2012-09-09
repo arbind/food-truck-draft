@@ -1,0 +1,44 @@
+table{
+  tr{
+    border-bottom: 1px dotted black;
+    background-color:#ccc;
+    td{
+      padding: 4px 8px;
+      background-color: transparent;
+      border-color: transparent;
+      max-width: 200px;
+      p {
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+.fit-0{ // no fit
+  color: #888;
+  border-color: #888;
+  background-color: #AAA;
+}
+.fit-1{ // missing craft
+  color: #822;
+  border-color: #822;
+  background-color:transparent;
+}
+.fit-3{  // need to check
+  color: #822;
+  border-color: #822;
+  background-color: #A88;
+}
+.fit-5{ // neutral
+  color: black;
+  border-color: black;
+  background-color: transparent;
+}
+.fit-8{ // absolute fit
+  color: #282;
+  border-color: #282;
+  background-color: #8A8;
+}

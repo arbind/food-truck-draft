@@ -4,14 +4,45 @@ class FacebookService < WebCraftService
 
   def self.web_craft_class() FacebookCraft end
 
+  def self.hover_craft(facebook_userename_or_url)
+    username = Web.service_id_from_string_or_href(facebook_userename_or_url, :facebook);
+    return nil unless username.present?
+    web_craft_hash = web_fetch(username)
+    return nil unless web_craft_hash.present?
+    id = web_craft_hash['id']
+    name = web_craft_hash['name']
+    username = web_craft_hash['username']
+    href = web_craft_hash['link']
+    website = web_craft_hash['website']
+    if website
+      begin
+        u = URI.parse(website)
+        u = URI.parse("http://#{website}") unless u.host.present?
+        website = nil if u.host.nil? or 'facebook.com'.eql? u.host
+      rescue
+      end
+    end
+
+    hover_craft = {
+      facebook_id: id,
+      facebook_name: name,
+      facebook_username: username,
+      facebook_href: href,
+      facebook_website: website,
+    }
+  end
+
   def self.raw_fetch(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
     id = "#{web_craft_id}"
     web_craft_hash = client.get_object(id)
+  rescue
+    nil
   end
 
   def self.web_fetch(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
     web_craft_hash = raw_fetch(web_craft_id)
-    
+    return nil unless web_craft_hash.present?
+
     # do any post process transformations
     website = web_craft_hash['website']
     web_craft_hash['website'] = website.strip.split(' ').first.downcase if website

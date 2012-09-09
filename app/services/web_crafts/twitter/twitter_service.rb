@@ -4,6 +4,40 @@ class TwitterService < WebCraftService
 
   def self.web_craft_class() TwitterCraft end
 
+  def self.hover_craft(twitter_screen_name_or_url)
+    #scrape from web page (does not use api) 
+    username = Web.service_id_from_string_or_href(twitter_screen_name_or_url, :twitter);
+    return nil unless username.present?
+
+    username.downcase!
+    href = "https://twitter.com/#{username}"
+    doc = doc = Web.hpricot_doc(href)
+    return nil unless doc.present?
+
+    name = doc.search('h1 .fullname').text().squish
+    screen_name = doc.search('.screen-name').text().squish.downcase
+    screen_name.slice!(0) # slice off the @ in front of the screen name
+
+    # validate webpage url
+    website = doc.search('.url a[@href]').text().squish.downcase
+    if website
+      begin
+        u = URI.parse(website)
+        u = URI.parse("http://#{website}") unless u.host.present?
+        website = nil if u.host.nil? or 'twitter.com'.eql? u.host
+      rescue
+      end
+    end
+
+    hover_craft = {
+      twitter_name: name,
+      twitter_username: screen_name || username,
+      twitter_href: href,
+      twitter_website: website,
+      twitter_following_list: nil
+    }
+  end
+
   def self.raw_fetch(web_craft_id, fetch_timeline=true) # get the user and their timeline
     id = "#{web_craft_id}"
     puts "Pulling id: #{id}"
@@ -48,7 +82,7 @@ class TwitterService < WebCraftService
 
   def self.web_fetch(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes
     web_craft_hash = raw_fetch(web_craft_id)
-    return nil if web_craft_hash.nil?
+    return nil unless web_craft_hash.present?
 
     #normalize atts
     web_craft_hash[:href] = "http://twitter.com/#{web_craft_hash[:screen_name]}"
@@ -83,7 +117,15 @@ class TwitterService < WebCraftService
 
   # webpage scraping
   def self.hrefs_in_hpricot_doc(doc)
-    Web.hrefs_in_hpricot_doc(doc, 'twitter.com')
+    hrefs = Web.hrefs_in_hpricot_doc(doc, 'twitter.com')
+    # See if there is a twitter widget in the doc (where twitter hrefs get added after document ready) and pick off the user
+    # e.g. <script> new TWTR.Widget() ... render().setUser('bemorepacific').start() ... </script>
+    twtr_widget_user_match = doc.search('script[text()*=TWTR.Widget]').text().match /^.*\.setUser\([\'\"](.*)[\'\"]\).*/
+    if twtr_widget_user_match # get the user name
+      twtr_user = twtr_widget_user_match[1] 
+      hrefs.push ("http://www.twitter.com/#{twtr_user}") if twtr_user # artificially construct an href to twitter
+    end
+    hrefs
   end
 
   def self.id_from_href(href) # get the twitter screen_name or id from a url or href

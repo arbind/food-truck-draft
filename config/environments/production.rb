@@ -16,10 +16,6 @@ FoodTruck::Application.configure do
     :TWITTER => {
 
     },
-    :FACEBOOK_CONNECT => {
-      :APP_ID =>  ,
-      :CHANNEL_URL => 'http://www.rylyz.com',
-    },
   }
 # 6cTaN__96vXxK6UOJPqnVw
   # Code is not reloaded between requests

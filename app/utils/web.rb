@@ -5,9 +5,15 @@ class Web
   STRENGTH_high = 3
   STRENGTH_auto_approve = 5
 
-  def domain_for_href(href)
+  def self.read_url(url)
+    url = URI.encode(url)
+    response = open(url)
+    return nil unless response.present?
+    JSON.parse(response.read)
+  rescue
+    nil
   end
-  
+
   def self.as_href(url_like)
     return "" if url_like.to_s.empty?
     u = URI.parse(url_like.to_s.downcase)

@@ -104,7 +104,12 @@ class TwitterService < WebCraftService
     web_craft_hash
   end
   
-    # find the website of an account
+  def self.user_for_id(twitter_id)
+    url = "https://api.twitter.com/1/users/show.json?id=#{twitter_id}"
+    Web.read_url(url)
+  end
+
+  # find the website of an account
   def self.website_for_account(user_id_or_url)
     user_id = Web.service_id_from_string_or_href(user_id_or_url, :twitter)
   puts "user_id #{user_id}"
@@ -133,8 +138,9 @@ class TwitterService < WebCraftService
 
     screen_name = nil
     begin
-      u = URI.parse(href.downcase)
-      u = URI.parse("http://#{href.downcase}") if u.host.nil?
+      url = href.downcase..split('?')[0] # strip off query params
+      u = URI.parse(url)
+      u = URI.parse("http://#{url}") if u.host.nil?
       return nil unless ['www.twitter.com', 'twitter.com'].include?(u.host)
       flat = href.downcase.gsub(/\/\//, '')
       tokens = flat.split('/')

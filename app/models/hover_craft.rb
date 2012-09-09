@@ -3,6 +3,7 @@ class HoverCraft
   include Mongoid::Timestamps
   include Geocoder::Model::Mongoid
 
+  FIT_need_to_explore = -1  # flag to go get hover crafts and explore this
   FIT_zero = 0           # its not a fit
   FIT_missing_craft = 1  # missing info
   FIT_need_to_check = 3  # flag for manual check
@@ -32,6 +33,8 @@ class HoverCraft
   field :yelp_categories, default: nil
   field :yelp_craft_id, default: nil
 
+  field :twitter_referring_user, default: nil
+  field :twitter_id, default: nil
   field :twitter_name, default: nil
   field :twitter_username, default: nil
   field :twitter_href, default: nil
@@ -95,6 +98,83 @@ class HoverCraft
     craft
   end
 
+  def self.explore_twitter_followers(twitter_screen_name, remaining_hits=nil)
+    return false unless twitter_screen_name.present?
+
+    num_hits_left = remaining_hits || Twitter.rate_limit_status.remaining_hits
+    return false if num_hits_left.zero?
+
+    response = Twitter.friend_ids(twitter_screen_name)
+    friends = response.ids if response
+    return true if friends.blank?
+    return true if 250 < friends.count # don't lookup everyone yet!
+    friends.each do |twitter_id|
+      dup = HoverCraft.where(twitter_id: twitter_id).first
+      next if dup.present?
+      h = { twitter_id: twitter_id, fit_score: FIT_need_to_explore, twitter_referring_user: twitter_screen_name }
+      HoverCraft.create(h)
+    end
+    true
+  rescue
+    false
+  end
+
+  def explore
+    return unless fit_score.eql? FIT_need_to_explore
+    explore_twitter_id if twitter_id.present?
+    # +++ explore under other conditions??
+  end
+
+  def explore_twitter_id(remaining_hits=nil)
+    return false unless twitter_id.present?
+
+    update_attributes(fit_score: FIT_zero) # assume there is no fit
+
+    num_hits_left = remaining_hits || Twitter.rate_limit_status.remaining_hits
+    return false if num_hits_left.zero?
+
+
+    twitter_user = TwitterService.user_for_id(twitter_id)
+
+    return false unless twitter_user.present?
+
+    website = twitter_user['url']
+    return false unless website.present?
+
+    screen_name = twitter_user['screen_name']
+    description = twitter_user['description'].downcase if twitter_user['description'].present?
+
+    doc = Web.hpricot_doc(website)
+    if doc.present?
+      facebook_links  = ::FacebookService.hrefs_in_hpricot_doc(doc)
+      yelp_links      = ::YelpService.hrefs_in_hpricot_doc(doc)
+      # hrefs[:you_tube]    = YouTubeService.hrefs_in_hpricot_doc(doc) unless hrefs[:you_tube].present?
+      # hrefs[:flickr]    = FlickrService.hrefs_in_hpricot_doc(doc) unless hrefs[:flickr].present?
+      # hrefs[:rss]       = RssService.hrefs_in_hpricot_doc(doc) unless hrefs[:rss].present?
+    end
+    twitter_hover_craft = TwitterService.hover_craft(screen_name)
+    facebook_hover_craft = FacebookService.hover_craft(facebook_links.first) if facebook_links.present?
+    yelp_hover_craft = YelpService.hover_craft(yelp_links.first) if yelp_links.present?
+    twitter_hover_craft ||= {}
+    facebook_hover_craft ||= {}
+    yelp_hover_craft ||= {}
+    dup = HoverCraft.where(twitter_username: twitter_username).first
+    return true if dup.present?
+    dup = HoverCraft.where(yelp_username: twitter_username).first
+    return true if dup.present?
+
+    udpate_attributes(yelp_hover_craft.merge(twitter_hover_craft).merge(facebook_hover_craft))
+    # identify most likely facebook link if there is more than 1
+    # create HoverCraft if strong fit or if description['truck'] or yelp_hover_craft.present?
+  rescue Exception => e
+    puts ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+    puts e.message
+    puts "When exploring hover craft"
+    puts e.backtrace
+    puts ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"        
+    false
+  end
+
   def self.explore_yelp_listing(biz)
     return unless biz.present?
 
@@ -123,7 +203,6 @@ class HoverCraft
     facebook_hover_craft ||= {}
     h = HoverCraft.create(yelp_hover_craft.merge(twitter_hover_craft).merge(facebook_hover_craft))
     puts "---------"
-    puts h.to_json
     # identify most likely twitter link if there is more than 1
     # identify most likely facebook link if there is more than 1
     # create HoverCraft if strong fit
@@ -136,16 +215,11 @@ class HoverCraft
     puts ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"        
   end
 
-  def self.explore_twitter_user(userid)
-  end
 
-  def self.scan_twitter_followers(userid)
-  end
-
-  def self.scan_food_trucks_in_city(city, state, term="food truck, truck", page=1, total_pages=0)
+  def self.scan_for_food_trucks_near_place(place, state, term="food truck, truck", page=1, total_pages=0)
     return if ( 1<page and (total_pages < page or 1000 < (page*YelpService::V2_MAX_RESULTS_LIMIT) ) )
 
-    results = YelpService.food_trucks_in_city(city, state, term, page)
+    results = YelpService.food_trucks_near_place(place, state, term, page)
     return unless results.present?
 
     results ||= {}
@@ -162,7 +236,7 @@ class HoverCraft
     puts "exploring #{biz_list.count} results from page #{page} of #{total_pages}"
     biz_list.each{ |biz| explore_yelp_listing(biz) }
 
-    scan_food_trucks_in_city(city, state, term, page+1, total_pages)
+    scan_for_food_trucks_near_place(place, state, term, page+1, total_pages)
   end
 
   def yelp_exists?() yelp_id.present? end
@@ -188,6 +262,7 @@ class HoverCraft
   end
   def calculate_fit_scores
     # calculate matches strengths
+    return set_all_fit_scores(FIT_need_to_explore) if fit_score.eql? FIT_need_to_explore
     return set_all_fit_scores(FIT_zero) if skip_this_craft?
     return set_all_fit_scores(FIT_missing_craft) if yelp_does_not_exist? or twitter_does_not_exist?
 

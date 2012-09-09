@@ -100,8 +100,10 @@ class YelpService < WebCraftService
 
     listing_id = nil
     begin
-      u = URI.parse(href.downcase)
-      u = URI.parse("http://#{href.downcase}") if u.host.nil?
+      url = href.downcase..split('?')[0] # strip off query params
+      url = url.split('#')[0] # strip off hash tag params
+      u = URI.parse(url)
+      u = URI.parse("http://#{url}") if u.host.nil?
       return nil unless ['www.yelp.com', 'yelp.com'].include?(u.host)
       flat = href.downcase.gsub(/\/\//, '')
       tokens = flat.split('/')
@@ -152,8 +154,8 @@ class YelpService < WebCraftService
     end
   end
 
-  def self.food_trucks_in_city(city, state, term="food truck, truck", page=1, radius=V2_MAX_RADIUS_FILTER)
-    search(city, state, term, page, radius)
+  def self.food_trucks_near_place(place, state, term="food truck, truck", page=1, radius=V2_MAX_RADIUS_FILTER)
+    search(place, state, term, page, radius)
   end
 
   def self.search(city, state, term, page=1, radius=V2_MAX_RADIUS_FILTER)

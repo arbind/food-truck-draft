@@ -1,0 +1,6 @@
+%h1 Scan City For Food Trucks
+
+%form{action: hover_craft_start_scanning_place_path, method: :post}
+  %input{type: :text, name: :place, value: @place, placeholder: 'city or metro or landmark or area'}
+  %input.med{type: :text, name: :state, value: @state, placeholder: 'state'}
+  %button{type: :submit}

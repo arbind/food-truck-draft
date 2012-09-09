@@ -69,8 +69,10 @@ class FacebookService < WebCraftService
     return nil if href.nil?
     pagename = nil
     begin
-      u = URI.parse(href.downcase)
-      u = URI.parse("http://#{href.downcase}") if u.host.nil?
+      url = href.downcase..split('?')[0] # strip off query params
+      url = url.split('#')[0] # strip off hash tag params
+      u = URI.parse(url)
+      u = URI.parse("http://#{url}") if u.host.nil?
       return nil unless ['www.facebook.com', 'facebook.com'].include?(u.host)
       flat = href.downcase.gsub(/\/\//, '')
       tokens = flat.split('/')

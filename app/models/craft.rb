@@ -3,6 +3,9 @@ class Craft
   include Mongoid::Timestamps
   include Geocoder::Model::Mongoid
 
+  # search ranking sort score
+  field :ranking_score, type: Integer, default: 0
+
   # geocoder fields
   field :address, default: nil
   field :coordinates, type: Array, default: [] # does geocoder gem auto index this?
@@ -230,6 +233,82 @@ class Craft
 
 
   def web_craft_for_provider(provider) web_crafts.where(provider: provider).first end
+
+  def calculate_score
+    scores = {
+      total:0.0, # 0-25
+
+      upcomming_event:0.0, # 0-5
+
+      reviewed_rating:0.0,# 0-5
+
+      reach: 0.0,
+      twitter_reach:0.0,# 0-5
+      # facebook_reach:0.0,# 0-5 +++
+
+      recent_activity:0.0, # avg of twitter and facebook activity
+      twitter_recent_activity:0.0, # 0-5
+      # facebook_recent_activity:0.0 # 0-5 +++
+    }
+
+    # +++ calculate upcomming event
+    if yelp.present? # 1 point for each star, vested with # reviews (at least 100 reviews required for 100% vested)
+      vesting = ([yelp.review_count, 100].min)/100.0
+      scores[:reviewed_rating] = yelp.rating * vesting
+    end
+
+    if twitter.present? # 1 point for each 500 followers (max of 5 points)
+      vesting = ([twitter.followers_count, 500].min)/100.0
+      scores[:twitter_reach] = 5 * vesting
+
+      if twitter.timeline and twitter.timeline.first
+        last_tweeted = twitter.timeline.first['created_at']
+        time = last_tweeted.to_time
+        time = time + (-Time.zone_offset(Time.now.zone))
+        if 30.minutes.ago < time
+          recent_activity_score = 5
+        elsif 1.hour.ago < time
+          recent_activity_score = 4.9
+        elsif 2.hours.ago < time
+          recent_activity_score = 4.8
+        elsif 3.hours.ago < time
+          recent_activity_score = 4.7
+        elsif 4.hours.ago < time
+          recent_activity_score = 4.6
+        elsif 8.hours.ago < time
+          recent_activity_score = 4.5
+        elsif 9.hours.ago < time
+          recent_activity_score = 4.4
+        elsif 10.hours.ago < time
+          recent_activity_score = 4.3
+        elsif 11.hours.ago < time
+          recent_activity_score = 4.2
+        elsif 12.hours.ago < time
+          recent_activity_score = 4.1
+        elsif 24.hours.ago < time
+          recent_activity_score = 4.0
+        elsif 36.hours.ago < time
+          recent_activity_score = 3.5
+        elsif 48.hours.ago < time
+          recent_activity_score = 3.0
+        elsif 60.hours.ago < time
+          recent_activity_score = 2.5
+        elsif 72.hours.ago < time
+          recent_activity_score = 2.0
+        else 
+          recent_activity_score = 1.0
+        end
+        scores[:twitter_recent_activity] = recent_activity_score
+      end
+    end
+    scores[:reach] = scores[:twitter_recent_activity]
+    scores[:recent_activity] = scores[:twitter_recent_activity]
+
+    scores[:total] = (scores[:upcomming_event] + scores[:reviewed_rating] + scores[:reach] + scores[:recent_activity])
+    self.ranking_score = (100*scores[:total]).to_i
+    save!
+  end
+
 private
   def geocode_this_location!
     # +++ enable geocoder geo caching! so we are not geocoding both the webcraft and the craft

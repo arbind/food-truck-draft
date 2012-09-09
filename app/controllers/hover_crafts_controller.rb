@@ -2,7 +2,7 @@ class HoverCraftsController < ApplicationController
   # GET /crafts
   # GET /crafts.json
   def index
-    # @hover_crafts = HoverCraft.where(:fit_score.gte => 7).desc(:fit_score)
+    # @hover_crafts = HoverCraft.where(:fit_score.gte => -1).desc(:fit_score)
     @hover_crafts = HoverCraft.ready_to_make.desc(:fit_score)
     respond_to do |format|
       format.html # index.html.erb

@@ -8,8 +8,8 @@ class RootController < ApplicationController
     @look_for = params[:q] || params[:look_for]
     @radius = params[:r] || params[:radius] || 100 # miles
 
-    @crafts = Craft.near(@geo_coordinates, @radius).limit(10) if @geo_coordinates
-    @crafts ||= Craft.near(@geo_place, @radius).limit(10) if @geo_place
+    @crafts = Craft.near(@geo_coordinates, @radius).desc(:ranking_score).limit(10) if @geo_coordinates
+    @crafts ||= Craft.near(@geo_place, @radius).desc(:ranking_score).limit(10) if @geo_place
     if @look_for.present?
       @crafts = @crafts.where(search_tags: @look_for)  if @crafts.present?
       @crafts ||= Craft.where(search_tags: @look_for)
@@ -25,8 +25,8 @@ class RootController < ApplicationController
     @look_for = params[:q] || params[:look_for]
     @radius = params[:r] || params[:radius] || 100 # miles
 
-    @crafts = Craft.near(@geo_coordinates, @radius) if @geo_coordinates
-    @crafts ||= Craft.near(@geo_place, @radius) if @geo_place
+    @crafts = Craft.near(@geo_coordinates, @radius).desc(:ranking_score).limit(10) if @geo_coordinates
+    @crafts ||= Craft.near(@geo_place, @radius).desc(:ranking_score).limit(10) if @geo_place
     # view_path   = "root/#{@route_to}/index" if @route_to.present?
     view_path = "root/index"
     respond_to do |format|

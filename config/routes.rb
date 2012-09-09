@@ -15,8 +15,8 @@ FoodTruck::Application.routes.draw do
   # resources :neighborhods
   # resources :colleges
 
-  # resources :crafts
-  # resources :hover_crafts
+  resources :crafts
+  resources :hover_crafts
 
   # root to: 'root#route_subdomain', constraints: lambda {|req| tokens =req.host.downcase.split('.'); (3==tokens.size && 'www'!=tokens.first) ? true : false }
   root to: 'root#index'

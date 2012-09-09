@@ -49,3 +49,22 @@ class TwitterCraft < WebCraft
 
   def id_for_fetching() screen_name end
 end
+
+# tweets in timeline:
+# id
+# text
+# source
+# truncated
+# in_reply_to_status_id
+# in_reply_to_status_id_str
+# in_reply_to_user_id
+# in_reply_to_user_id_str
+# in_reply_to_screen_name
+# geo
+# coordinates
+# place
+# contributors
+# retweet_count
+# favorited
+# retweeted
+# possibly_sensitive

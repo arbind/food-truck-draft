@@ -1,6 +1,8 @@
 module Merge
   def merge!(from_source)
-    from_source.instance_variables.each {|var| self.instance_variable_set(var.symbolize, from_source.instance_variable_get(var.symbolize) }
+    from_source.instance_variables.each do |var| 
+      self.instance_variable_set(var.symbolize, from_source.instance_variable_get(var.symbolize) )
+    end
     self
   end
 

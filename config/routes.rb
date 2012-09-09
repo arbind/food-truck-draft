@@ -15,18 +15,15 @@ FoodTruck::Application.routes.draw do
   # resources :neighborhods
   # resources :colleges
 
-  resources :crafts
-
-  get  'hover_crafts/scan_place', to: 'hover_crafts#new_scan_place', as: :hover_craft_new_scan_place
-  post 'hover_crafts/scan_place', to: 'hover_crafts#start_scanning_place', as: :hover_craft_start_scanning_place
-  resources :hover_crafts
+  # resources :crafts
+  # resources :hover_crafts
 
   # root to: 'root#route_subdomain', constraints: lambda {|req| tokens =req.host.downcase.split('.'); (3==tokens.size && 'www'!=tokens.first) ? true : false }
   root to: 'root#index'
  
   # root to: 'root#index', as: :root
 
-  get 'load_url', to: 'root#load_url'
+  # get 'load_url', to: 'root#load_url'
 
   scope "/", controller: :food_truck do
     get "index", as: :home_page

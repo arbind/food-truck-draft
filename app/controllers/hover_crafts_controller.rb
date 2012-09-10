@@ -13,39 +13,48 @@ class HoverCraftsController < ApplicationController
   end
 
   def sync
-    hash = JSON.parse(params[:hover_craft])
-    puts hash
+    @hash = JSON.parse(params[:hover_craft])
+    puts @hash
 
     # remove derived atts that need to be regenerated
-    hash.delete('_id')
-    hash.delete('status')
-    hash.delete('craft_id')
-    hash.delete('yelp_craft_id')
-    hash.delete('twitter_craft_id')
-    hash.delete('facebook_craft_id')
-    hash.delete('created_at')
+    @hash.delete('_id')
+    @hash.delete('status')
+    @hash.delete('craft_id')
+    @hash.delete('yelp_craft_id')
+    @hash.delete('twitter_craft_id')
+    @hash.delete('facebook_craft_id')
+    @hash.delete('created_at')
+    @hash.delete('updated_at')
 
-    puts "=============="
-    puts hash
+    puts "============== #{@hash['yelp_id']}"
+    puts @hash
 
-    hover_craft = HoverCraft.where(yelp_id: hash['yelp_id']).first
-    hover_craft ||= HoverCraft.where(twitter_id: hash['twitter_id']).first
-    hover_craft ||= HoverCraft.where(twitter_username: hash['twitter_username']).first
-    hover_craft ||= HoverCraft.where(facebook_username: hash['facebook_username']).first
+    @hover_craft = HoverCraft.where(yelp_id: @hash['yelp_id']).first
+    @hover_craft ||= HoverCraft.where(twitter_id: @hash['twitter_id']).first
+    @hover_craft ||= HoverCraft.where(twitter_username: @hash['twitter_username']).first
+    @hover_craft ||= HoverCraft.where(facebook_username: @hash['facebook_username']).first
 
-    if hover_craft.present?
-    puts "============== Updating.."
-      hover_craft.update_attributes(hash)
+    if @hover_craft.present?
+    puts "============== Updating [#{@hover_craft._id}].."
+      @hover_craft.update_attributes(@hash)
     puts "============== Updated!"
     else
     puts "============== Creating.."
-      hover_craft = HoverCraft.create(hash)
+      @hover_craft = HoverCraft.create(@hash)
     puts "============== Created!"
     end
 
+    @hover_craft.save if @hover_craft.present?
+
+    if @hover_craft.present?
+      status = 'ok' 
+    else
+      status = 'error'
+    end
+
     respond_to do |format|
-      format.html { render text: 'ok'} # index.html.erb
-      format.json { render json: {status: 'ok'}.to_json }
+      format.html { render text: status} # index.html.erb
+      format.json { render json: {status: status}.to_json }
     end
 
   end

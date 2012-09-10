@@ -37,7 +37,6 @@ class Web
     headers = { 'Content-Type' => 'application/json' }
     # +++ TODO cookies (session) see: http://dzone.com/snippets/custom-httphttps-getpost
     puts "Sending to #{href}:"
-    puts body
     HTTParty.post(href, body: body, headers: headers)
   end
 

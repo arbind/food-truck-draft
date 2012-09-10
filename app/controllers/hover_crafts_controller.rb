@@ -4,8 +4,8 @@ class HoverCraftsController < ApplicationController
   # GET /crafts
   # GET /crafts.json
   def index
-    # @hover_crafts = HoverCraft.where(:fit_score.gte => -5).desc(:fit_score)
-    @hover_crafts = HoverCraft.ready_to_make.desc(:fit_score)
+    @hover_crafts = HoverCraft.where(:fit_score.gte => -5).desc(:fit_score)
+    # @hover_crafts = HoverCraft.ready_to_make.desc(:fit_score)
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: nil }
@@ -23,6 +23,7 @@ class HoverCraftsController < ApplicationController
     hash.delete('yelp_craft_id')
     hash.delete('twitter_craft_id')
     hash.delete('facebook_craft_id')
+    hash.delete('created_at')
 
     puts "=============="
     puts hash
@@ -33,17 +34,21 @@ class HoverCraftsController < ApplicationController
     hover_craft ||= HoverCraft.where(facebook_username: hash['facebook_username']).first
 
     if hover_craft.present?
+    puts "============== Updating.."
       hover_craft.update_attributes(hash)
+    puts "============== Updated!"
     else
+    puts "============== Creating.."
       hover_craft = HoverCraft.create(hash)
+    puts "============== Created!"
     end
 
     respond_to do |format|
-      format.html {render text: 'ok'}# index.html.erb
-      format.json { render json: hover_craft.to_json }
+      format.html { render text: 'ok'} # index.html.erb
+      format.json { render json: {status: 'ok'}.to_json }
     end
-  end
 
+  end
 
   # GET /hover_crafts/1
   # GET /hover_crafts/1.json

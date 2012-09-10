@@ -335,7 +335,7 @@ class HoverCraft
     self.fit_score_truck = FIT_need_to_check
   end
 
-  def self.beam_up(url='www.food-truck.me', path='hover_crafts/sync', use_ssl=false, cookies = {}, port=nil)
+  def self.beam_up(url='www.food-truck.me', path='hover_crafts/sync.json', use_ssl=false, cookies = {}, port=nil)
     HoverCraft.all.each do |h|
       h.beam_up(url, path, use_ssl, cookies, port)
     end
@@ -344,7 +344,8 @@ class HoverCraft
   def beam_up(url, path, use_ssl=false, cookies = {}, port=nil)
     params = { hover_craft: self.to_json }
     r = Web.http_post(url, path, params, use_ssl, cookies, port)
-    r.parsed_response['yelp_id'] if r
+    puts r
+    r
   end
 
 

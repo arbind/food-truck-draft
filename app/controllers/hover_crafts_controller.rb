@@ -29,19 +29,17 @@ class HoverCraftsController < ApplicationController
     puts "============== #{@hash['yelp_id']}"
     puts @hash
 
-    @hover_craft = HoverCraft.where(yelp_id: @hash['yelp_id']).first
-    @hover_craft ||= HoverCraft.where(twitter_id: @hash['twitter_id']).first
-    @hover_craft ||= HoverCraft.where(twitter_username: @hash['twitter_username']).first
-    @hover_craft ||= HoverCraft.where(facebook_username: @hash['facebook_username']).first
+    @hover_craft = HoverCraft.where(yelp_id: @hash['yelp_id']).first if @hash['yelp_id']
+    (@hover_craft ||= HoverCraft.where(twitter_id: @hash['twitter_id']).first) if @hash['twitter_id'].pesent?
+    (@hover_craft ||= HoverCraft.where(twitter_username: @hash['twitter_username']).first) if @hash['twitter_username'].pesent?
+    (@hover_craft ||= HoverCraft.where(facebook_username: @hash['facebook_username']).first) if @hash['facebook_username'].pesent?
 
     if @hover_craft.present?
-    puts "============== Updating [#{@hover_craft._id}].."
+      puts "Updating HoverCraft [#{@hover_craft._id}].."
       @hover_craft.update_attributes(@hash)
-    puts "============== Updated!"
     else
-    puts "============== Creating.."
+      puts "Creating HoverCraft"
       @hover_craft = HoverCraft.create(@hash)
-    puts "============== Created!"
     end
 
     @hover_craft.save if @hover_craft.present?

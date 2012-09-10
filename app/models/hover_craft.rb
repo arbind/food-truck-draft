@@ -84,18 +84,17 @@ class HoverCraft
       puts "No Web crafts created for HoverCraft(#{_id})"
       return nil 
     end
-    save! # store ids for the web_crafts found !
 
     # see if a craft is already bound to any of the web_crafts
     crafts_map = {}
     web_crafts.map{|wc| crafts_map[wc.craft._id] = wc.craft if wc.craft.present?} # collect all the parent crafts for the web_crafts
     crafts = crafts_map.values
     if 1==crafts.size  # return the parent craft if exactly 1 craft already exists
-      craft = crafts.first._id
+      craft = crafts.first
       puts "Binding new web crafts to and existing craft [#{craft}] for this HoverCraft #{_id}"
       craft.bind(web_crafts)
       self.craft_id = craft._id
-      save! # store the parent craft_id
+      save! # store the parent craft_id and any new web_craft_ids
       return craft
     elsif 1<crafts.size  # ambiguos situation if more than one craft already exists
       puts "Now Confused: Multiple crafts (#{crafts.first._id}, #{crafts.first._id}, ... ) previously exists for this HoverCraft #{_id}."
@@ -105,7 +104,7 @@ class HoverCraft
     craft = Craft.create
     craft.bind(web_crafts)
     self.craft_id = craft._id
-    save! # store the parent craft_id
+    save! # store the parent craft_id and any new web_craft_ids
     craft
   end
 

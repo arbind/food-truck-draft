@@ -52,11 +52,13 @@ class FacebookService < WebCraftService
 
   # find the website of an account
   def self.website_for_account(user_id_or_url)
-    user_id = Web.service_id_from_string_or_href(user_id_or_url, :facebook)
+    user_id = id_from_href(user_id_or_url) || user_id_or_url
     return nil if user_id.nil?
 
     web_craft_hash = web_fetch(user_id)
     web_craft_hash['website']
+  rescue
+    ""
   end 
 
 
@@ -69,12 +71,12 @@ class FacebookService < WebCraftService
     return nil if href.nil?
     pagename = nil
     begin
-      url = href.downcase..split('?')[0] # strip off query params
+      url = href.downcase.split('?')[0] # strip off query params
       url = url.split('#')[0] # strip off hash tag params
       u = URI.parse(url)
       u = URI.parse("http://#{url}") if u.host.nil?
       return nil unless ['www.facebook.com', 'facebook.com'].include?(u.host)
-      flat = href.downcase.gsub(/\/\//, '')
+      flat = url.gsub(/\/\//, '')
       tokens = flat.split('/')
       return nil unless tokens.present?
       case tokens.size

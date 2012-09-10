@@ -77,12 +77,10 @@ class YelpService < WebCraftService
 
   # find the website of a yelp listing
   def self.website_for_account(user_id_or_url)
-    user_id = Web.service_id_from_string_or_href(user_id_or_url, :yelp, 'biz')
+    user_id = id_from_href(user_id_or_url) || user_id_or_url
     return nil if user_id.nil?
 
     service_url = "http://www.yelp.com/biz/#{URI::encode user_id}"
-    puts "user_id_or_url: #{user_id_or_url}"
-    puts "service_url: #{service_url}"
     doc = Web.hpricot_doc(service_url)
     elements = doc.search("#bizUrl a[@href]")
     e = elements[0]
@@ -100,12 +98,12 @@ class YelpService < WebCraftService
 
     listing_id = nil
     begin
-      url = href.downcase..split('?')[0] # strip off query params
+      url = href.downcase.split('?')[0] # strip off query params
       url = url.split('#')[0] # strip off hash tag params
       u = URI.parse(url)
       u = URI.parse("http://#{url}") if u.host.nil?
       return nil unless ['www.yelp.com', 'yelp.com'].include?(u.host)
-      flat = href.downcase.gsub(/\/\//, '')
+      flat = url.gsub(/\/\//, '')
       tokens = flat.split('/')
       return nil unless tokens.present?
 

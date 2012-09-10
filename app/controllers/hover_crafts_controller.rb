@@ -1,14 +1,49 @@
 class HoverCraftsController < ApplicationController
+  protect_from_forgery :except => :sync
+
   # GET /crafts
   # GET /crafts.json
   def index
-    @hover_crafts = HoverCraft.where(:fit_score.gte => -5).desc(:fit_score)
-    # @hover_crafts = HoverCraft.ready_to_make.desc(:fit_score)
+    # @hover_crafts = HoverCraft.where(:fit_score.gte => -5).desc(:fit_score)
+    @hover_crafts = HoverCraft.ready_to_make.desc(:fit_score)
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: nil }
     end
- end
+  end
+
+  def sync
+    hash = JSON.parse(params[:hover_craft])
+    puts hash
+
+    # remove derived atts that need to be regenerated
+    hash.delete('_id')
+    hash.delete('status')
+    hash.delete('craft_id')
+    hash.delete('yelp_craft_id')
+    hash.delete('twitter_craft_id')
+    hash.delete('facebook_craft_id')
+
+    puts "=============="
+    puts hash
+
+    hover_craft = HoverCraft.where(yelp_id: hash['yelp_id']).first
+    hover_craft ||= HoverCraft.where(twitter_id: hash['twitter_id']).first
+    hover_craft ||= HoverCraft.where(twitter_username: hash['twitter_username']).first
+    hover_craft ||= HoverCraft.where(facebook_username: hash['facebook_username']).first
+
+    if hover_craft.present?
+      hover_craft.update_attributes(hash)
+    else
+      hover_craft = HoverCraft.create(hash)
+    end
+
+    respond_to do |format|
+      format.html {render text: 'ok'}# index.html.erb
+      format.json { render json: hover_craft.to_json }
+    end
+  end
+
 
   # GET /hover_crafts/1
   # GET /hover_crafts/1.json

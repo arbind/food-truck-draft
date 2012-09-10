@@ -4,6 +4,8 @@ FoodTruck::Application.routes.draw do
   match '(*any)' => redirect { |p, req| req.url.sub('//', '//www.') }, :constraints => { :subdomain => '' } 
 
   resources :crafts
+  post '/hover_crafts/sync', to: 'hover_crafts#sync'
+
   resources :hover_crafts
   # resources :nizers
   # resources :categories

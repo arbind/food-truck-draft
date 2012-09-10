@@ -1,4 +1,6 @@
 class Web
+  require 'addressable/uri'
+
   STRENGTH_zero = 0
   STRENGTH_low = 1
   STRENGTH_medium = 2
@@ -26,6 +28,17 @@ class Web
     href = href_for(host, path, params, use_ssl, port)
     # +++ TODO cookies (session) see: http://dzone.com/snippets/custom-httphttps-getpost
     HTTParty.get(href)
+  end
+
+  def self.http_post(host, path='/', params={}, use_ssl=false, cookies = {}, port=nil)
+    no_parmas_in_endpoint = {}
+    href = href_for(host, path, no_parmas_in_endpoint, use_ssl, port)
+    body = params.to_json
+    headers = { 'Content-Type' => 'application/json' }
+    # +++ TODO cookies (session) see: http://dzone.com/snippets/custom-httphttps-getpost
+    puts "Sending to #{href}:"
+    puts body
+    HTTParty.post(href, body: body, headers: headers)
   end
 
   def self.href_for(host, path='/', params = {}, use_ssl = false, port=nil)

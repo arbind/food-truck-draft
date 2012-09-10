@@ -10,6 +10,10 @@ class HoverCraft
   FIT_neutral = 5        # at least its not a bad fit
   FIT_absolute = 8       # known to be a fit
 
+  # geocoder fields
+  field :address, default: nil
+  field :coordinates, type: Array, default: [] # does geocoder gem auto index this?
+
   field :status, type: Symbol, default: :unvisited # [:unvisited, :visited]
 
   field :craft_id, default: nil
@@ -50,6 +54,10 @@ class HoverCraft
   field :facebook_craft_id, default: nil
 
   scope :ready_to_make, where(fit_score: 8).and(craft_id: nil)
+
+  geocoded_by :address
+  reverse_geocoded_by :coordinates
+  before_save :geocode_this_location! # auto-fetch coordinates
 
   before_save :calculate_fit_scores
   # after_initialize :calculate_fit_scores # use in debug mode to play with algorythm
@@ -325,6 +333,47 @@ class HoverCraft
   def calculate_truck_fit_score
     return (self.fit_score_truck = FIT_absolute) if craft_is_a_truck?
     self.fit_score_truck = FIT_need_to_check
+  end
+
+  def self.beam_up(url='www.food-truck.me', path='hover_crafts/sync', use_ssl=false, cookies = {}, port=nil)
+    HoverCraft.all.each do |h|
+      h.beam_up(url, path, use_ssl, cookies, port)
+    end
+  end
+
+  def beam_up(url, path, use_ssl=false, cookies = {}, port=nil)
+    params = { hover_craft: self.to_json }
+    r = Web.http_post(url, path, params, use_ssl, cookies, port)
+    r.parsed_response['yelp_id'] if r
+  end
+
+
+  def latitude() coordinates.last end
+  alias_method :lat, :latitude
+
+  def latitude=(lat) coordinates ||= [0,0]; coordinates[1] = lat end
+  alias_method :lat=, :latitude=
+
+  def longitude() coordinates.first end
+  alias_method :lng, :longitude
+  alias_method :long, :longitude
+
+  def longitude=(lng) coordinates[0] = lng end
+  alias_method :lng=, :longitude=
+  alias_method :long=, :longitude=
+  # /geocoding  aliases
+
+private
+  def geocode_this_location!
+    # +++ enable geocoder geo caching!
+    if self.lat.present? and (new? or changes[:coordinates].present?)
+      puts "coordinates changed!"
+      reverse_geocode # udate the address
+    elsif address.present? and (new? or changes[:address].present?)
+      puts "address changed!"
+      geocode # update lat, lng
+    end
+    return true
   end
 
 end

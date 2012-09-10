@@ -19,6 +19,7 @@ gem 'sass'
 gem 'haml'
 gem 'hpricot'
 gem 'httparty'
+gem 'addressable'
 gem 'jquery-rails'
 
 # services

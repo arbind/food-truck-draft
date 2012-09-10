@@ -64,45 +64,48 @@ class HoverCraft
 
   def materialize_craft
     web_crafts = []
-    yelp_craft = YelpService.web_craft_for_href(yelp_href) if yelp_exists?
+    yelp_craft = YelpService.web_craft_for_href(yelp_href) if (yelp_exists? and yelp_craft_id.nil?)
     if yelp_craft
       self.yelp_craft_id = yelp_craft_id
       web_crafts << yelp_craft
     end
-    twitter_craft = TwitterService.web_craft_for_href(twitter_href) if twitter_exists?
+    twitter_craft = TwitterService.web_craft_for_href(twitter_href) if (twitter_exists? and twitter_craft_id.nil?)
     if twitter_craft
       self.twitter_craft_id = twitter_craft_id
       web_crafts << twitter_craft
     end
-    facebook_craft = FacebookService.web_craft_for_href(facebook_href) if facebook_exists?
+    facebook_craft = FacebookService.web_craft_for_href(facebook_href) if (facebook_exists? and facebook_craft_id.nil?)
     if facebook_craft
       self.facebook_craft_id = facebook_craft_id
       web_crafts << facebook_craft
     end
 
     if web_crafts.empty?
-      puts "Could not create any web crafts for HoverCraft(#{_id})"
+      puts "No Web crafts created for HoverCraft(#{_id})"
       return nil 
     end
+    save! # store ids for the web_crafts found !
 
-    # see if a craft is already bound 
+    # see if a craft is already bound to any of the web_crafts
     crafts_map = {}
     web_crafts.map{|wc| crafts_map[wc.craft._id] = wc.craft if wc.craft.present?} # collect all the parent crafts for the web_crafts
     crafts = crafts_map.values
     if 1==crafts.size  # return the parent craft if exactly 1 craft already exists
-      puts "A craft #{crafts.first._id} previously exists for this HoverCraft #{_id}"
-      self.craft_id = crafts.first._id
-      save!
-      return crafts.first 
+      craft = crafts.first._id
+      puts "Binding new web crafts to and existing craft [#{craft}] for this HoverCraft #{_id}"
+      craft.bind(web_crafts)
+      self.craft_id = craft._id
+      save! # store the parent craft_id
+      return craft
     elsif 1<crafts.size  # ambiguos situation if more than one craft already exists
-      puts "Multiple crafts (#{crafts.first._id}, #{crafts.first._id}, ... )previously exists for this HoverCraft #{_id}, Now Confused"
+      puts "Now Confused: Multiple crafts (#{crafts.first._id}, #{crafts.first._id}, ... ) previously exists for this HoverCraft #{_id}."
       return nil
     end
     # no craft was previously found, safe to materialize one
     craft = Craft.create
     craft.bind(web_crafts)
     self.craft_id = craft._id
-    save!
+    save! # store the parent craft_id
     craft
   end
 
@@ -225,7 +228,7 @@ class HoverCraft
 
 
   def self.scan_for_food_trucks_near_place(place, state, term="food truck, truck", page=1, total_pages=0)
-    return if ( 1<page and (total_pages < page or 1000 < (page*YelpService::V2_MAX_RESULTS_LIMIT) ) )
+    return if ( 1<page and (total_pages < page or 5000 < (page*YelpService::V2_MAX_RESULTS_LIMIT) ) )
 
     results = YelpService.food_trucks_near_place(place, state, term, page)
     return unless results.present?
@@ -239,7 +242,12 @@ class HoverCraft
     end
 
     biz_list = *results['businesses']
-
+    if biz_list.count.zero?
+      puts "==========================================="
+      puts "Zero results returned! From page #{page} of #{total_pages}"
+      puts "==========================================="
+      return 
+    end
     puts "============================"
     puts "exploring #{biz_list.count} results from page #{page} of #{total_pages}"
     biz_list.each{ |biz| explore_yelp_listing(biz) }

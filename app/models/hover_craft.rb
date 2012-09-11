@@ -78,15 +78,20 @@ class HoverCraft
     end
 
     crafts = Craft.all.reject{|c| c.twitter.present?} # find all crafts with missing twitter webcrafts
+    puts "There are #{crafts.count} crafts where twitter is missing"
     hover_crafts = []
     crafts.each do |craft|
       next if craft.yelp.nil?
       h = HoverCraft.where(yelp_id: craft.yelp.yelp_id) 
-      hover_crafts<<h if h.present?
+      hover_crafts<<h if (h.present? and h.twitter_exists?)
     end
+    puts "There are #{hover_crafts.count} crafts where a twitter_craft could be explored"
     hover_crafts[0..(rate_limit-1)].each do |h|
       h.materialize_craft
     end
+    puts "Done"
+    crafts = Craft.all.reject{|c| c.twitter.present?} # find all crafts with missing twitter webcrafts
+    puts "Now there are #{crafts.count} crafts where twitter is missing"    
   end
 
   def materialize_craft

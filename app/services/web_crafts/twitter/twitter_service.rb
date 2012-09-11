@@ -6,7 +6,7 @@ class TwitterService < WebCraftService
 
   def self.rate_limit() Twitter.rate_limit_status.remaining_hits end
   def self.time_until_rate_limit_resets() Util.normalized_time(Twitter.rate_limit_status.reset_time) end
-  def self.how_long_until_rate_limit_resets() Util.how_long_from(Twitter.rate_limit_status.reset_time) end
+  def self.how_long_until_rate_limit_resets?() Util.how_long_from(Twitter.rate_limit_status.reset_time) end
 
   def self.hover_craft(twitter_screen_name_or_url)
     #scrape from web page (does not use api) 

@@ -77,7 +77,7 @@ class HoverCraft
       return 
     end
 
-    crafts = Craft.all.reject{|c| c.twitter.present?} # find all crafts with missing twitter webcrafts
+    crafts = Craft.without_twitter # find all crafts with missing twitter webcrafts
     puts "There are #{crafts.count} crafts where twitter is missing"
     hover_crafts = []
     crafts.each do |craft|
@@ -98,17 +98,17 @@ class HoverCraft
     web_crafts = []
     yelp_craft = YelpService.web_craft_for_href(yelp_href) if (yelp_exists? and yelp_craft_id.nil?)
     if yelp_craft
-      self.yelp_craft_id = yelp_craft_id
+      self.yelp_craft_id = yelp_craft._id
       web_crafts << yelp_craft
     end
     twitter_craft = TwitterService.web_craft_for_href(twitter_href) if (twitter_exists? and twitter_craft_id.nil?)
     if twitter_craft
-      self.twitter_craft_id = twitter_craft_id
+      self.twitter_craft_id = twitter_craft._id
       web_crafts << twitter_craft
     end
     facebook_craft = FacebookService.web_craft_for_href(facebook_href) if (facebook_exists? and facebook_craft_id.nil?)
     if facebook_craft
-      self.facebook_craft_id = facebook_craft_id
+      self.facebook_craft_id = facebook_craft._id
       web_crafts << facebook_craft
     end
 
@@ -123,13 +123,13 @@ class HoverCraft
     crafts = crafts_map.values
     if 1==crafts.size  # return the parent craft if exactly 1 craft already exists
       craft = crafts.first
-      puts "Binding new web crafts to an existing craft [#{craft}] for this HoverCraft #{_id}"
+      puts "Binding new web crafts to an existing craft [#{craft._id}] for this HoverCraft #{_id}"
       craft.bind(web_crafts)
       self.craft_id = craft._id
       save! # store the parent craft_id and any new web_craft_ids
       return craft
     elsif 1<crafts.size  # ambiguos situation if more than one craft already exists
-      puts "Now Confused: Multiple crafts (#{crafts.first._id}, #{crafts.first._id}, ... ) previously exists for this HoverCraft #{_id}."
+      puts "Now Confused: Multiple crafts (#{crafts.first._id}, ..., #{crafts.last._id} ) previously exists for this HoverCraft #{_id}."
       return nil
     end
     # no craft was previously found, safe to materialize one

@@ -33,6 +33,13 @@ class Craft
   reverse_geocoded_by :coordinates
   before_save :geocode_this_location! # auto-fetch coordinates
 
+  def self.where_twitter_exists
+    crafts = Craft.all.reject{|c| c.twitter.nil?} # find all crafts with a twitter webcraft
+  end
+  def self.without_twitter
+    crafts = Craft.all.reject{|c| c.twitter.present?} # find all crafts with missing twitter webcrafts
+  end
+
   # geocoding  aliases
   alias_method :ip_address, :address
   alias_method :ip_address=, :address=

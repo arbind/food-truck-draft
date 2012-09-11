@@ -69,6 +69,26 @@ class HoverCraft
   before_save :calculate_fit_scores
   # after_initialize :calculate_fit_scores # use in debug mode to play with algorythm
 
+  def self.explore_missing_twitter_web_crafts
+    rate_limit = TwitterService.rate_limit # see how many request we can make
+    if rate_limit.zero?
+      puts "Twitter Rate Limit Already Reached"
+      puts "Try again in #{TwitterService.how_long_until_rate_limit_resets}"
+      return 
+    end
+
+    crafts = Craft.all.reject{|c| c.twitter.present?} # find all crafts with missing twitter webcrafts
+    hover_crafts = []
+    crafts.each do |craft|
+      next if craft.yelp.nil?
+      h = HoverCraft.where(yelp_id: craft.yelp.yelp_id) 
+      hover_crafts<<h if h.present?
+    end
+    hover_crafts[0..(rate_limit-1)].each do |h|
+      h.materialize_craft
+    end
+  end
+
   def materialize_craft
     web_crafts = []
     yelp_craft = YelpService.web_craft_for_href(yelp_href) if (yelp_exists? and yelp_craft_id.nil?)
@@ -98,7 +118,7 @@ class HoverCraft
     crafts = crafts_map.values
     if 1==crafts.size  # return the parent craft if exactly 1 craft already exists
       craft = crafts.first
-      puts "Binding new web crafts to and existing craft [#{craft}] for this HoverCraft #{_id}"
+      puts "Binding new web crafts to an existing craft [#{craft}] for this HoverCraft #{_id}"
       craft.bind(web_crafts)
       self.craft_id = craft._id
       save! # store the parent craft_id and any new web_craft_ids

@@ -85,7 +85,7 @@ class Craft
   def bind(web_craft)
     web_craft_list = *web_craft 
     web_craft_list.each do |web_craft|
-      next if web_crafts.find(web_craft.id).present? # don't add duplicates!
+      next if web_crafts.where(web_craft_id: web_craft.id).first.present? # don't add duplicates!
       self.web_crafts << web_craft
 
       self.provider_id_tags << web_craft.web_craft_id if web_craft.web_craft_id.present?

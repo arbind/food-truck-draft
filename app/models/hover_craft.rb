@@ -113,7 +113,7 @@ class HoverCraft
     end
 
     if web_crafts.empty?
-      puts "No Web crafts created for HoverCraft(#{_id})"
+      puts "No Web crafts created for HoverCraft(#{_id}): #{to_json}"
       return nil 
     end
 

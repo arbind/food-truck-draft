@@ -82,7 +82,7 @@ class HoverCraft
     hover_crafts = []
     crafts.each do |craft|
       next if craft.yelp.nil?
-      h = HoverCraft.where(yelp_id: craft.yelp.yelp_id) 
+      h = HoverCraft.where(yelp_id: craft.yelp.yelp_id).first 
       hover_crafts<<h if (h.present? and h.twitter_exists?)
     end
     puts "There are #{hover_crafts.count} crafts where a twitter_craft could be explored"

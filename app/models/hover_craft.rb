@@ -4,11 +4,11 @@ class HoverCraft
   include Geocoder::Model::Mongoid
 
   FIT_need_to_explore = -1  # flag to go get hover crafts and explore this
-  FIT_zero = 0           # its not a fit
-  FIT_missing_craft = 1  # missing info
-  FIT_need_to_check = 3  # flag for manual check
-  FIT_neutral = 5        # at least its not a bad fit
-  FIT_absolute = 8       # known to be a fit
+  FIT_zero = 0              # its not a fit
+  FIT_missing_craft = 1     # missing info
+  FIT_check_manually = 3     # flag for manual check
+  FIT_neutral = 5           # at least its not a bad fit
+  FIT_absolute = 8          # known to be a fit
 
   # geocoder fields
   field :address, default: nil
@@ -22,12 +22,12 @@ class HoverCraft
   field :craft_is_for_food, type: Boolean, default: false
   field :craft_is_a_truck, type: Boolean, default: false
 
-  field :fit_score, type: Integer, default: FIT_need_to_check
-  field :fit_score_name, type: Integer, default: FIT_need_to_check
-  field :fit_score_username, type: Integer, default: FIT_need_to_check
-  field :fit_score_website, type: Integer, default: FIT_need_to_check
-  field :fit_score_food, type: Integer, default: FIT_need_to_check
-  field :fit_score_truck, type: Integer, default: FIT_need_to_check
+  field :fit_score, type: Integer, default: FIT_check_manually
+  field :fit_score_name, type: Integer, default: FIT_check_manually
+  field :fit_score_username, type: Integer, default: FIT_check_manually
+  field :fit_score_website, type: Integer, default: FIT_check_manually
+  field :fit_score_food, type: Integer, default: FIT_check_manually
+  field :fit_score_truck, type: Integer, default: FIT_check_manually
 
   field :yelp_id, default: nil
   field :yelp_name, default: nil
@@ -52,6 +52,13 @@ class HoverCraft
   field :facebook_href, default: nil
   field :facebook_website, default: nil
   field :facebook_craft_id, default: nil
+
+  scope :need_to_explore, where(fit_score: FIT_need_to_explore)
+  scope :check_manually, where(fit_score: FIT_check_manually)
+  scope :missing_craft, where(fit_score: FIT_missing_craft)
+  scope :zero_fit, where(fit_score: FIT_zero)
+  scope :neutral_fit, where(fit_score: FIT_neutral)
+  scope :absolute_fit, where(fit_score: FIT_absolute)
 
   scope :ready_to_make, where(fit_score: 8).and(craft_id: nil)
 
@@ -291,17 +298,17 @@ class HoverCraft
 
     return (self.fit_score = FIT_absolute) if FIT_absolute.eql? fit_score_website
     return (self.fit_score = FIT_absolute) if yelp_exists? and twitter_exists? and facebook_exists? and FIT_absolute.eql? fit_score_name
-    return (self.fit_score = FIT_need_to_check) if FIT_absolute.eql? fit_score_name
-    return (self.fit_score = FIT_need_to_check) if FIT_absolute.eql? fit_score_username
+    return (self.fit_score = FIT_check_manually) if FIT_absolute.eql? fit_score_name
+    return (self.fit_score = FIT_check_manually) if FIT_absolute.eql? fit_score_username
 
   end
 
   def calculate_website_fit_score 
-    return (self.fit_score_website = FIT_need_to_check) if yelp_website.blank? or twitter_website.blank?
+    return (self.fit_score_website = FIT_check_manually) if yelp_website.blank? or twitter_website.blank?
 
     if Web.href_domains_match?(yelp_website, twitter_website)
       self.fit_score_website = FIT_absolute
-      self.fit_score_website = FIT_need_to_check if facebook_website.present? and not Web.href_domains_match?(yelp_website, facebook_website)
+      self.fit_score_website = FIT_check_manually if facebook_website.present? and not Web.href_domains_match?(yelp_website, facebook_website)
       return self.fit_score_website
     else # website domains do not match
       self.fit_score_website = FIT_zero
@@ -309,11 +316,11 @@ class HoverCraft
   end
 
   def calculate_name_fit_score
-    return (self.fit_score_name = FIT_need_to_check) if yelp_name.blank? or twitter_name.blank?
+    return (self.fit_score_name = FIT_check_manually) if yelp_name.blank? or twitter_name.blank?
       
     if names_match?(yelp_name, twitter_name)
       self.fit_score_name = FIT_absolute
-      self.fit_score_name = FIT_need_to_check if facebook_name.present? and not names_match?(yelp_name, facebook_name)
+      self.fit_score_name = FIT_check_manually if facebook_name.present? and not names_match?(yelp_name, facebook_name)
     else
       self.fit_score_name = FIT_zero
     end
@@ -333,13 +340,13 @@ class HoverCraft
 
   def calculate_food_fit_score 
     return (self.fit_score_food = FIT_absolute) if craft_is_for_food?
-    self.fit_score_food = FIT_need_to_check
+    self.fit_score_food = FIT_check_manually
     # check yelp categories?
   end
 
   def calculate_truck_fit_score
     return (self.fit_score_truck = FIT_absolute) if craft_is_a_truck?
-    self.fit_score_truck = FIT_need_to_check
+    self.fit_score_truck = FIT_check_manually
   end
 
   def self.beam_up(url='www.food-truck.me', path='hover_crafts/sync.json', use_ssl=false, cookies = {}, port=nil)

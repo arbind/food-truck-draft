@@ -13,6 +13,15 @@
 #right-sidebar
   / =render 'crafts/crafts_nav'
 
+:javascript
+  $('body').on('user:scrolled-to-bottom', $.debounce( 1000, true, 
+    function(){
+      console.log('get an event for end reached');
+      // go get more results and add to main-content
+      // $('#main-content').append(h1)  
+    })
+  )
+
 / %h1 index
 / = request.host
 / .x= "Have a #{@target_interest[:meal_kw]} meal!"

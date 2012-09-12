@@ -1,31 +1,5 @@
-= render '/crafts/craft', craft: @craft
-%table
-  %tr
-    %th Provider  
-    %th Name
-    %th Username
-    %th Address
-    %th Geo
-    %th LocationHash
-    %th Location
-    %th Coo
-    %th href
-    %th website
-  - @craft.web_crafts.each do |web_craft|
-    %tr
-      %td= web_craft.provider
-      %td= web_craft.name
-      %td= web_craft.username
-      %td= web_craft.address
-      %td= web_craft.coordinates
-      %td= web_craft.location_hash
-      %td= web_craft[:location]
-      %td= web_craft[:coordinates]
-      %td= web_craft.href
-      %td= web_craft.website
+.section
+  = render '/crafts/craft', craft: @craft
 
-%a{href:edit_craft_path(@craft)}
-  Edit
-  |
-%a{href:crafts_path}
-  Back
+#geomap-wrapper
+  .geomap.cut

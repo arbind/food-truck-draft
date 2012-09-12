@@ -1,6 +1,7 @@
 // sass variables
 $content_min_width: 1008px;
 
+$footer_height: 48px;
 $content_top: 98px;
 $right_column_width: 220px;
 
@@ -52,11 +53,15 @@ textarea{
 }
   
 #main-content {
+  position:fixed;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  overflow:auto;
   padding-top: $content_top;
   padding-right: ($right_column_width + 10);
   padding-bottom: 88px;
   background: #FAFBFC url(/assets/textures/light02.jpeg);
-  min-height: 800px;
 }
   
 #header-wrap {
@@ -263,7 +268,7 @@ textarea{
   padding-bottom: 8px;
   color: white;
   width: 100%;
-  min-height: 48px;
+  min-height: $footer_height;
   bottom:0;
   left:0;
   border-top: 3px solid #225;

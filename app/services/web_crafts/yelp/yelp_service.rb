@@ -8,7 +8,7 @@ class YelpService < WebCraftService
   def self.web_craft_class() YelpCraft end
 
   def self.hover_craft(biz_listing)
-    return nil unless biz_listing.present?
+    return nil unless biz_listing.present? and biz_listing['id'].present?
     biz = biz_listing
 
     yelp_id = biz['id']

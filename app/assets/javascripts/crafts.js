@@ -58,6 +58,8 @@ $(function(){
     openInfo($craft);
   });
 
+  if (1== $('.craft').size) $('.craft').click()
+
   $('h2.name').live('click.once', function(ev){
     $crafts = $(this).parents('.craft') // should only be one really
     $crafts.each(function(idx, craft){

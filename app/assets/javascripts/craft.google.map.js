@@ -1,4 +1,5 @@
-// for google maps implementtaion: be sure to iclude http://maps.google.com/maps/api/js?sensor=false
+// for google maps implementtaion: be sure to iclude http://maps.google.com/maps/api/js?sensor=false&key=API_KEY 
+// to setup a key, see: https://developers.google.com/maps/documentation/javascript/tutorial#api_key
 
 /* usage:
   1.  create an html file with a .geomap:

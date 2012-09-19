@@ -22,6 +22,9 @@ class HoverCraft
   field :craft_is_for_food, type: Boolean, default: false
   field :craft_is_a_truck, type: Boolean, default: false
 
+  field :essence_tags, type: Array, default: [] # food, fit, fun, travel, home
+  field :theme_tags, type: Array, default: [] # truck, taco, sushi: weight-loss, yoga, etc
+
   field :fit_score, type: Integer, default: FIT_check_manually
   field :fit_score_name, type: Integer, default: FIT_check_manually
   field :fit_score_username, type: Integer, default: FIT_check_manually

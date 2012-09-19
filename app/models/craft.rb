@@ -18,6 +18,10 @@ class Craft
   field :provider_id_tags, type: Array, default: [], index: true # e.g. fb:facebook_id, yelp:yelp_id, @twitter_id etc. should be aliased to this field for a normalized id 
   field :provider_username_tags, type: Array, default: [], index: true  # e.g. fb:username, @twitter_handle
 
+  field :essence_tags, type: Array, default: [], index: true # food, fit, fun, travel, home
+  field :theme_tags, type: Array, default: [], index: true # truck, taco, sushi: weight-loss, yoga, etc
+
+
   field :href_tags, type: Array, default: [], index: true
   field :search_tags, type: Array, default: [], index: true
 

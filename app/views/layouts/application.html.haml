@@ -11,15 +11,12 @@
     = javascript_include_tag "application"
     = javascript_include_tag "https://platform.twitter.com/widgets.js"
 
-    - if true  # for food-trucks
+    - if Rails.env.production? and true  # replace true with domain == food-trucks
       - google_maps_api_key = "AIzaSyA6SvDNT6S-hTO1EydsE93i2yx7vaoDfNo" # API_KEY for food-truck.me: 25K/day free, need to buy if more than that.
       = javascript_include_tag "http://maps.google.com/maps/api/js?sensor=false&key=#{google_maps_api_key}".html_safe
+      = javascript_include_tag "google/analytics"
     - else
       = javascript_include_tag "http://maps.google.com/maps/api/js?sensor=false"
-
-
-    - if Rails.env.production?
-      = javascript_include_tag "google/analytics"
 
     = csrf_meta_tags
   %body{'data-geo-place' => @geo_place, 'data-geo-coordinates' => @geo_coordinates}
@@ -47,5 +44,3 @@
 
       #light.white_content
       #fade.black_overlay
-
-  

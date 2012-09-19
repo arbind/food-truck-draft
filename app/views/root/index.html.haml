@@ -1,10 +1,17 @@
 - @show_locator = true
 
-/ - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
-- if @crafts.present?
-  - @crafts.each do |craft|
+#list
+  #craft-list
+    / - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
+    - if @crafts.present?
+      - @crafts.each do |craft|
+        .section
+          = render '/crafts/craft', craft: craft
+  #loading-crafts
     .section
-      = render '/crafts/craft', craft: craft
+      .canvas
+        .loadinginprogress
+
 / %a.add-a-craft{href: href_for(new_craft_path) }
 /   add a new food truck
 #geomap-wrapper
@@ -13,10 +20,24 @@
 #right-sidebar
   / =render 'crafts/crafts_nav'
 
-:javascript
+:javascript 
   $('body').on('user:scrolled-to-bottom', $.debounce( 1000, true, 
     function(){
-      console.log('get an event for end reached');
+      // return if there are no more pages to fetch
+      js_var.current_page = js_var.current_page || js_var.page;
+      if (js_var.current_page >= js_var.total_pages) {
+        //fade in: add a truck we missed:
+        return;
+      }
+
+      js_var.current_page++;
+      $('.loadinginprogress').show();
+      var href = "http://www.food-truck-local.me:3000/?qp=los+angeles%2C+ca&p="+ js_var.current_page
+      $.get(href, function(data){
+        $('.loadinginprogress').hide();
+        $('#craft-list').append($(data).find('#craft-list').children().hide());
+        $('#craft-list .section').fadeIn('slow');
+      })
       // go get more results and add to main-content
       // $('#main-content').append(h1)  
     })

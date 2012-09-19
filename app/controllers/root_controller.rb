@@ -1,5 +1,5 @@
 class RootController < ApplicationController
-
+  RESULTS_PER_PAGE = 10
   # @xxx_place and @xxx_coordinates are available for each of:
   # query, user, subdomain, url and geo
   # @geo_place and @geo_coordinates holds the highest priority (best guess of of which location to use) 
@@ -7,9 +7,24 @@ class RootController < ApplicationController
   def index
     @look_for = params[:q] || params[:look_for]
     @radius = params[:r] || params[:radius] || 100 # miles
+    @page = params[:p] || params[:page] || '1' # page
+    @page = @page.to_i
 
-    @crafts = Craft.near(@geo_coordinates, @radius).desc(:ranking_score).limit(10) if @geo_coordinates
-    @crafts ||= Craft.near(@geo_place, @radius).desc(:ranking_score).limit(10) if @geo_place
+    js_var(look_for: @look_for, radius: @radius, geo_place: @geo_place, geo_coordinates: @geo_coordinates)
+
+    @crafts = Craft.near(@geo_coordinates, @radius).desc(:ranking_score) if @geo_coordinates
+    @crafts ||= Craft.near(@geo_place, @radius).desc(:ranking_score) if @geo_place
+
+    @total_crafts_count = @crafts.count
+    limit = RESULTS_PER_PAGE
+    skip = (@page-1) * RESULTS_PER_PAGE
+
+    @crafts = @crafts.skip(skip).limit(limit)
+
+
+    @total_pages = 1 + (@total_crafts_count/RESULTS_PER_PAGE).to_i
+    js_var(total_crafts_count: @total_crafts_count, page: @page, total_pages: @total_pages)
+
     if @look_for.present?
       @crafts = @crafts.where(search_tags: @look_for)  if @crafts.present?
       @crafts ||= Craft.where(search_tags: @look_for)

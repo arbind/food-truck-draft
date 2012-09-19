@@ -1,4 +1,9 @@
 module ApplicationHelper
+  def js_var(hash)
+    @js_var ||= {}
+    @js_var.merge!(hash)
+  end
+
   def href_for(path)
     "//#{request.host}:#{request.port}#{path}"
   end

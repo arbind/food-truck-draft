@@ -17,3 +17,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.loadinginprogress {
+  display:none;
+  width: 16px;
+  height: 16px;
+  background: rgba(255,255,255,0.28) url(/assets/loading.gif) no-repeat left top;
+}

@@ -1,0 +1,50 @@
+.sudo-craft {
+  width: 704px;
+  margin-top: 8px;
+  border: 1px dotted blue;
+  background-color: #822;
+
+  .toolbar {
+    overflow: hidden;
+    padding: 4px 12px 0px 12px;
+    .button{
+      float:left;
+      padding: 4px 4px 4px 20px;
+      border: 1px solid black;
+      margin-right: 4px
+    }
+    .button.reject {
+      float: right;
+    }
+    .status{
+      margin: 0 auto;
+    }
+    .true:before{
+      content: "\2713";
+      color:green;
+      font-weight:bold;    
+    }
+    .false:before{
+      content: " ";
+    }
+    .rejected.false:before {
+      content: "X";
+      color:red;
+      font-weight:bold;
+    }
+  }
+
+}
+
+.sudo-craft.approved.essenced, .hovercraft.approved.essenced {
+  background-color: #282;
+}
+
+.sudo-craft.rejected, .hovercraft.rejected {
+  background-color: transparent;
+  zoom:1;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
+  filter: alpha(opacity=25);
+  -khtml-opacity: 0.25;
+  opacity: 0.25;
+}

@@ -1,0 +1,120 @@
+- @show_locator = sudo_index_path
+- @locator_submit_url = sudo_index_path
+
+#list
+  #craft-list
+    / - if @target_interest[:location][:metro_kw].present? and @target_interest[:location][:metro_kw] != @target_interest[:location][:city_kw]
+    - if @crafts.present?
+      - @crafts.each do |craft|
+        - status = 'approved' if craft.approved.present?
+        - status = 'rejected' if craft.rejected.present?
+        - status ||= ''
+        - status << ' essenced' if craft.essence_tags.present?
+        - status << ' themed' if craft.theme_tags.present?
+        .sudo-craft{class: status, :'data-craft-id' => craft._id}
+          .toolbar
+            .button.approve{class: "#{craft.approved}"}
+              approve
+            .button.essence.foodtruck{class: "#{craft.is_for_foodtruck?}"}
+              food truck
+            .button.essence.food{class: "#{craft.is_for_food?}"}
+              food
+            .button.essence.fitness{class: "#{craft.is_for_fitness?}"}
+              fitness
+            .button.essence.fun{class: "#{craft.is_for_fun?}"}
+              fun
+            .button.essence.home{class: "#{craft.is_for_home?}"}
+              home
+            .button.reject{class: "#{craft.rejected}"}
+              reject
+          .section
+            = render '/crafts/craft', craft: craft
+  #loading-crafts
+    .section
+      .canvas
+        .loadinginprogress
+
+/ %a.add-a-craft{href: href_for(new_craft_path) }
+/   add a new food truck
+#geomap-wrapper
+  .geomap.cut
+
+#right-sidebar
+  / =render 'crafts/crafts_nav'
+
+:javascript 
+  $(function(){
+
+    $('.button.approve').live('click', function(){
+      var $approve_button = $(this)
+      var $sudo_craft = $approve_button.parents('.sudo-craft');
+      var $reject_button = $sudo_craft.find('.reject')
+      var craft_id = $sudo_craft.data('craft-id');
+
+      var endpoint = $.extend({}, js_var.request);
+      endpoint.path = '/sudo/toggle_approved';
+      endpoint.query_parameters = { 'id': craft_id }
+      var href = make_url(endpoint);
+      $.get(href, function(data){
+        var status = data.status;
+        $sudo_craft.removeClass('approved').removeClass('rejected');
+        $approve_button.removeClass('true').removeClass('false');
+        $reject_button.removeClass('true').removeClass('false').addClass('false');
+        if (status) {
+          $sudo_craft.addClass('approved')
+          $approve_button.addClass('true');
+        }
+        else {
+          $approve_button.addClass('false');
+        }
+      })
+    })
+
+    $('.button.reject').live('click', function(){
+      var $reject_button = $(this)
+      var $sudo_craft = $reject_button.parents('.sudo-craft');
+      var $approve_button = $sudo_craft.find('.approve')
+      var craft_id = $sudo_craft.data('craft-id');
+
+      var endpoint = $.extend({}, js_var.request);
+      endpoint.path = '/sudo/toggle_rejected';
+      endpoint.query_parameters = { 'id': craft_id }
+      var href = make_url(endpoint);
+      $.get(href, function(data){
+        var status = data.status;
+        $sudo_craft.removeClass('approved').removeClass('rejected');
+        $reject_button.removeClass('true').removeClass('false');
+        $approve_button.removeClass('true').removeClass('false').addClass('false');
+
+        if (status) {
+          $sudo_craft.addClass('rejected')
+          $reject_button.addClass('true');
+        }
+        else {
+          $reject_button.addClass('false');
+        }
+      })
+    })
+
+
+  })
+
+  $('body').on('user:scrolled-to-75%', $.debounce( 1000, true, function(){
+      console.log('scrolled!')
+      // return if there are no more pages to fetch
+      var href = make_url_for_next_page();
+      if (!href) {
+        // +++ show add more crafts 
+        return; // no more pages to fetch
+      }
+      js_var.current_page++;
+      $('.loadinginprogress').show();
+      $.get(href, function(data){
+        $('.loadinginprogress').hide();
+        $('#craft-list').append($(data).find('#craft-list .sudo-craft').hide());
+        $('#craft-list .sudo-craft').fadeIn();
+      })
+      // go get more results and add to main-content
+      // $('#main-content').append(h1)  
+    })
+  )

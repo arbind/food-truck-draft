@@ -9,7 +9,8 @@
       <![endif]-->
 
     = javascript_include_tag "application"
-    = javascript_include_tag "https://platform.twitter.com/widgets.js"
+    = javascript_include_tag "http://underscorejs.org/underscore-min.js"
+    / = javascript_include_tag "https://platform.twitter.com/widgets.js"
 
     - if Rails.env.production? and true  # replace true with domain == food-trucks
       - google_maps_api_key = "AIzaSyA6SvDNT6S-hTO1EydsE93i2yx7vaoDfNo" # API_KEY for food-truck.me: 25K/day free, need to buy if more than that.
@@ -34,8 +35,10 @@
             - if @geo_city
               %h2= @geo_city
             - if @show_locator
+              - form_action = @locator_submit_url
+              - form_action ||= root_path
               #locator
-                %form{action: root_path, method: :get}
+                %form{action: form_action, method: :get}
                   %input.med{type: :text, name: :qp, value: @query_place, placeholder: 'adress, city, state or zip'}
                   %button.off-screen{type: :submit}
         #main-content

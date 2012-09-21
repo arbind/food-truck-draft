@@ -21,22 +21,20 @@
   / =render 'crafts/crafts_nav'
 
 :javascript 
-  $('body').on('user:scrolled-to-bottom', $.debounce( 1000, true, 
-    function(){
+  $('body').on('user:scrolled-to-75%', $.debounce( 1000, true, function(){
+      console.log('scrolled!')
       // return if there are no more pages to fetch
-      js_var.current_page = js_var.current_page || js_var.page;
-      if (js_var.current_page >= js_var.total_pages) {
-        //fade in: add a truck we missed:
-        return;
+      var href = make_url_for_next_page();
+      if (!href) {
+        // +++ show add more crafts 
+        return; // no more pages to fetch
       }
-
       js_var.current_page++;
       $('.loadinginprogress').show();
-      var href = "http://www.food-truck-local.me:3000/?qp=los+angeles%2C+ca&p="+ js_var.current_page
       $.get(href, function(data){
         $('.loadinginprogress').hide();
-        $('#craft-list').append($(data).find('#craft-list').children().hide());
-        $('#craft-list .section').fadeIn('slow');
+        $('#craft-list').append($(data).find('#craft-list .section').hide());
+        $('#craft-list .section').fadeIn();
       })
       // go get more results and add to main-content
       // $('#main-content').append(h1)  

@@ -44,6 +44,54 @@ class Craft
     crafts = Craft.all.reject{|c| c.twitter.present?} # find all crafts with missing twitter webcrafts
   end
 
+  def is_for_food?(add_it = nil) is_in_essence_tags(:food, add_it) end
+  def is_for_mobile_cuisine?(add_it = nil) is_in_essence_tags(:mobile_cuisine, add_it) end
+  def is_for_fitness?(add_it = nil) is_in_essence_tags(:fitness, add_it) end
+  def is_for_fun?(add_it = nil) is_in_essence_tags(:fun, add_it) end
+  def is_for_home?(add_it = nil) is_in_essence_tags(:home, add_it) end
+  alias_method :is_for_food_truck?, :is_for_mobile_cuisine?
+  alias_method :is_for_foodtruck?, :is_for_mobile_cuisine?
+
+  # add, remove or toggle a tag in the essence_tags
+  def is_in_essence_tags(tag, add_it = nil)
+    if :toggle.eql? add_it
+      if essence_tags.include? tag
+        is_in_essence_tags(tag, false) 
+      else
+        is_in_essence_tags(tag, true) 
+      end
+    elsif true.eql? add_it
+      self.essence_tags << tag unless essence_tags.include? tag
+      save!
+      return true
+    elsif false.eql? add_it
+      self.essence_tags -= [ tag ]
+      save!
+      return false
+    end
+    essence_tags.include? tag
+  end
+
+  # add, remove or toggle a tag in the theme_tags
+  def is_in_theme_tags(tag, add_it = nil)
+    if :toggle.eql? add_it
+      if theme_tags.include? tag
+        is_in_theme_tags(tag, false) 
+      else
+        is_in_theme_tags(tag, true) 
+      end
+    elsif true.eql? add_it
+      self.theme_tags << tag unless theme_tags.include? tag
+      save!
+      return true
+    elsif false.eql? add_it
+      self.theme_tags -= [ tag ]
+      save!
+      return false
+    end
+    theme_tags.include? tag
+  end
+
   # geocoding  aliases
   alias_method :ip_address, :address
   alias_method :ip_address=, :address=

@@ -1,13 +1,12 @@
 class RootController < ApplicationController
-  RESULTS_PER_PAGE = 10
   # @xxx_place and @xxx_coordinates are available for each of:
   # query, user, subdomain, url and geo
   # @geo_place and @geo_coordinates holds the highest priority (best guess of of which location to use) 
 
   def index
-    @look_for = params[:q] || params[:look_for]
-    @radius = params[:r] || params[:radius] || 100 # miles
-    @page = params[:p] || params[:page] || '1' # page
+    @look_for = params[:look_for] || params[:q]
+    @radius = params[:radius] || params[:r] || 100 # miles
+    @page = params[:page] || params[:p] || '1' # page
     @page = @page.to_i
 
     js_var(look_for: @look_for, radius: @radius, geo_place: @geo_place, geo_coordinates: @geo_coordinates)

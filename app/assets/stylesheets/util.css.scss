@@ -24,3 +24,9 @@
   height: 16px;
   background: rgba(255,255,255,0.28) url(/assets/loading.gif) no-repeat left top;
 }
+
+.dim {
+  zoom: 1;
+  filter: alpha(opacity=50);
+  opacity: 0.5;
+}

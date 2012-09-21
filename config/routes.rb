@@ -29,13 +29,19 @@ FoodTruck::Application.routes.draw do
 
   # get 'load_url', to: 'root#load_url'
 
-  scope "/", controller: :food_truck do
-    get "index", as: :home_page
-    get ":name", to: :lookup, as: :lookup
+  scope '/', controller: :root do
+    get 'index', as: :home_page
+    # get ':name', to: :lookup, as: :lookup
+    get ':name', to: :index
   end
 
-  
-
+  scope '/sudo', controller: :sudo do
+    get 'index', as: :sudo_index
+    get 'toggle_approved'
+    get 'toggle_rejected'
+    get 'toggle_essence'
+    get 'toggle_theme'
+  end
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

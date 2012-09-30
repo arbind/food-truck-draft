@@ -1,6 +1,6 @@
 
-CRAFT_STREAMS = nil
+_craft_stream_service = nil
 
 def stream_manager
-  CRAFT_STREAMS ||= CraftStreamService.instance
+  _craft_stream_service ||= CraftStreamService.instance
 end

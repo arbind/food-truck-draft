@@ -27,6 +27,17 @@ class CraftStream
     # return array of following id
   end
 
+  def self.beam_up(url='www.food-truck.me', path='craft_streams/sync.json', use_ssl=false, cookies = {}, port=nil)
+    CraftStream.all.each do |s|
+      s.beam_up(url, path, use_ssl, cookies, port)
+    end
+  end
+  def beam_up(url, path, use_ssl=false, cookies = {}, port=nil)
+    params = { craft_stream: self.to_json }
+    r = Web.http_post(url, path, params, use_ssl, cookies, port)
+    puts r
+    r
+  end
 
 # geocoding  aliases
   alias_method :ip_address, :address

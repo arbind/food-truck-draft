@@ -30,12 +30,6 @@ class SudoController < ApplicationController
     end
   end
 
-  def tweet_streams
-    @craft_streams = CraftStream.all
-    @threads = CraftStreamService.instance.threads
-    @threads_started = CraftStreamService.instance.start    
-  end
-
   def toggle_approved
     respond_to do |format|
       format.json do

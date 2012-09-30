@@ -5,8 +5,11 @@ FoodTruck::Application.routes.draw do
 
   resources :crafts
   post '/hover_crafts/sync', to: 'hover_crafts#sync'
+  post '/craft_streams/sync', to: 'craft_streams#sync'
 
   resources :hover_crafts
+  resources :craft_streams
+
   # resources :nizers
   # resources :categories
   # resources :meals
@@ -41,9 +44,6 @@ FoodTruck::Application.routes.draw do
     get 'toggle_rejected'
     get 'toggle_essence'
     get 'toggle_theme'
-
-    get 'tweet_streams'
-
   end
 
   # The priority is based upon order of creation:

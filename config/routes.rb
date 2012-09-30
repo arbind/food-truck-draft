@@ -41,6 +41,9 @@ FoodTruck::Application.routes.draw do
     get 'toggle_rejected'
     get 'toggle_essence'
     get 'toggle_theme'
+
+    get 'tweet_streams'
+
   end
 
   # The priority is based upon order of creation:

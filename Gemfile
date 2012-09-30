@@ -24,10 +24,11 @@ gem 'addressable'
 gem 'jquery-rails'
 
 # services
-gem 'yelpster'
-gem 'twitter'
 gem 'geocoder'
+gem 'yelpster'
 gem 'koala' # facebook graph
+gem 'twitter'
+gem 'tweetstream'
 
 # Gems used only for assets and not required
 # in production environments by default.

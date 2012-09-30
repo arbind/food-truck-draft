@@ -13,13 +13,12 @@ cuisine:italian
 cuisine:indian
 
 State Organizers
-state:ny [ City Organizers]
-state:ca [ City Organizers]
+state:ny [ City Organizers ]
+state:ca [ City Organizers ]
 
 Metro Organizers
-state:ny [ City Organizers]
-state:ca [ City Organizers]
-
+state:ny [ City Organizers ]
+state:ca [ City Organizers ]
 
 City Organizers
 city:New York

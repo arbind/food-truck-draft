@@ -95,7 +95,7 @@ class YelpService < WebCraftService
 
   def self.id_from_href(href)
     return nil if href.nil?
-
+    puts "looking up yelp id from href: #{href}"
     listing_id = nil
     begin
       url = href.downcase.split('?')[0] # strip off query params

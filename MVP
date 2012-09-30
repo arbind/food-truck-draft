@@ -1,0 +1,248 @@
+MVP - Low Fidelity
+2. Update Info in Real Time
+* TweetStream
+    - Queue TwitterCraftPull whenever tweetstream recieves a status message
+* YelpAPI Request on demand
+  Facebook Likes
+6. Location of Food Trucks
+  drop pin on map - when mobile location is known
+  popup window on map pin
+    - state if location is verified and by who (source)
+5. Coverage of Food Trucks
+  Add TweetStreamer for city
+    - set description to "[city] Food Lover!"
+    - set location to "[city], [st]" (essential for geocoding)
+    - follow food trucks only in [location] area
+  Add TwitterCraft from TweetStreamer
+    - default location to TweetStreamer location
+    - follow website link and add fb and yelp crafts if found
+    - search for yelp craft in [location] for food truck name if necessary
+  Scan All Cities
+    - search yelp for [location] and create HoverCraft
+    - add materialized crafts to a TweetStream - create new TweetStreams as needed
+13. Facebook Page
+19. Member login
+  - login with social oauth
+  - identify areas for: morning, daytime, evening, night time
+  - select favorites
+  - select trucks to try soon
+  - save notes for truck or specific item 
+  - share experiences
+  - feedback to food trucks (anonymously)
+
+
+0. Logo
+1. View Food Truck Info
+  TwitterCraft
+  FacebookCraft
+  YelpCraft
+  WebsiteCraft
+    - link to website
+  Info from owner:
+    - top 3 Best Seller
+    - Recommendation for 1st timer
+  Cuisine
+  Base Location
+  Mobile Location
+3. Find good food trucks
+  Search by Geo 
+  Search by Name
+4. Ranking
+  Trucks with verified locations at the top
+  Trucks with good ratings at top (vested with enough reviews)
+  Trucks with high influence at top (lots of followers and like and ratings)
+  Trucks with recent tweets near the top
+  Inactive, closed, or hibernating trucks at bottom
+8. Detect location and schedule of Food Truck
+  Manually read, identify and extract location and schedule from tweets
+  NLP: parse location and schedule from tweet
+9. Verify Location and schedule of Food Truck
+  - Map indicates if location is un/verified and source of verification
+  - Ask truck to verify their location - by loggin in and placing pin on map
+10. Food Truck Tweeter
+  Food Truck Owner can input
+    - current location
+    - planned location and time
+    - Truck Profile:
+      - top 3 best sellers
+      - Highly recommended
+      - Food Truck Video url
+11 Tweet at FoodTrucks (FoodTruckTweeter)
+  - ask for their current location
+  - ask for their planned location
+  - ask how long thier lines are
+  - auto Tweet at FoodTruck to login and set/update their location and schedule
+
+
+MVP - High Fidelity
+1. View Food Truck Info
+  TwitterCraft
+  FacebookCraft
+  YelpCraft
+  WebsiteCraft
+    - link to website
+  Telephone Number if possible
+  Info from owner:
+    - top 3 Best Seller
+    - Recommendation for 1st timer
+  Cuisine
+  Menu Details
+  Location
+  Schedule
+
+2. Update Info in Real Time
+  TweetStream
+    - Queue TwitterCraftPull whenever tweetstream recieves a status message
+  YelpAPI Request on demand
+  Facebook Likes
+
+3. Find a good food trucks
+  Search by Geo 
+  Search by Name
+  Search by Cuisine
+
+4. Ranking
+  Trucks with verified locations at the top
+  Trucks with good ratings at top (vested with enough reviews)
+  Trucks with high influence at top (lots of followers and like and ratings)
+  Trucks with recent tweets near the top
+  Inactive, closed, or hibernating trucks at bottom
+
+5. Coverage of Food Trucks
+  Add TweetStreamer for city
+    - set description to "[city] Food Lover!"
+    - set location to "[city], [st]" (essential for geocoding)
+    - follow food trucks only in [location] area
+
+  Add TwitterCraft from TweetStreamer
+    - default location to TweetStreamer location
+    - follow website link and add fb and yelp crafts if found
+    - search for yelp craft in [location] for food truck name if necessary
+
+  Add TwitterCraft by twitter handle
+    - must be logged in to add
+    - follow website link and add fb and yelp crafts if found
+    - prompt for city if not determinable
+    - add to TweetStream following list when verified (be sure to get its real time updates)
+  Scan All Cities
+    - search yelp for [location] and create HoverCraft
+  Detect Newly launched Food Trucks
+
+6. Location of Food Trucks
+  Map location of Food Truck - when known
+
+7. Schedule
+  Morning - breakfast
+  Daytime - lunch
+  Evening - dinner
+  Night - late night
+
+8. Detect location and schedule of Food Truck
+  Manually read, identify and extract location and schedule from tweets
+  NLP: parse location and schedule from tweet
+  Member: allow members to submit Food Truck Sighting
+
+9. Verify Location and schedule of Food Truck
+  - Map indicates if location is un/verified and source of verification
+  - Ask truck to verify their location - by loggin in and placing pin on map
+  - Ask members who are at food truck
+
+10. Food Truck Tweeter
+  Food Truck Owner can input
+    - current location
+    - planned location and time
+    - Truck Profile:
+      - top 3 best sellers
+      - Highly recommended
+      - 5 minute interview video
+      - Food Truck Video url
+
+11 Tweet at FoodTrucks (FoodTruckTweeter)
+  - ask for their current location
+  - ask for their planned location
+  - ask how long thier lines are
+  - auto Tweet at FoodTruck to login and set/update their location and schedule
+
+12. FoodTruck Photo Album
+
+13. Facebook Page
+
+14. Survey/Poll for Food Truck Owners to tweet to their followers to fill out.
+
+15 Festivals and Events
+16 Permanent Communities
+17. Bulletin Board
+18. Notifications
+  - msg when favorite food truck is near by
+  - msg when any food truck is in your area
+
+19. Member login
+  - login with social oauth
+  - select favorites
+  - select trucks to try soon
+  - save notes for truck or specific item 
+  - take photo
+  - save virtual fortune cookies
+  - share experiences
+  - feedback to food trucks (anonymously)
+
+20. Games:
+  Loyalty Program
+  Checks Ins
+  Favorites with leader board
+  Want to Try with leader board
+  Food Truck Trivia
+
+21 Feature Food Trucks
+  - Take 5 minute interview of food truck owner, and feature them.
+
+22 Virtual Fotune Cookie
+  - get your virtual fortune cookie: inspirational or funny quotes
+
+--------------------------
+
+steps:
+1. create twittter account using
+  username: FTM[country code][state code][city code/name]
+  email: twitter+FTM[country code][state code][city code]@food-truck.me
+  password: foodTRUCK2012
+  location: [city name][state code][country name]
+  description: [city name] Food Truck Lover!
+
+2. confirm account from email inbox
+  - be sured to be logged in to the new twitter account when clicking the confirm link
+
+3. create oauth tokens
+  - go to dev.twitter.com and sign in with same twitter account
+  - enter same twitter username for the app name
+  - enter http://www.food-truck.me for url
+  - leave callback URL blank
+  - click yes, I agree
+  - enter captcha
+  - create account
+  - scroll down and click on creat access tokens
+  - copy the following oauth configs
+    Consumer Key
+    Consumer Secret
+    Access Token
+    Access Token Secret
+    example below:
+
+twitter streamers
+FTMUSCASF: foodTRUCK2012
+{
+consumer_key: 'OMAQHbZk3DMcyUmBFVMOrQ',
+consumer_secret: 'q6gOZtD8m9UQIi95clklWM4Zn1PZnXCtQqGjhWuA',
+oauth_token: '853532191-vU1naBlA4Rej18dCclQaN3CsDmrIkulXROyIuLeE',
+oauth_token_secret: 'KpIwP29UmJnDuHylmKU0TGs5OxLXZVNFT1mpm5XTIws',
+auth_method: :oauth
+}
+
+FTMUSCALA: foodTRUCK2012
+{
+consumer_key: 'WU4y16i0csbAxpdjM5lfYw',
+consumer_secret: '7LuQ8QUFlcXPEkyhMrLUmZq67Kflf7Ai5kdY6N7YCA',
+oauth_token: '853531597-AoSSorNPOO7FhFO0cJCBkxms4UxvwlVlbsosQRxd',
+oauth_token_secret: '93ALUGF11QkoRKA2yjVuFodZX7j3QuxZWu5MuFvLU',
+auth_method: :oauth
+}

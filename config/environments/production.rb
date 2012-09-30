@@ -9,15 +9,53 @@ FoodTruck::Application.configure do
       :V2 => { # Yelp API v2.0 uses OAUTH:
         :consumer_key     => "EdtIXf4NMUBXh8XoysxW2Q",
         :consumer_secret  => "hMUNaKi1Oa_d7OvlHH0d2_7d7-M",
-        :token            => "p4KFTaHrRR6oTGNOzGq28G9lrdgssyId",
+        :token             => "p4KFTaHrRR6oTGNOzGq28G9lrdgssyId",
         :token_secret     => "8Zvy3k9wMPQflJs7Ztgq9w2uE1c"
       }
     },
-    :TWITTER => {
-
+    :STRIPE => { #stripe Test Account
+      :SECRET => '5LeZ5IabCsvLNA8YHZOwaILWpGPaFFlG',
+      :PUBLISH => 'pk_fA9y8hjM5PLXy9Ubdh7VcZyvNH0dH'
     },
+    :TWITTER => {   # @rylyz: https://dev.twitter.com/apps/settings 
+      :CONSUMER_KEY => '',
+      :CONSUMER_SECRET => ''
+    },
+    :FACEBOOK => { # arbind.thakur: https://developers.facebook.com/apps/202629609869569
+      :APP_ID => '202629609869569',
+      :APP_SECRET => '6b8ba4b741b5f4da8a53723ec07eff87'
+    },
+    :GOOGLE_OAUTH2 => { # arbind.thakur@gmail.com: https://code.google.com/apis/console/?pli=1#project:954168963539
+      :CLIENT_ID => '954168963539.apps.googleusercontent.com',
+      :CLIENT_SECRET => 'LyqaMg3l9PWLgGPnBf0MGJyr'
+    },
+    :TUMBLR => { # : http://www.tumblr.com/oauth/apps
+      :CONSUMER_KEY => "",
+      :SECRET => ""
+    },
+    :RUNKEEPER => { # : http://runkeeper.com/partner/applications
+      :CLIENT_ID => "",
+      :CLIENT_SECRET => ""
+    },
+    :WINDOWSLIVE => { # : https://manage.dev.live.com/Applications/Index: http://msdn.microsoft.com/en-us/library/hh243641.aspx
+      :CLIENT_ID => "",
+      :SECRET => ""
+    },
+    :YAHOO => { # google signin(play@rylyz.com): https://developer.apps.yahoo.com/projects !select 1 service(√Social Directory), then updated keys
+      :CONSUMER_KEY => "",
+      :CONSUMER_SECRET => ""
+    },    
+    :LINKEDIN => { # : https://www.linkedin.com/secure/developer
+      :API_KEY => "",
+      :SECRET_KEY => ""
+    },
+    :MEETUP => { #  http://www.meetup.com/meetup_api/oauth_consumers/
+      :KEY => "",
+      :SECRET => ""
+    },    
+
   }
-# 6cTaN__96vXxK6UOJPqnVw
+  # 6cTaN__96vXxK6UOJPqnVw
   # Code is not reloaded between requests
   config.cache_classes = true
 

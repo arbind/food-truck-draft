@@ -9,14 +9,14 @@ class CraftStreamService
     streams_started
   end
 
-  def threads
-    @threads ||= {}
+  def stream_threads
+    @_threads ||= {}
   end
 
 private
 
   def start_stream(craft_stream)
-    thread = @threads[craft_stream.twitter_username]
+    thread = stream_threads[craft_stream.twitter_username]
     return 0 if (thread.present? and thread.alive?)
 
     thread = Thread.new do
@@ -53,7 +53,7 @@ private
       end
 
     end
-    @threads[craft_stream.twitter_username] = thread
+    stream_threads[craft_stream.twitter_username] = thread
     1
   end
 

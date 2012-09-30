@@ -3,8 +3,8 @@ class CraftStreamsController < ApplicationController
 
   def index
     @craft_streams = CraftStream.all
-    @threads = CraftStreamService.instance.threads
-    @threads_started = CraftStreamService.instance.start
+    @threads = stream_manager.stream_threads
+    @threads_started = stream_manager.start
 
     respond_to do |format|
       format.html # index.html.erb

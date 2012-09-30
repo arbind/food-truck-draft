@@ -229,20 +229,55 @@ steps:
     example below:
 
 twitter streamers
-FTMUSCASF: foodTRUCK2012
+
 {
-consumer_key: 'OMAQHbZk3DMcyUmBFVMOrQ',
-consumer_secret: 'q6gOZtD8m9UQIi95clklWM4Zn1PZnXCtQqGjhWuA',
-oauth_token: '853532191-vU1naBlA4Rej18dCclQaN3CsDmrIkulXROyIuLeE',
-oauth_token_secret: 'KpIwP29UmJnDuHylmKU0TGs5OxLXZVNFT1mpm5XTIws',
-auth_method: :oauth
+twitter_username: 'FTMUSCASF',
+twitter_password: 'foodTRUCK2012',
+address: 'San Francisco, CA USA',
+oauth_config: {
+    consumer_key: 'OMAQHbZk3DMcyUmBFVMOrQ',
+    consumer_secret: 'q6gOZtD8m9UQIi95clklWM4Zn1PZnXCtQqGjhWuA',
+    oauth_token: '853532191-vU1naBlA4Rej18dCclQaN3CsDmrIkulXROyIuLeE',
+    oauth_token_secret: 'KpIwP29UmJnDuHylmKU0TGs5OxLXZVNFT1mpm5XTIws',
+    auth_method: :oauth
+  }
 }
 
-FTMUSCALA: foodTRUCK2012
 {
-consumer_key: 'WU4y16i0csbAxpdjM5lfYw',
-consumer_secret: '7LuQ8QUFlcXPEkyhMrLUmZq67Kflf7Ai5kdY6N7YCA',
-oauth_token: '853531597-AoSSorNPOO7FhFO0cJCBkxms4UxvwlVlbsosQRxd',
-oauth_token_secret: '93ALUGF11QkoRKA2yjVuFodZX7j3QuxZWu5MuFvLU',
-auth_method: :oauth
+twitter_username: 'FTMUSCALA',
+twitter_password: 'foodTRUCK2012',
+address: 'Los Angeles, CA USA',
+oauth_config: {
+    consumer_key: 'WU4y16i0csbAxpdjM5lfYw',
+    consumer_secret: '7LuQ8QUFlcXPEkyhMrLUmZq67Kflf7Ai5kdY6N7YCA',
+    oauth_token: '853531597-AoSSorNPOO7FhFO0cJCBkxms4UxvwlVlbsosQRxd',
+    oauth_token_secret: '93ALUGF11QkoRKA2yjVuFodZX7j3QuxZWu5MuFvLU',
+    auth_method: :oauth
+  }
+}
+
+{
+twitter_username: 'FTMUSTXAUS',
+twitter_password: 'foodTRUCK2012',
+address: 'Austin, TX USA',
+oauth_config: {
+    consumer_key: '7PYfTs3Dv7BwJf0tjBzhg',
+    consumer_secret: 'sDIqrSgYI3XOVrvyNIu7HO3OG5huT1OqzIFAIMcwg',
+    oauth_token: '853532191-pga0ou7WenGj83vBiHH37lrs5Wl4vVik4AmFA651',
+    oauth_token_secret: 'AFQGEFEPXtppG1VE6QqXD9c2viXTdd5xKtrufnyPuA',
+    auth_method: :oauth
+  }
+}
+
+{
+twitter_username: 'FTMUSNYNY',
+twitter_password: 'foodTRUCK2012',
+address: 'New York, New York USA',
+oauth_config: {
+    consumer_key: 'oihTBcWpe4kjO9kU1AC9rg',
+    consumer_secret: 'KMJ59BEyJvIQneCBxc5ege97aJZJ1g7HiIkWRrs5rSk',
+    oauth_token: '855493621-DUHMWr1iw9Vi6KlDjEBreXgFH54wuWQRNdvr5yQf',
+    oauth_token_secret: '4PX5KlxR3tPsOqyV3gWMj89oYvfTkN94gQ77nw7rQ',
+    auth_method: :oauth
+  }
 }

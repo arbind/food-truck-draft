@@ -18,12 +18,12 @@ private
   def start_stream(craft_stream)
     thread = stream_threads[craft_stream.twitter_username]
     if thread.present?
-      puts "............Thread found for #{craft_stream.twitter_username} present: #{thread.present?} alive: #{thread.alive?} staus: #{thread.status}"
+      puts "............Thread found for #{craft_stream.twitter_username} present: #{thread.present?} alive: #{thread.alive?} staus: #{thread.status} connected: #{thread[:connected]}"
     else
       puts "............Thread NOT found for #{craft_stream.twitter_username}"
     end
 
-    return 0 if (thread.present? and thread.alive?)
+    return 0 if (thread.present? and thread[:connected])
 
     thread = Thread.new do
       Thread.current[:name]           = craft_stream.twitter_username
@@ -74,8 +74,9 @@ private
         puts "---#{craft_stream.twitter_username}: TWEET"
         puts "#{status.text}"
       end
-
+      puts "************************ Client is Setup "
     end
+    puts "************************ Thread Created "
     stream_threads[craft_stream.twitter_username] = thread
     1
   end

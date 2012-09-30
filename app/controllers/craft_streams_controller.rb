@@ -24,6 +24,8 @@ class CraftStreamsController < ApplicationController
 
     # remove derived atts that need to be regenerated
     @hash.delete('_id')
+    @hash.delete('created_at')
+    @hash.delete('updated_at')
     puts "============== #{@hash['twitter_username']}"
     puts @hash
 

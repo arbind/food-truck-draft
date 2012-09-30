@@ -4,7 +4,7 @@ class CraftStreamsController < ApplicationController
   def index
     @craft_streams = CraftStream.all
     @threads = stream_manager.stream_threads
-    @threads_started = stream_manager.start
+    @threads_started = stream_manager.start_listening
 
     respond_to do |format|
       format.html # index.html.erb

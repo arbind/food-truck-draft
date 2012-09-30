@@ -1,7 +1,7 @@
 class CraftStreamService
   include Singleton
 
-  def start
+  def start_listening
     streams_started = 0
     CraftStream.all.each do |craft_stream|
       streams_started += start_stream(craft_stream)

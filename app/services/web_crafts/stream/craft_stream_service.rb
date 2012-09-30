@@ -18,7 +18,7 @@ private
   def start_stream(craft_stream)
     thread = stream_threads[craft_stream.twitter_username]
     if thread.present?
-      puts "............Thread found for #{craft_stream.twitter_username} present: #{thread.present?} alive: #{thread.alive?}"
+      puts "............Thread found for #{craft_stream.twitter_username} present: #{thread.present?} alive: #{thread.alive?} staus: #{thread.status}"
     else
       puts "............Thread NOT found for #{craft_stream.twitter_username}"
     end

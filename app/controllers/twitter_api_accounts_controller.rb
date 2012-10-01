@@ -40,11 +40,11 @@ private
     hash.delete('_id')
     hash.delete('created_at')
     hash.delete('updated_at')
-    puts "============== #{hash['twitter_username']}"
+    puts "============== #{hash['screen_name']}"
     puts hash
 
-    @account = clazz.where(twitter_username: hash['twitter_username']).first if hash['twitter_username'].present?
-    (@account ||= clazz.where(twitter_id: hash['twitter_id']).first) if hash['twitter_id'].present?
+    (@account = clazz.where(twitter_id: hash['twitter_id']).first) if hash['twitter_id'].present?
+    @account ||= clazz.where(screen_name: hash['screen_name']).first if hash['screen_name'].present?
 
     if @account.present?
       puts "Updating #{clazz.name} [#{@account._id}].."

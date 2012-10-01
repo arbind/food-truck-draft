@@ -4,10 +4,15 @@ class TwitterApiAccount
   include Mongoid::Timestamps
   include Geocoder::Model::Mongoid
 
-  field :twitter_id, default: nil
-  field :twitter_username, default: nil
+  field :twitter_id, type: Integer, default: nil
+  field :screen_name, default: nil
+  field :name, default: nil
+  field :description, default: nil
+  field :friends_count, type: Integer, default: 0
+  field :followers_count, type: Integer, default: 0
+  field :friend_ids, type: Array, default: []
   field :oauth_config, type: Hash, default: { auth_method: :oauth }
-
+  field :location, default: nil
   # geocoder fields
   field :address, default: nil
   field :coordinates, type: Array, default: [] # does geocoder gem auto index this?
@@ -17,6 +22,34 @@ class TwitterApiAccount
   geocoded_by :address
   reverse_geocoded_by :coordinates
   before_save :geocode_this_location! # auto-fetch coordinates
+
+  def remote_pull
+    client = Twitter::Client.new(twitter_oauth_config)
+    tid = twitter_id.present? ? twitter_id : screen_name
+    user = client.user
+    self.twitter_id = user.id
+    self.screen_name = user.screen_name
+    self.name = user.name
+    self.description = user.description
+    self.location = user.location
+    self.friends_count = user.friends_count
+    self.followers_count = user.followers_count
+
+    # manage friend list
+    friends = client.friend_ids
+    unfriended = self.friend_ids - friends.ids # +++ TODO unbind TwitterCrafts that are bound to this TweetStreamAccount (if this is a TweetStreamAccount)
+    self.friend_ids = friends.ids
+    self.save!
+  end
+
+  def consumer_key() oauth_config['consumer_key'] end
+  def consumer_key=(val) oauth_config['consumer_key'] = val end
+  def consumer_secret() oauth_config['consumer_secret'] end
+  def consumer_secret=(val) oauth_config['consumer_secret'] = val end
+  def oauth_token() oauth_config['oauth_token'] end
+  def oauth_token=(val) oauth_config['oauth_token'] = val end
+  def oauth_token_secret() oauth_config['oauth_token_secret'] end
+  def oauth_token_secret=(val) oauth_config['oauth_token_secret'] = val end
 
   def follow(twitter_username_or_id)
   end

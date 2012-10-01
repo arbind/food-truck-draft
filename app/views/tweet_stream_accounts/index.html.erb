@@ -1,0 +1,45 @@
+<h1>Listing tweet_stream_accounts</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th>Twitter</th>
+    <th>screen name</th>
+    <th>name</th>
+    <th>description</th>
+    <th>location</th>
+    <th># friends</th>
+    <th># followers</th>
+    <th>Cons key</th>
+    <th>Cons secret</th>
+    <th>Token</th>
+    <th>Token secret</th>
+    <th></th>
+  </tr>
+
+<% @tweet_stream_accounts.each do |tweet_stream_account| %>
+  <tr>
+    <td><%= link_to 'Refresh', "#" %></td>
+    <td><%= link_to 'Show', tweet_stream_account %></td>
+    <td><%= link_to 'Edit', edit_tweet_stream_account_path(tweet_stream_account) %></td>
+    <td><%= tweet_stream_account.twitter_id %></td>
+    <td><%= tweet_stream_account.screen_name %></td>
+    <td><%= tweet_stream_account.name %></td>
+    <td><%= tweet_stream_account.description %></td>
+    <td><%= tweet_stream_account.location %></td>
+    <td><%= tweet_stream_account.friends_count %></td>
+    <td><%= tweet_stream_account.followers_count %></td>
+    <td><%= hide_middle tweet_stream_account.consumer_key %></td>
+    <td><%= hide_middle tweet_stream_account.consumer_secret %></td>
+    <td><%= hide_middle tweet_stream_account.oauth_token %></td>
+    <td><%= hide_middle tweet_stream_account.oauth_token_secret %></td>
+    <td><%= link_to 'Destroy', tweet_stream_account, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Tweet stream account', new_tweet_stream_account_path %>

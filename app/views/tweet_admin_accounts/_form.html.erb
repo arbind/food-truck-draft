@@ -1,0 +1,37 @@
+<%= form_for(@tweet_admin_account) do |f| %>
+  <% if @tweet_admin_account.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@tweet_admin_account.errors.count, "error") %> prohibited this tweet_admin_account from being saved:</h2>
+
+      <ul>
+      <% @tweet_admin_account.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :screen_name %><br />
+    <%= f.text_field :screen_name %>
+  </div>
+  <div class="field">
+    <%= f.label :oauth_token %><br />
+    <%= f.text_field :oauth_token %>
+  </div>
+  <div class="field">
+    <%= f.label :oauth_token_secret %><br />
+    <%= f.text_field :oauth_token_secret %>
+  </div>
+  <div class="field">
+    <%= f.label :consumer_key %><br />
+    <%= f.text_field :consumer_key %>
+  </div>
+  <div class="field">
+    <%= f.label :consumer_secret %><br />
+    <%= f.text_field :consumer_secret %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

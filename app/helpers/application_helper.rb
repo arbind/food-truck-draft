@@ -4,6 +4,11 @@ module ApplicationHelper
     @js_var.merge!(hash)
   end
 
+  def hide_middle(string_val)
+    return "***" if string_val.size < 12
+    "#{string_val[0..2]}...#{string_val[-3,3]}"
+  end
+
   def href_for(path)
     "//#{request.host}:#{request.port}#{path}"
   end

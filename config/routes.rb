@@ -1,5 +1,9 @@
 FoodTruck::Application.routes.draw do
 
+  resources :tweet_admin_accounts
+
+  resources :tweet_stream_accounts
+
   # redirect to www for ssl and google analytics
   match '(*any)' => redirect { |p, req| req.url.sub('//', '//www.') }, :constraints => { :subdomain => '' } 
 

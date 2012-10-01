@@ -212,7 +212,9 @@ steps:
 2. confirm account from email inbox
   - be sured to be logged in to the new twitter account when clicking the confirm link
 
-3. create oauth tokens
+3. tweet your first tweet "booting up!", so this account can be searched
+
+4. create oauth tokens
   - go to dev.twitter.com and sign in with same twitter account
   - enter same twitter username for the app name
   - enter http://www.food-truck.me for url

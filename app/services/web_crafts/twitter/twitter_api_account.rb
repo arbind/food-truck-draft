@@ -1,8 +1,10 @@
-class CraftStream
+class TwitterApiAccount
+  # used by application (not Users) to connect to twitter api (via Twitter or TweetStream Gem)
   include Mongoid::Document
   include Mongoid::Timestamps
   include Geocoder::Model::Mongoid
 
+  field :twitter_id, default: nil
   field :twitter_username, default: nil
   field :twitter_password, default: nil
   field :oauth_config, type: Hash, default: { auth_method: :oauth }
@@ -27,13 +29,13 @@ class CraftStream
     # return array of following id
   end
 
-  def self.beam_up(url='www.food-truck.me', path='craft_streams/sync.json', use_ssl=false, cookies = {}, port=nil)
-    CraftStream.all.each do |s|
-      s.beam_up(url, path, use_ssl, cookies, port)
-    end
+  def twitter_config
+    self.oauth_config.twitter_config
   end
-  def beam_up(url, path, use_ssl=false, cookies = {}, port=nil)
-    params = { craft_stream: self.to_json }
+ 
+  def beam_up(name, url, path, use_ssl=false, cookies = {}, port=nil)
+    params = {}
+    params[name] = self.to_json
     r = Web.http_post(url, path, params, use_ssl, cookies, port)
     puts r
     r

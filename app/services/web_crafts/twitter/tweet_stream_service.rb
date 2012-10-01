@@ -9,76 +9,95 @@ class TweetStreamService
     streams_started
   end
 
-  def stream_threads
-    @_threads ||= {}
+  def active_streams
+    @_active_streams ||= {}
   end
 
 private
 
   def start_stream(tweet_stream)
-    thread = stream_threads[tweet_stream.twitter_username]
-    if thread.present?
-      puts "............Thread found for #{tweet_stream.twitter_username} present: #{thread.present?} alive: #{thread.alive?} state: #{thread.state} connected: #{thread[:connected]}"
+    active_stream = active_streams[tweet_stream.twitter_username]
+    if active_stream.present?
+      puts "............active_stream found for #{tweet_stream.twitter_username} present: #{active_stream.present?} state: #{active_stream[:state]} connected: #{active_stream[:connected]}"
     else
-      puts "............Thread NOT found for #{tweet_stream.twitter_username}"
+      puts "............active_stream NOT found for #{tweet_stream.twitter_username}"
     end
 
-    return 0 if (thread.present? and thread[:connected])
+    if (active_stream.present? and active_stream[:connected])
+      return 0 
+    elsif active_stream.present? and active_stream[:client].present?
+      # close out a previous client that got disconnected
+      begin
+        client = active_stream[:client]
+        client.stop
+        active_stream[:client] = nil
+      rescue Exception => e
+        puts ":::::::::::::::::::"
+        puts e.message
+        puts e.backtrace
+        puts ":::::::::::::::::::"
+      end
+    end
 
-    thread = Thread.new do
-      Thread.current[:name]           = tweet_stream.twitter_username
-      Thread.current[:start_time]     = Time.now()
-      Thread.current[:last_tweet_at]  = nil
-      Thread.current[:description]    = :"TweetStream Listener Thread"
+    # activate this stream
+    active_streams[tweet_stream.twitter_username] = nil
+    active_stream = {}
+    active_streams[tweet_stream.twitter_username] = active_stream
 
-      # cfg = {
-      #   auth_method: :oauth, 
-      #   consumer_key: tweet_stream.oauth_config["consumer_key"] || tweet_stream.oauth_config[:consumer_key],
-      #   consumer_secret: tweet_stream.oauth_config["consumer_secret"] || tweet_stream.oauth_config[:consumer_secret],
-      #   oauth_token: tweet_stream.oauth_config["oauth_token"] || tweet_stream.oauth_config[:oauth_token],
-      #   oauth_token_secret: tweet_stream.oauth_config["oauth_token_secret"] || tweet_stream.oauth_config[:oauth_token_secret]
-      # }
+    active_stream[:twitter_id]     = tweet_stream.twitter_id
+    active_stream[:name]           = tweet_stream.twitter_username
+    active_stream[:start_time]     = Time.now()
+    active_stream[:description]    = :"TweetStream Listener Thread"
+    active_stream[:last_tweet_at]  = nil
 
+    active_stream[:connected]  = false
+    active_stream[:state]  = nil
+
+    begin
       cfg = tweet_stream.twitter_oauth_config
-
-      Thread.current[:connected]  = false
       client = TweetStream::Client.new(cfg)
-      Thread.current[:client] = client
-      Thread.current[:connected]  = true
-      Thread.current[:state]  = :connected
+
+      active_stream[:client] = client
+      active_stream[:connected]  = true
+      active_stream[:state]  = :connected
 
       client.on_limit do |skip_count| 
         # handle rate limit
-        Thread.current[:connected]  = true
-        Thread.current[:state]  = :rate_limited
+        active_stream[:connected]  = true
+        active_stream[:state]  = :rate_limited
         puts "limit reached! skiped #{skip_count}"
       end.on_error do |message|
-        Thread.current[:connected]  = true
-        Thread.current[:state]  = :error
+        active_stream[:connected]  = true
+        active_stream[:state]  = :error
         puts "---#{tweet_stream.twitter_username}: ERROR!"
         # Twitter may be momentarily down - no need to do anything
       end.on_reconnect do |timeout, retries|
-        Thread.current[:connected]  = false
-        Thread.current[:state]  = :disconnected
+        active_stream[:connected]  = false
+        active_stream[:state]  = :disconnected
         puts "---#{tweet_stream.twitter_username}: RECONNECT REQUIRED!"
         # need to terminate this listener thread and start a new one
       end.on_delete do |status_id, user_id|
         # handle deleted tweet
         # Tweet.delete(status_id)
-        Thread.current[:connected]  = true
-        Thread.current[:state]  = :listening
+        active_stream[:connected]  = true
+        active_stream[:state]  = :listening
         puts "---#{tweet_stream.twitter_username}: DELETE!"
         puts "tweet [#{status_id}] was deleted by #{user_id}"
       end.userstream do |status|
-        Thread.current[:last_tweet_at]  = Time.now
-        Thread.current[:connected]  = true
-        Thread.current[:state]  = :listening
+        active_stream[:last_tweet_at]  = Time.now
+        active_stream[:connected]  = true
+        active_stream[:state]  = :listening
         puts "---#{tweet_stream.twitter_username}: TWEET"
         puts "#{status.text}"
       end
+      return 1
+    rescue Exception => e
+      puts ":::::::::::::::::::"
+      puts e.message
+      puts e.backtrace
+      puts ":::::::::::::::::::"
+      return 0
     end
-    stream_threads[tweet_stream.twitter_username] = thread
-    1
   end
 
 end

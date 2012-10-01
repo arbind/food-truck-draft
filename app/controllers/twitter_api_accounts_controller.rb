@@ -3,7 +3,7 @@ class TwitterApiAccountsController < ApplicationController
 
   def tweet_streams
     @tweet_streams = TweetStreamAccount.all
-    @threads = TweetStreamService.instance.stream_threads
+    @threads = TweetStreamService.instance.active_streams
     @threads_started = TweetStreamService.instance.start_listening
 
     respond_to do |format|

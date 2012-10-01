@@ -6,8 +6,8 @@ class TwitterApiAccountsController < ApplicationController
 
   def tweet_streams
     @tweet_streams = TweetStreamAccount.all
-    @threads = stream_manager.stream_threads
-    @threads_started = stream_manager.start_listening
+    @threads = TweetStreamService.instance.stream_threads
+    @threads_started = TweetStreamService.instance.start_listening
 
     respond_to do |format|
       format.html # index.html.erb

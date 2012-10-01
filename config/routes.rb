@@ -4,11 +4,12 @@ FoodTruck::Application.routes.draw do
   match '(*any)' => redirect { |p, req| req.url.sub('//', '//www.') }, :constraints => { :subdomain => '' } 
 
   resources :crafts
+  get '/twitter_api_accounts/tweet_streams', to: 'twitter_api_accounts#tweet_streams', as: :tweet_streams
   post '/hover_crafts/sync', to: 'hover_crafts#sync'
-  post '/craft_streams/sync', to: 'craft_streams#sync'
+  post '/twitter_api_accounts/sync_twitter_admin_account', to: 'twitter_api_accounts#sync_twitter_admin_account'
+  post '/twitter_api_accounts/sync_tweet_stream_account', to: 'twitter_api_accounts#sync_tweet_stream_account'
 
   resources :hover_crafts
-  resources :craft_streams
 
   # resources :nizers
   # resources :categories

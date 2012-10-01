@@ -1,9 +1,6 @@
 class TwitterApiAccountsController < ApplicationController
   protect_from_forgery :except => :sync
 
-  def index
-  end
-
   def tweet_streams
     @tweet_streams = TweetStreamAccount.all
     @threads = TweetStreamService.instance.stream_threads
@@ -14,12 +11,6 @@ class TwitterApiAccountsController < ApplicationController
       format.json { render json: nil }
     end
   end
-
-  # def tweet_streams
-  #   @tweet_streams = CraftStream.all
-  #   @threads = CraftStreamService.instance.threads
-  #   @threads_started = CraftStreamService.instance.start    
-  # end
 
   def sync_twitter_admin_account
     hash = JSON.parse(params[:twitter_admin_account])
@@ -41,6 +32,7 @@ class TwitterApiAccountsController < ApplicationController
     end
   end
 
+private
   def sync(hash, clazz)
     puts @ash
 
@@ -72,72 +64,4 @@ class TwitterApiAccountsController < ApplicationController
 
   end
 
-  def show
-    # @account = CraftStream.find(params[:id])
-
-    # respond_to do |format|
-    #   format.html # show.html.erb
-    #   format.json { render json: @account }
-    # end
-  end
-
-  # GET /tweet_streams/new
-  # GET /tweet_streams/new.json
-  def new
-    # @account = CraftStream.new
-
-    # respond_to do |format|
-    #   format.html # new.html.erb
-    #   format.json { render json: @account }
-    # end
-  end
-
-  # GET /tweet_streams/1/edit
-  def edit
-    # @account = CraftStream.find(params[:id])
-  end
-
-  # POST /tweet_streams
-  # POST /tweet_streams.json
-  def create
-    # @account = CraftStream.materialize(params)
-
-    # respond_to do |format|
-    #   if @account
-    #     format.html { redirect_to @account, notice: 'Craft was materialized.' }
-    #     format.json { render json: @account, status: :created, location: @account }
-    #   else
-    #     format.html { render action: "new" }
-    #     format.json { render json: @account.errors, status: :unprocessable_entity }
-    #   end
-    # end
-  end
-
-  # PUT /tweet_streams/1
-  # PUT /tweet_streams/1.json
-  def update
-    # @account = CraftStream.find(params[:id])
-
-    # respond_to do |format|
-    #   if @account.update_attributes(params[:craft_stream])
-    #     format.html { redirect_to @account, notice: 'Craft was successfully updated.' }
-    #     format.json { head :no_content }
-    #   else
-    #     format.html { render action: "edit" }
-    #     format.json { render json: @account.errors, status: :unprocessable_entity }
-    #   end
-    # end
-  end
-
-  # DELETE /tweet_streams/1
-  # DELETE /tweet_streams/1.json
-  def destroy
-    # @account = CraftStream.find(params[:id])
-    # @account.destroy
-
-    # respond_to do |format|
-    #   format.html { redirect_to tweet_streams_url }
-    #   format.json { head :no_content }
-    # end
-  end
 end

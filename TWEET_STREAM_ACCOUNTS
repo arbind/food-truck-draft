@@ -16,8 +16,8 @@ oauth_config: {
 twitter_username: 'FTMUSCALA',
 address: 'Los Angeles, CA USA',
 oauth_config: {
-    consumer_key: 'WU4y16i0csbAxpdjM5lfYw',
-    consumer_secret: '7LuQ8QUFlcXPEkyhMrLUmZq67Kflf7Ai5kdY6N7YCA',
+    consumer_key: 'KOtYPu1rQkS2EyvCPHEsA',
+    consumer_secret: 'XtSt6y0s11TmOYizqetlbAw5AeBgfjQPVm2QhBO04Y',
     oauth_token: '853531597-AoSSorNPOO7FhFO0cJCBkxms4UxvwlVlbsosQRxd',
     oauth_token_secret: '93ALUGF11QkoRKA2yjVuFodZX7j3QuxZWu5MuFvLU',
     auth_method: :oauth

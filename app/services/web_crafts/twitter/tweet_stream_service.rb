@@ -31,8 +31,10 @@ private
       # close out a previous client that got disconnected
       begin
         client = active_stream[:client]
+        puts "............#{tweet_stream.twitter_username} Stopping client"
         client.stop
-        active_stream[:client] = nil
+        puts "............#{tweet_stream.twitter_username} Client Stopped"
+      active_stream[:client] = nil
       rescue Exception => e
         puts ":::::::::::::::::::"
         puts e.message
@@ -59,9 +61,12 @@ private
     active_stream[:state]  = nil
 
     begin
+      puts "............#{tweet_stream.twitter_username} Thread Started!"      
       cfg = tweet_stream.twitter_oauth_config
       client = TweetStream::Client.new(cfg)
+      puts "............#{tweet_stream.twitter_username} Client Created!"
 
+      active_stream[:thread] = Thread.current
       active_stream[:client] = client
       active_stream[:connected]  = true
       active_stream[:state]  = :connected
@@ -95,6 +100,8 @@ private
         puts "---#{tweet_stream.twitter_username}: TWEET"
         puts "#{status.text}"
       end
+      puts "............#{tweet_stream.twitter_username} Handlers Bound!"
+      puts "............#{tweet_stream.twitter_username} Complete returning 1!"
       return 1
     rescue Exception => e
       puts ":::::::::::::::::::"
@@ -103,6 +110,8 @@ private
       puts ":::::::::::::::::::"
       return 0
     end
+    puts "............#{tweet_stream.twitter_username} DoneDone!"
+    return 1
   end
 
 end

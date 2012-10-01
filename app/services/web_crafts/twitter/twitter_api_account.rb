@@ -6,7 +6,6 @@ class TwitterApiAccount
 
   field :twitter_id, default: nil
   field :twitter_username, default: nil
-  field :twitter_password, default: nil
   field :oauth_config, type: Hash, default: { auth_method: :oauth }
 
   # geocoder fields

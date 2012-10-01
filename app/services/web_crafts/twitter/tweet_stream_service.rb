@@ -18,14 +18,16 @@ private
   def start_stream(tweet_stream)
     active_stream = active_streams[tweet_stream.twitter_username]
     if active_stream.present?
-      puts "............active_stream found for #{tweet_stream.twitter_username} present: #{active_stream.present?} state: #{active_stream[:state]} connected: #{active_stream[:connected]}"
+      puts "............#{tweet_stream.twitter_username}: active_stream found present: #{active_stream.present?} state: #{active_stream[:state]} connected: #{active_stream[:connected]}"
     else
-      puts "............active_stream NOT found for #{tweet_stream.twitter_username}"
+      puts "............#{tweet_stream.twitter_username}: No active_stream found"
     end
 
     if (active_stream.present? and active_stream[:connected])
+      puts "............#{tweet_stream.twitter_username} Stream already started, returning without doing anything"
       return 0 
     elsif active_stream.present? and active_stream[:client].present?
+      puts "............#{tweet_stream.twitter_username} Stream closing previous connection"
       # close out a previous client that got disconnected
       begin
         client = active_stream[:client]
@@ -37,9 +39,12 @@ private
         puts e.backtrace
         puts ":::::::::::::::::::"
       end
+    else
+      puts "............#{tweet_stream.twitter_username} Stream does not exist, creating a new one!"      
     end
 
     # activate this stream
+    puts "............#{tweet_stream.twitter_username} Activating Stream!"      
     active_streams[tweet_stream.twitter_username] = nil
     active_stream = {}
     active_streams[tweet_stream.twitter_username] = active_stream

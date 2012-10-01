@@ -28,10 +28,10 @@ oauth_config: {
 twitter_username: 'FTMUSTXAUS',
 address: 'Austin, TX USA',
 oauth_config: {
-    consumer_key: '7PYfTs3Dv7BwJf0tjBzhg',
-    consumer_secret: 'sDIqrSgYI3XOVrvyNIu7HO3OG5huT1OqzIFAIMcwg',
-    oauth_token: '853532191-pga0ou7WenGj83vBiHH37lrs5Wl4vVik4AmFA651',
-    oauth_token_secret: 'AFQGEFEPXtppG1VE6QqXD9c2viXTdd5xKtrufnyPuA',
+    consumer_key: 'zsxyQGKv8gSEZOeIrtg2eA',
+    consumer_secret: 'xbokthjSBAzjh47QHuBph2PkDI6VFPFjhYRZdB0JXyo',
+    oauth_token: '855484819-m3TGlN2y83Vv4qdk9Eup3iD7bfKlgjy0dV0VdGMK',
+    oauth_token_secret: 'dDN8m2lSn03LsAC4k7AcFpaPqElVJIVjyR2AksAE',
     auth_method: :oauth
   }
 }

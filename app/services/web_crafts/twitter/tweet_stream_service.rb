@@ -39,7 +39,7 @@ private
       #   oauth_token_secret: tweet_stream.oauth_config["oauth_token_secret"] || tweet_stream.oauth_config[:oauth_token_secret]
       # }
 
-      cfg = tweet_stream.twitter_config
+      cfg = tweet_stream.twitter_oauth_config
 
       Thread.current[:connected]  = false
       client = TweetStream::Client.new(cfg)

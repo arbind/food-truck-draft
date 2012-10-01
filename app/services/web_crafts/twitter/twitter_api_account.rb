@@ -28,8 +28,8 @@ class TwitterApiAccount
     # return array of following id
   end
 
-  def twitter_config
-    self.oauth_config.twitter_config
+  def twitter_oauth_config
+    self.oauth_config.twitter_oauth_config
   end
  
   def beam_up(name, url, path, use_ssl=false, cookies = {}, port=nil)

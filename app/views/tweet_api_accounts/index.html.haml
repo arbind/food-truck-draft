@@ -1,24 +1,23 @@
 %h1 Tweet API Accounts
-
+%h2= "#{@streamers_count} Total Streams"
+- total_friends_count = 0
 %table
     %tr
         %th Streamer
+        %th # Friends
         %th Refresh
         %th Screen name
         %th Name
         %th Description
         %th Address
-        %th # Friends
         %th # Followers
-        %th Cons key
-        %th Cons secret
-        %th Token
-        %th Token secret
         %th
 
     - @tweet_api_accounts.each do |tweet_api_account|
+        - total_friends_count += tweet_api_account.friends_count
         %tr
             %td= link_to "#{tweet_api_account.is_tweet_streamer}", toggle_streamer_tweet_api_account_path(tweet_api_account)
+            %td= tweet_api_account.friends_count
             %td= link_to tweet_api_account.twitter_id, refresh_tweet_api_account_path(tweet_api_account)
             %td= link_to tweet_api_account.screen_name, tweet_api_account
             %td= tweet_api_account.name
@@ -28,14 +27,15 @@
                 %br
                 = tweet_api_account.coordinates
 
-            %td= tweet_api_account.friends_count
             %td= tweet_api_account.followers_count
-            %td= hide_middle tweet_api_account.consumer_key
-            %td= hide_middle tweet_api_account.consumer_secret
-            %td= hide_middle tweet_api_account.oauth_token
-            %td= hide_middle tweet_api_account.oauth_token_secret
+            / %td= hide_middle tweet_api_account.consumer_key
+            / %td= hide_middle tweet_api_account.consumer_secret
+            / %td= hide_middle tweet_api_account.oauth_token
+            / %td= hide_middle tweet_api_account.oauth_token_secret
             %td= link_to 'Destroy', tweet_api_account, confirm: 'Are you sure?', method: :delete
 
+%br
+%h2= "Following #{total_friends_count} total Food Trucks"
 %br
 
 = link_to 'New Tweet stream account', new_tweet_api_account_path

@@ -26,6 +26,7 @@ class TweetApiAccountsController < BasicAuthProtectionController
   # GET /tweet_api_accounts.json
   def index
     @tweet_api_accounts = TweetApiAccount.all
+    @streamers_count = TweetApiAccount.streams.count
 
     respond_to do |format|
       format.html # index.html.erb

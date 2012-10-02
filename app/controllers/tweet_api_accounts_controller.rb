@@ -15,7 +15,7 @@ class TweetApiAccountsController < BasicAuthProtectionController
 
   def sync
     hash = JSON.parse(params[:tweet_api_account])
-    status = sync(hash)
+    status = sync_account(hash)
     respond_to do |format|
       format.html { render text: status} # index.html.erb
       format.json { render json: {status: status}.to_json }
@@ -156,7 +156,8 @@ class TweetApiAccountsController < BasicAuthProtectionController
   #   end
   # end
 
-  def sync(hash)
+private
+  def sync_account(hash)
     puts @ash
 
     # remove derived atts that need to be regenerated

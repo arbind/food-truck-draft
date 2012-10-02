@@ -1,78 +1,73 @@
 Tweet Streamers
 
 {
-screen_name: 'FTMUSCASF',
-oauth_config: {
-    consumer_key: 'OMAQHbZk3DMcyUmBFVMOrQ',
-    consumer_secret: 'q6gOZtD8m9UQIi95clklWM4Zn1PZnXCtQqGjhWuA',
-    oauth_token: '853532191-vU1naBlA4Rej18dCclQaN3CsDmrIkulXROyIuLeE',
-    oauth_token_secret: 'KpIwP29UmJnDuHylmKU0TGs5OxLXZVNFT1mpm5XTIws',
-    auth_method: :oauth
-  }
+screen_name:            FTMUSCASF
+Consumer key:           OMAQHbZk3DMcyUmBFVMOrQ
+Consumer secret:        q6gOZtD8m9UQIi95clklWM4Zn1PZnXCtQqGjhWuA
+Access token:           853532191-vU1naBlA4Rej18dCclQaN3CsDmrIkulXROyIuLeE
+Access token secret:    KpIwP29UmJnDuHylmKU0TGs5OxLXZVNFT1mpm5XTIws
 }
 
 {
-screen_name: 'FTMUSCALA',
-oauth_config: {
-    consumer_key: 'KOtYPu1rQkS2EyvCPHEsA',
-    consumer_secret: 'XtSt6y0s11TmOYizqetlbAw5AeBgfjQPVm2QhBO04Y',
-    oauth_token: '853531597-AoSSorNPOO7FhFO0cJCBkxms4UxvwlVlbsosQRxd',
-    oauth_token_secret: '93ALUGF11QkoRKA2yjVuFodZX7j3QuxZWu5MuFvLU',
-    auth_method: :oauth
-  }
+screen_name:            FTMUSCALA
+Consumer key:           KOtYPu1rQkS2EyvCPHEsA
+Consumer secret:        XtSt6y0s11TmOYizqetlbAw5AeBgfjQPVm2QhBO04Y
+Access token:           853531597-AoSSorNPOO7FhFO0cJCBkxms4UxvwlVlbsosQRxd
+Access token secret:    93ALUGF11QkoRKA2yjVuFodZX7j3QuxZWu5MuFvLU
 }
 
 {
-screen_name: 'FTMUSTXAUS',
-oauth_config: {
-    consumer_key: 'zsxyQGKv8gSEZOeIrtg2eA',
-    consumer_secret: 'xbokthjSBAzjh47QHuBph2PkDI6VFPFjhYRZdB0JXyo',
-    oauth_token: '855484819-m3TGlN2y83Vv4qdk9Eup3iD7bfKlgjy0dV0VdGMK',
-    oauth_token_secret: 'dDN8m2lSn03LsAC4k7AcFpaPqElVJIVjyR2AksAE',
-    auth_method: :oauth
-  }
+screen_name:            FTMUSTXAUS
+Consumer key:           zsxyQGKv8gSEZOeIrtg2eA
+Consumer secret:        xbokthjSBAzjh47QHuBph2PkDI6VFPFjhYRZdB0JXyo
+Access token:           855484819-m3TGlN2y83Vv4qdk9Eup3iD7bfKlgjy0dV0VdGMK
+Access token secret:    dDN8m2lSn03LsAC4k7AcFpaPqElVJIVjyR2AksAE
 }
 
 {
-screen_name: 'FTMUSNYNY',
-oauth_config: {
-    consumer_key: 'oihTBcWpe4kjO9kU1AC9rg',
-    consumer_secret: 'KMJ59BEyJvIQneCBxc5ege97aJZJ1g7HiIkWRrs5rSk',
-    oauth_token: '855493621-DUHMWr1iw9Vi6KlDjEBreXgFH54wuWQRNdvr5yQf',
-    oauth_token_secret: '4PX5KlxR3tPsOqyV3gWMj89oYvfTkN94gQ77nw7rQ',
-    auth_method: :oauth
-  }
+screen_name:            FTMUSNYNY
+Consumer key:           oihTBcWpe4kjO9kU1AC9rg
+Consumer secret:        KMJ59BEyJvIQneCBxc5ege97aJZJ1g7HiIkWRrs5rSk
+Access token:           855493621-DUHMWr1iw9Vi6KlDjEBreXgFH54wuWQRNdvr5yQf
+Access token secret:    4PX5KlxR3tPsOqyV3gWMj89oYvfTkN94gQ77nw7rQ
 }
 
 {
-screen_name: 'FTMUSCASD',
-oauth_config: {
-    consumer_key: 'wF4YrevrvAt11qKLE3hYQ',
-    consumer_secret: 'QbcjiLOpKssxWSpLpmCieJy5DJ0uuPL0JQIILO9o',
-    oauth_token: '855569760-GsAgz5kDlm3b8VsrRqTaXWXsKJn9ACdh7m4NnzMT',
-    oauth_token_secret: '8F9jtilVFoOvH4EOnG8a1ReOGQWW5zBZFKZx5rYTaW4',
-    auth_method: :oauth
-  }
+screen_name:            FTMUSCASD
+Consumer key:           wF4YrevrvAt11qKLE3hYQ
+Consumer secret:        QbcjiLOpKssxWSpLpmCieJy5DJ0uuPL0JQIILO9o
+Access token:           855569760-GsAgz5kDlm3b8VsrRqTaXWXsKJn9ACdh7m4NnzMT
+Access token secret:    8F9jtilVFoOvH4EOnG8a1ReOGQWW5zBZFKZx5rYTaW4
 }
 
 {
-screen_name: 'FTMUSNVLV',
-oauth_config: {
-    consumer_key: '7dz0uRwqL6fUimgOgUgEjw',
-    consumer_secret: 'gtZ3sYSLQVRbU3CbKBYiWtzLHhPsTkEoSmnkDphE',
-    oauth_token: '855608838-SRUJGRzlv1CkQy7mYe6ieTFn0AgSyHuy7tq5Ujxh',
-    oauth_token_secret: 'ZrRwzdvek3r2H8EUd64sFYmwPI80Zn887fuyzZqT9dc',
-    auth_method: :oauth
-  }
+screen_name:            FTMUSNVLV
+Consumer key:           7dz0uRwqL6fUimgOgUgEjw
+Consumer secret:        gtZ3sYSLQVRbU3CbKBYiWtzLHhPsTkEoSmnkDphE
+Access token:           855608838-SRUJGRzlv1CkQy7mYe6ieTFn0AgSyHuy7tq5Ujxh
+Access token secret:    ZrRwzdvek3r2H8EUd64sFYmwPI80Zn887fuyzZqT9dc
 }
 
 {
-screen_name: 'FTMUSILCH',
-oauth_config: {
-    consumer_key: 'QYwUR1Ug8KeGomL74A6g',
-    consumer_secret: 'KkBsRzMKcJ2Rj8iAvWCblgqvUVH9EhcKD7cEWTQwYfY',
-    oauth_token: '855658340-paQA4foJY4s3UV9Dztxn6Z0iRuOUore7BGpcy2z0',
-    oauth_token_secret: 'f48VJUN2tG3kFfafO035tsaZt202DF0ICmsSPcMNQ',
-    auth_method: :oauth
-  }
+screen_name:            FTMUSILCH
+Consumer key:           X8stmgl2z7eZYd3D0gYSlw
+Consumer secret:        lVHeiuZgQA4P4bhry8LuJpT7NtuvQcpXpgQpsPrV6gQ
+Access token:           855658340-paQA4foJY4s3UV9Dztxn6Z0iRuOUore7BGpcy2z0
+Access token secret:    f48VJUN2tG3kFfafO035tsaZt202DF0ICmsSPcMNQ
+}
+
+{
+screen_name:            FTMUSDC
+Consumer key:           kmfoemOMQD57mnaVuSc8RA
+Consumer secret:        DtqdkWGEFwfd4IPqPcKVQFU1mbqBxWjCUA4n67oJbn4
+Access token:           857344927-KOvd7X0T5eX7dZZhpkttcGrOCpWnvdPDVS3D6mYP
+Access token secret:    zAstTZ1OyVi8bcrNfKoxysmMZacONNBJT37GjTJ9c8    
+}
+
+{
+screen_name:            FTMUSORPORT
+Consumer key:           wMQC5To7Cxgw7Z3kMiMPA
+Consumer secret:        oG4HQkUTETGc2gxSFzHMV3Dezs2AKtHseudnr2pEFHs
+Access token:           857357942-UBEIKiaTXVnoci9y6XJm3AfSiCUWj9dHUYOlPwcn
+Access token secret:    dw8ot1bwBsWO0Wwl3EZOWzDl6odRY1vsq3YOEqUWY    
 }

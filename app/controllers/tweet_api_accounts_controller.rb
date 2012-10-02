@@ -158,7 +158,7 @@ class TweetApiAccountsController < BasicAuthProtectionController
 
 private
   def sync_account(hash)
-    puts @ash
+    puts "sync in progress for TweetApiAccount: #{@hash}"
 
     # remove derived atts that need to be regenerated
     hash.delete('_id')
@@ -174,7 +174,7 @@ private
       puts "Updating #{@account.screen_name} [#{@account._id}].."
       @account.update_attributes(hash)
     else
-      puts "Creating #{@account.name}"
+      puts "Creating #{hash['screen_name']}"
       @account = TweetApiAccount.create(hash)
     end
 
@@ -185,7 +185,8 @@ private
     else
       status = 'error'
     end
-
+    puts "============== sync #{status}: #{hash['screen_name']}"
+    status
   end
 
 end

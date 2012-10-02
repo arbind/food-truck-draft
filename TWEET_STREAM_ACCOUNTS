@@ -1,8 +1,7 @@
-twitter streamers
+Tweet Streamers
 
 {
-twitter_username: 'FTMUSCASF',
-address: 'San Francisco, CA USA',
+screen_name: 'FTMUSCASF',
 oauth_config: {
     consumer_key: 'OMAQHbZk3DMcyUmBFVMOrQ',
     consumer_secret: 'q6gOZtD8m9UQIi95clklWM4Zn1PZnXCtQqGjhWuA',
@@ -13,8 +12,7 @@ oauth_config: {
 }
 
 {
-twitter_username: 'FTMUSCALA',
-address: 'Los Angeles, CA USA',
+screen_name: 'FTMUSCALA',
 oauth_config: {
     consumer_key: 'KOtYPu1rQkS2EyvCPHEsA',
     consumer_secret: 'XtSt6y0s11TmOYizqetlbAw5AeBgfjQPVm2QhBO04Y',
@@ -25,8 +23,7 @@ oauth_config: {
 }
 
 {
-twitter_username: 'FTMUSTXAUS',
-address: 'Austin, TX USA',
+screen_name: 'FTMUSTXAUS',
 oauth_config: {
     consumer_key: 'zsxyQGKv8gSEZOeIrtg2eA',
     consumer_secret: 'xbokthjSBAzjh47QHuBph2PkDI6VFPFjhYRZdB0JXyo',
@@ -37,8 +34,7 @@ oauth_config: {
 }
 
 {
-twitter_username: 'FTMUSNYNY',
-address: 'New York, New York USA',
+screen_name: 'FTMUSNYNY',
 oauth_config: {
     consumer_key: 'oihTBcWpe4kjO9kU1AC9rg',
     consumer_secret: 'KMJ59BEyJvIQneCBxc5ege97aJZJ1g7HiIkWRrs5rSk',
@@ -49,8 +45,7 @@ oauth_config: {
 }
 
 {
-twitter_username: 'FTMUSCASD',
-address: 'San Diego, CA USA',
+screen_name: 'FTMUSCASD',
 oauth_config: {
     consumer_key: 'wF4YrevrvAt11qKLE3hYQ',
     consumer_secret: 'QbcjiLOpKssxWSpLpmCieJy5DJ0uuPL0JQIILO9o',
@@ -61,8 +56,7 @@ oauth_config: {
 }
 
 {
-twitter_username: 'FTMUSNVLV',
-address: 'Las Vegas, NV USA',
+screen_name: 'FTMUSNVLV',
 oauth_config: {
     consumer_key: '7dz0uRwqL6fUimgOgUgEjw',
     consumer_secret: 'gtZ3sYSLQVRbU3CbKBYiWtzLHhPsTkEoSmnkDphE',
@@ -73,8 +67,7 @@ oauth_config: {
 }
 
 {
-twitter_username: 'FTMUSILCH',
-address: 'Chicago, IL USA',
+screen_name: 'FTMUSILCH',
 oauth_config: {
     consumer_key: 'QYwUR1Ug8KeGomL74A6g',
     consumer_secret: 'KkBsRzMKcJ2Rj8iAvWCblgqvUVH9EhcKD7cEWTQwYfY',

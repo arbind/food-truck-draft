@@ -1,0 +1,49 @@
+%p#notice
+  = notice
+
+%p
+  %b Twitter:
+  = @tweet_api_account.twitter_id
+
+%p
+  %b Screen Name:
+  = @tweet_api_account.screen_name
+
+%p
+  %b Description:
+  = @tweet_api_account.description
+
+%p
+  %b # Friends:
+  = @tweet_api_account.friends_count
+
+%p
+  %b # Followers:
+  = @tweet_api_account.followers_count
+
+%p
+  %b Address:
+  = @tweet_api_account.address
+  %br
+  = @tweet_api_account.coordinates
+
+%p
+  %b Oauth token:
+  = @tweet_api_account.oauth_token
+
+%p
+  %b Oauth token secret:
+  = @tweet_api_account.oauth_token_secret
+
+%p
+  %b Consumer key:
+  = @tweet_api_account.consumer_key
+
+%p
+  %b Consumer secret:
+  = @tweet_api_account.consumer_secret
+
+
+<!-- = link_to 'Edit', edit_tweet_api_account_path(@tweet_api_account) -->
+<!-- | -->
+= link_to 'Back', tweet_api_accounts_path

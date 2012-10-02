@@ -3,7 +3,7 @@ class TweetStreamService
 
   def start_listening
     streams_started = 0
-    TweetStreamAccount.all.each do |tweet_stream|
+    TweetApiAccount.streams.each do |tweet_stream|
       streams_started += start_stream(tweet_stream)
     end
     streams_started
@@ -54,7 +54,7 @@ private
     active_stream[:twitter_id]     = tweet_stream.twitter_id
     active_stream[:name]           = tweet_stream.screen_name
     active_stream[:start_time]     = Time.now()
-    active_stream[:description]    = :"TweetStream Listener Thread"
+    active_stream[:description]    = :"Tweet Stream Listener Thread"
     active_stream[:last_tweet_at]  = nil
 
     active_stream[:connected]  = false

@@ -1,17 +1,18 @@
 FoodTruck::Application.routes.draw do
 
-  resources :tweet_admin_accounts
-
-  resources :tweet_stream_accounts
+  # resources :tweet_admin_accounts
+  # resources :tweet_stream_accounts
+  post  '/tweet_api_accounts/sync', to: 'tweet_api_accounts#sync'
+  get   '/tweet_api_accounts/tweet_streams', to: 'tweet_api_accounts#tweet_streams', as: :tweet_streams
+  get   '/tweet_api_accounts/:id/refresh', to: 'tweet_api_accounts#refresh', as: :refresh_tweet_api_account
+  get   '/tweet_api_accounts/:id/toggle_streamer', to: 'tweet_api_accounts#toggle_streamer', as: :toggle_streamer_tweet_api_account
+  resources :tweet_api_accounts
 
   # redirect to www for ssl and google analytics
   match '(*any)' => redirect { |p, req| req.url.sub('//', '//www.') }, :constraints => { :subdomain => '' } 
 
   resources :crafts
-  get '/twitter_api_accounts/tweet_streams', to: 'twitter_api_accounts#tweet_streams', as: :tweet_streams
   post '/hover_crafts/sync', to: 'hover_crafts#sync'
-  post '/twitter_api_accounts/sync_twitter_admin_account', to: 'twitter_api_accounts#sync_twitter_admin_account'
-  post '/twitter_api_accounts/sync_tweet_stream_account', to: 'twitter_api_accounts#sync_tweet_stream_account'
 
   resources :hover_crafts
 

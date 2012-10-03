@@ -1,20 +1,24 @@
 FoodTruck::Application.routes.draw do
+  # redirect to www for ssl and google analytics
+  match '(*any)' => redirect { |p, req| req.url.sub('//', '//www.') }, :constraints => { :subdomain => '' } 
 
-  # resources :tweet_admin_accounts
-  # resources :tweet_stream_accounts
+  # respond to ping
+  get   '/ping', to: 'root#ping', as: :ping
+
+  # crafts
+  resources :crafts
+
+  # hover crafts
+  post '/hover_crafts/sync', to: 'hover_crafts#sync'
+  resources :hover_crafts
+
+  # tweet api accounts
   post  '/tweet_api_accounts/sync', to: 'tweet_api_accounts#sync'
   get   '/tweet_api_accounts/tweet_streams', to: 'tweet_api_accounts#tweet_streams', as: :tweet_streams
   get   '/tweet_api_accounts/:id/refresh', to: 'tweet_api_accounts#refresh', as: :refresh_tweet_api_account
   get   '/tweet_api_accounts/:id/toggle_streamer', to: 'tweet_api_accounts#toggle_streamer', as: :toggle_streamer_tweet_api_account
   resources :tweet_api_accounts
 
-  # redirect to www for ssl and google analytics
-  match '(*any)' => redirect { |p, req| req.url.sub('//', '//www.') }, :constraints => { :subdomain => '' } 
-
-  resources :crafts
-  post '/hover_crafts/sync', to: 'hover_crafts#sync'
-
-  resources :hover_crafts
 
   # resources :nizers
   # resources :categories

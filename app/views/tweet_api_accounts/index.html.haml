@@ -16,7 +16,7 @@
     - @tweet_api_accounts.each do |tweet_api_account|
         - total_friends_count += tweet_api_account.friends_count
         %tr
-            %td= link_to "#{tweet_api_account.is_tweet_streamer}", toggle_streamer_tweet_api_account_path(tweet_api_account)
+            %td= link_to "#{tweet_api_account.streaming_status}", toggle_streamer_tweet_api_account_path(tweet_api_account)
             %td= tweet_api_account.friends_count
             %td= link_to tweet_api_account.twitter_id, refresh_tweet_api_account_path(tweet_api_account)
             %td= link_to tweet_api_account.screen_name, tweet_api_account

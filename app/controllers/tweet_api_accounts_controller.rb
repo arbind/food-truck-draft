@@ -1,18 +1,6 @@
 class TweetApiAccountsController < BasicAuthProtectionController
   protect_from_forgery except: :sync
 
-
-  def tweet_streams
-    @tweet_streams = TweetApiAccount.streams
-    @threads = TweetStreamService.instance.active_streams
-    @threads_started = TweetStreamService.instance.start_listening
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: nil }
-    end
-  end
-
   def sync
     hash = JSON.parse(params[:tweet_api_account])
     status = sync_account(hash)
@@ -25,8 +13,11 @@ class TweetApiAccountsController < BasicAuthProtectionController
   # GET /tweet_api_accounts
   # GET /tweet_api_accounts.json
   def index
+    # TweetStreamService.instance.start_listening
+
     @tweet_api_accounts = TweetApiAccount.all
-    @streamers_count = TweetApiAccount.streams.count
+    @tweet_streams = TweetApiAccount.streams
+    @streamers_count = @tweet_streams.count
 
     respond_to do |format|
       format.html # index.html.erb
@@ -48,6 +39,11 @@ class TweetApiAccountsController < BasicAuthProtectionController
     if @tweet_api_account.present?
       @tweet_api_account.is_tweet_streamer = ! @tweet_api_account.is_tweet_streamer
       @tweet_api_account.save!
+      if @tweet_api_account.is_tweet_streamer
+        TweetStreamService.instance.start_stream(@tweet_api_account) 
+      else
+        TweetStreamService.instance.stop_stream(@tweet_api_account)
+      end
     end
     respond_to do |format|
       format.html { redirect_to tweet_api_accounts_url }

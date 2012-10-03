@@ -3,6 +3,13 @@ class RootController < ApplicationController
   # query, user, subdomain, url and geo
   # @geo_place and @geo_coordinates holds the highest priority (best guess of of which location to use) 
 
+  def ping
+    respond_to do |format|
+      format.html { render text: :pong}
+      format.json { render json: {ping: :pong} }
+    end    
+  end
+
   def index
     @look_for = params[:look_for] || params[:q]
     @radius = params[:radius] || params[:r] || 100 # miles

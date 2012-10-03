@@ -67,6 +67,10 @@ class TweetApiAccount
     # return array of following id
   end
 
+  def streaming_status
+    self.is_tweet_streamer ? TweetStreamService.instance.stream_status(self.screen_name) : :off
+  end
+
   def twitter_oauth_config
     self.oauth_config.twitter_oauth_config
   end

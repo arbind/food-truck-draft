@@ -1,6 +1,23 @@
 class TweetStreamService
   include Singleton
 
+  def dequeue_friend_id_and_materialize_craft
+    job = JobQueue.service.dequeue(:make_craft_for_twitter_id)
+    return nil if job.nil?
+
+    twitter_id = job[:twitter_id]
+    default_address = job[:default_address]
+    tweet_stream_id = job[:tweet_stream_id]
+    puts job
+    craft = Craft.materialize_from_twitter_id(twitter_id)
+  end
+
+  def queue_all_friend_ids_to_materialize
+    TweetApiAccount.streams.each do |account|
+      account.queue_friend_ids_to_materialize
+    end
+  end
+
   def start_listening
     streams_started = 0
     TweetApiAccount.streams.each do |tweet_stream|

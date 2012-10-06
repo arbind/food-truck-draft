@@ -1,0 +1,36 @@
+Coverage Strategy
+
+TweetStream -> friend_ids -> Craft
+
+Data Source -> HoverCraft -> Review -> Craft
+
+
+
+Data Sources
+Yelp -> Search['food truck, truck'] -> foreach yelp listing:
+          -> lookup website url -> crawl website for links: twitter, fb -> HoverCraft
+
+
+
+
+
+TweetStream -> pull -> queue all friend ids -> foreach queued twitter friend_id:
+  -> pull -> lookup website url -> crawl website for links, fb, yelp -> HoverCraft
+
+
+
+
+HoverCraft
+Score for correctness
+
+
+
+
+Review
+
+
+
+Craft
+Generate Craft for approved HoverCrafts
+
+

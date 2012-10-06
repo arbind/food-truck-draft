@@ -83,6 +83,9 @@ class Web
     u = URI.parse("http://#{link}") if u.host.nil?
     return "" if u.host.nil?
     domain = (u.host.match /^(w{3}\.)?(.*)$/)[2].downcase
+  rescue
+    # +++ log and scrub why href could not be parsed
+    ""
   end
 
   def self.href_domains_match?(url1, url2)
@@ -142,7 +145,12 @@ class Web
   #   }
   # end
 
-  def self.web_crafts_for_website(url)
+  def self.web_craft_map(provider_id_username_or_href, provider=nil)
+    # web_crafts_map = web_craft_map_for_twitter_id(provider_id_username_or_href) if :twitter_id == provider
+    web_crafts_map = web_craft_map_for_website(provider_id_username_or_href)
+  end
+
+  def self.web_craft_map_for_website(url)
     u = URI.parse(url.to_s.downcase)
     u = URI.parse("http://#{url.to_s.downcase}") if u.host.nil?
     return nil if u.host.nil?

@@ -4,9 +4,31 @@ class TwitterService < WebCraftService
 
   def self.web_craft_class() TwitterCraft end
 
-  def self.rate_limit() Twitter.rate_limit_status.remaining_hits end
-  def self.time_until_rate_limit_resets() Util.normalized_time(Twitter.rate_limit_status.reset_time) end
-  def self.how_long_until_rate_limit_resets?() Util.how_long_from(Twitter.rate_limit_status.reset_time) end
+  def self.rate_limit() instance.twitter_client.rate_limit_status.remaining_hits end
+  def self.time_until_rate_limit_resets() Util.normalized_time(instance.twitter_client.rate_limit_status.reset_time) end
+  def self.how_long_until_rate_limit_resets?() Util.how_long_from(instance.twitter_client.rate_limit_status.reset_time) end
+
+  def twitter_clients
+    @_twitter_clients ||= {}
+  end
+
+  def next_admin_account
+    TweetApiAccount.next_admin_account 
+  end
+
+  def twitter_client(twitter_account=nil)
+    admin_account = twitter_account
+    admin_account = next_admin_account if admin_account.nil?
+
+    client = twitter_clients[admin_account.twitter_id]
+    if client.nil?
+      client = Twitter::Client.new(admin_account.twitter_oauth_config)
+      twitter_clients[admin_account.twitter_id] = client if admin_account.twitter_id.present?
+    end
+    client
+  rescue
+    nil
+  end
 
   def self.hover_craft(twitter_screen_name_or_url)
     #scrape from web page (does not use api) 
@@ -43,9 +65,12 @@ class TwitterService < WebCraftService
   end
 
   def self.raw_fetch(web_craft_id, fetch_timeline=true) # get the user and their timeline
-    id = "#{web_craft_id}"
-    puts "Pulling id: #{id}"
-    twitter_user = Twitter.user(id)
+    tid = "#{web_craft_id}"
+    tid = tid.to_i if tid.integer?
+    puts "Fetching id: #{tid}"
+    client = instance.twitter_client
+    twitter_user = client.user(tid) # twitter id should be number, but screen_name will be string
+
     if twitter_user
       web_craft_hash = twitter_user.to_hash
     else
@@ -53,7 +78,7 @@ class TwitterService < WebCraftService
     end
 
     if(true===fetch_timeline and web_craft_hash.present?)
-      timeline = Twitter.user_timeline(id)
+      timeline = client.user_timeline(tid)
       if timeline
         timeline = timeline.map do |status|
           tweet_hash = status.to_hash

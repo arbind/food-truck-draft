@@ -158,7 +158,16 @@ class Craft
     save
   end
 
-  def self.materialize(provider_id_username_or_href)
+  def self.materialize_from_twitter_id(tid)
+    twitter_craft = TwitterCraft.pull(tid)
+    return twitter_craft.craft if twitter_craft.craft.present?
+
+    craft = Craft.create
+    craft.bind(twitter_craft)
+    craft
+  end
+
+  def self.materialize(provider_id_username_or_href, provider = nil)
     web_craft = nil
     if provider_id_username_or_href.looks_like_url? # look for web_craft by href
       web_craft = WebCraft.where(hrefs: provider_id_username_or_href).first
@@ -168,7 +177,7 @@ class Craft
     return web_craft.craft if (web_craft && web_craft.craft)
 
     # didn't find a craft, lets scrape the web to get web_crafts for provider_id_username_or_href
-    web_crafts_map = Web.web_crafts_for_website(provider_id_username_or_href)
+    web_crafts_map = Web.web_crafts_map(provider_id_username_or_href, provider)
     web_crafts = web_crafts_map[:web_crafts] # all the web_crafts in an array
     return nil unless web_crafts.present? # do not create a new craft if there are no web_crafts
 
@@ -197,7 +206,6 @@ class Craft
   def facebook() web_crafts.facebook_crafts.first end
   def you_tube() web_crafts.you_tube_crafts.first end
   def google_plus() web_crafts.google_plus_crafts.first end
-
 
   # Derive the Craft's Brand
   def name

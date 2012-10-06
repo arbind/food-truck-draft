@@ -40,6 +40,7 @@ class TweetApiAccountsController < BasicAuthProtectionController
       @tweet_api_account.is_tweet_streamer = ! @tweet_api_account.is_tweet_streamer
       @tweet_api_account.save!
       if @tweet_api_account.is_tweet_streamer
+        @tweet_api_account.remote_pull! # take this opportunity to also update the profile
         TweetStreamService.instance.start_stream(@tweet_api_account) 
       else
         TweetStreamService.instance.stop_stream(@tweet_api_account)
@@ -82,7 +83,6 @@ class TweetApiAccountsController < BasicAuthProtectionController
   # POST /tweet_api_accounts.json
   def create
     account = {
-      twitter_id: params[:tweet_api_account][:twitter_id],
       screen_name: params[:tweet_api_account][:screen_name],
       oauth_config: params[:tweet_api_account].twitter_oauth_config
     }

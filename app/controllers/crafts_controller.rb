@@ -28,7 +28,7 @@ class CraftsController < ApplicationController
   # GET /crafts/find.json
   def capture
     @url = Web.as_url(params[:url])
-    @social_crafts = Web.web_crafts_for_website(@url)
+    @social_crafts = Web.web_craft_map(@url)
 
     respond_to do |format|
       format.html # new.html.erb

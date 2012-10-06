@@ -50,6 +50,7 @@ class TwitterCraft < WebCraft
   def id_for_fetching() screen_name end
 end
 
+
 # tweets in timeline:
 # id
 # text

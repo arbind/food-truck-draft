@@ -66,7 +66,7 @@ def launch_job_to_verify_tweet_accounts_and_start_streaming
 end
 
 def launch_initializers
-  # launch_job_to_verify_tweet_accounts_and_start_streaming
+  launch_job_to_verify_tweet_accounts_and_start_streaming
 end
 
 def launch_chron_jobs

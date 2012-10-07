@@ -36,13 +36,8 @@ class TweetApiAccount
   def twitter_service() TwitterService.instance end
   def self.twitter_service() TwitterService.instance end
     
-
-  def remote_pull!
-    raise "!! could not authenticate #{screen_name}[#{twitter_id}]" unless (login_ok or verify_login)
-    # client = Twitter::Client.new(twitter_oauth_config)
-    client = twitter_service.twitter_client(self)
+  def update_from_twitter_client(client)
     user = client.user
-    puts user
     self.twitter_id = user.id
     self.screen_name = user.screen_name
     self.name = user.name
@@ -56,6 +51,13 @@ class TweetApiAccount
     unfriended = self.friend_ids - friends.ids # +++ TODO unbind TwitterCrafts that are bound to this TweetStreamAccount (if this is a TweetStreamAccount)
     self.friend_ids = friends.ids
     self.save!
+  end
+
+  def remote_pull!
+    raise "!! account login is unverified #{screen_name}[#{twitter_id}]" unless (login_ok or verify_login)
+    # client = Twitter::Client.new(twitter_oauth_config)
+    client = twitter_service.twitter_client(self)
+    update_from_twitter_client(client)
   rescue Exception => e
     puts e.message
     false
@@ -70,8 +72,9 @@ class TweetApiAccount
 
   def verify_login
     twitter_service.delete_twitter_client(self) # remove any old clients that may have stale auth info
-    login_ok = remote_pull!
-    login_ok = !!login_ok
+    client = twitter_service.twitter_client(self)
+    login_ok = update_from_twitter_client(client)
+    puts ":: #{scren_name}: Login OK = #{login_ok}"
     update_attributes(login_ok: login_ok)
     login_ok
   rescue Exception => e

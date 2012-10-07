@@ -40,16 +40,12 @@ class TweetStreamService
     active_stream = active_streams[tweet_stream.screen_name]
     return unless active_stream.present?
     client = active_stream[:client]
-    puts '1 stopping!'
     if client.present?
       client.stop_stream
       client.close_connection 
     end
-    puts '2 stopped!'
     active_stream[:client] = nil
-    puts '3 client=nil'
     active_streams.delete(tweet_stream.screen_name)
-    puts '4 active-stream = nil'
   end
 
   def start_stream(tweet_stream)

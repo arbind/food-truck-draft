@@ -11,7 +11,7 @@ def launch_job_to_materialize_crafts_from_tweet_stream_friends
     Thread.current[:type] = :chron
     Thread.current[:description] = 'Materializes crafts for any new friends that have been added to a Twitter TweetStreams account'
     puts ":: #{Thread.current[:name]}: Thread Launched"
-    sleep 20 # allow a few moments for the webserver to load
+    sleep 120 # allow a few moments for the webserver to load
     loop do
       begin
         puts ":: Pulling streams"

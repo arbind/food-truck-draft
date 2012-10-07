@@ -174,6 +174,7 @@ private
     hash.delete('_id')
     hash.delete('created_at')
     hash.delete('updated_at')
+    hash.delete('login_ok')
     puts "============== #{hash['screen_name']}"
     puts hash
 
@@ -189,6 +190,7 @@ private
     end
 
     @account.save if @account.present?
+    @account.remote_pull!
 
     if @account.present?
       status = 'ok' 

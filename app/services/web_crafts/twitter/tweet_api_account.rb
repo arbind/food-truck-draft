@@ -5,15 +5,9 @@ class TweetApiAccount
   include Mongoid::Timestamps
   include Geocoder::Model::Mongoid
 
-  def stream_service() TweetStreamService.instance end
-  def self.stream_service() TweetStreamService.instance end
-    
-  def twitter_service() TwitterService.instance end
-  def self.twitter_service() TwitterService.instance end
-    
-
   field :twitter_id, type: Integer, default: nil
   field :is_tweet_streamer, type: Boolean, default: false
+  field :login_ok, type: Boolean, default: false
   field :screen_name, default: nil
   field :name, default: nil
   field :description, default: nil
@@ -31,8 +25,17 @@ class TweetApiAccount
   reverse_geocoded_by :coordinates
   before_save :geocode_this_location! # auto-fetch coordinates
 
-  scope :streams, where(is_tweet_streamer: true)
+  scope :streams, where(is_tweet_streamer: true).and(login_ok: true)
   scope :admins, where(is_tweet_streamer: false)
+
+
+
+  def stream_service() TweetStreamService.instance end
+  def self.stream_service() TweetStreamService.instance end
+
+  def twitter_service() TwitterService.instance end
+  def self.twitter_service() TwitterService.instance end
+    
 
   def remote_pull!
     # client = Twitter::Client.new(twitter_oauth_config)
@@ -58,14 +61,21 @@ class TweetApiAccount
     false
   end
 
-  def twitter_client
-    twitter_service.twitter_client(self)
+  def twitter_client() twitter_service.twitter_client(self) end
+  def self.next_admin_account!() twitter_service.next_admin_account! end
+
+  def self.verify_logins
+    TweetApiAccount.all.each { |account| account.verify_login }
   end
 
-  def self.next_admin_account!
-    twitter_service.next_admin_account!
+  def verify_login
+    twitter_service.delete_twitter_client(self) # remove any old clients that may have stale auth info
+    twitter_service.twitter_client(self).user
+    update_attributes(login_ok: true)
+  rescue Exception => e
+    puts "!! #{screen_name}: login failed #{e.message}"
+    update_attributes(login_ok: false)
   end
-
 
   def consumer_key() oauth_config['consumer_key'] end
   def consumer_key=(val) oauth_config['consumer_key'] = val end
@@ -87,7 +97,6 @@ class TweetApiAccount
     return unless is_tweet_streamer
 
     remote_pull!
-    new_friend_ids = []
     new_friends_count = 0
     friend_ids.each do |fid|
       twitter_craft = TwitterCraft.where(twitter_id: fid).first
@@ -95,7 +104,7 @@ class TweetApiAccount
         JobQueue.service.enqueue(:make_craft_for_twitter_id, {twitter_id: fid, default_address: address, tweet_stream_id: _id})
         new_friends_count +=1
       end
-      puts "^^Queued #{new_friends_count} to make_craft_for_twitter_id  from #{screen_name} tweet stream" unless new_friends_count.zero?
+      puts "^^Queued #{new_friends_count} to make_craft_for_twitter_id from #{screen_name} tweet stream" unless new_friends_count.zero?
     end
       # craft = Craft.materialize_from_twitter_id(fid)
         # client = TwitterService.instance.admin_client

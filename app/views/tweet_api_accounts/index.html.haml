@@ -1,9 +1,13 @@
 %h1 Tweet API Accounts
 %h2= "#{@streamers_count} Total Streams"
 - total_friends_count = 0
+.button
+    %a{href: verify_tweet_api_account_logins_path}
+        verify logins
 %table
     %tr
-        %th Streamer
+        %th Account
+        %th Login
         %th # Friends
         %th Refresh
         %th Screen name
@@ -17,6 +21,12 @@
         - total_friends_count += tweet_api_account.friends_count
         %tr
             %td= link_to "#{tweet_api_account.streaming_status}", toggle_streamer_tweet_api_account_path(tweet_api_account)
+            %td
+                - if not tweet_api_account.login_ok
+                    %a{href: verify_tweet_api_account_login_path(tweet_api_account)}
+                        failed
+                - else
+                    ok
             %td= tweet_api_account.friends_count
             %td= link_to tweet_api_account.twitter_id, refresh_tweet_api_account_path(tweet_api_account)
             %td= link_to tweet_api_account.screen_name, tweet_api_account

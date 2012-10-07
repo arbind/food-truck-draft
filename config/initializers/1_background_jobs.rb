@@ -15,9 +15,9 @@ def launch_job_to_materialize_crafts_from_tweet_stream_friends
     loop do
       begin
         puts ":: Pulling streams"
-        TweetApiAccount.streams.each do |stream|
-          puts ":: #{Thread.current[:name]}: TweetStream.pull(#{stream.screen_name}) "
-          stream.remote_pull!
+        TweetApiAccount.streams[1..10].each do |stream|
+          puts ":: #{Thread.current[:name]}: queue_friend_ids(#{stream.screen_name}) "
+          stream.queue_friend_ids_to_materialize
         end
         puts ":: Dequeueing twitter friend jobs"
         while job=JobQueue.dequeue(:make_craft_for_twitter_id)
@@ -45,10 +45,31 @@ end
 def launch_job_to_detect_duplicates
 end
 
-def launch_background_jobs
+def launch_job_to_verify_tweet_accounts_and_start_streaming
+  BACKGROUND_JOBS[:verify_tweet_accounts_and_start_streaming]  ||= Thread.new do
+    Thread.current[:name] = :verify_tweet_accounts_and_start_streaming
+    Thread.current[:type] = :initializer
+    Thread.current[:description] = 'Verify Tweet Api Accounts can login ok, and start listening to tweet streams'
+    sleep 4 # allow a few moments for the webserver to load
+    puts ":: #{Thread.current[:name]}: Thread Launched"
+    TweetApiAccount.verify_logins
+    TweetStreamService.instance.start_listening
+  end
+end
+
+def launch_initializers
+  launch_job_to_verify_tweet_accounts_and_start_streaming
+end
+
+def launch_chron_jobs
   launch_job_to_materialize_crafts_from_approved_hover_crafts
   launch_job_to_materialize_crafts_from_tweet_stream_friends
   launch_job_to_detect_duplicates
+end
+
+def launch_background_jobs
+  launch_initializers
+  launch_chron_jobs
 end
 
 if RUNNING_IN_SERVER and LAUNCH_THREADS

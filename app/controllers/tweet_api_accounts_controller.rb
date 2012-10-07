@@ -34,6 +34,19 @@ class TweetApiAccountsController < BasicAuthProtectionController
     end
   end
 
+  def verify_tweet_api_account_logins
+    if params[:id]
+      @account= TweetApiAccount.find(params[:id])
+      @account.verify_login if @account.present?
+    else
+      TweetApiAccount.verify_logins
+    end
+    respond_to do |format|
+      format.html { redirect_to tweet_api_accounts_url }
+      format.json { render json: {status: :ok } }
+    end
+  end
+
   def toggle_streamer
     @tweet_api_account = TweetApiAccount.find(params[:id])
     if @tweet_api_account.present?

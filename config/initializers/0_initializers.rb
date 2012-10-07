@@ -1,5 +1,5 @@
-# LAUNCH_THREADS = true
-LAUNCH_THREADS = false
+LAUNCH_THREADS = true
+# LAUNCH_THREADS = false
 RUNNING_IN_CONSOLE = defined?(Rails::Console)
 RUNNING_IN_SERVER = ! RUNNING_IN_CONSOLE
 
@@ -9,17 +9,6 @@ puts ":: Running in console" if RUNNING_IN_CONSOLE
 # Fire up redis
 uri = URI.parse(ENV["REDISTOGO_URL"] || "redis://localhost:6379/" )
 REDIS = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
-
-
-# start listening to tweet streamers once the server loads
-Rails.application.config.after_initialize do
-  if LAUNCH_THREADS
-    Thread.new do
-      sleep 8 # allow a few moments for the webserver to load
-      TweetStreamService.instance.start_listening
-    end
-  end
-end
 
 
 # ping the server to keep from idling out

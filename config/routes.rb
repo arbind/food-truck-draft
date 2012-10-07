@@ -13,6 +13,9 @@ FoodTruck::Application.routes.draw do
   resources :hover_crafts
 
   # tweet api accounts
+
+  get   '/tweet_api_accounts/verify_tweet_api_account_logins', to: 'tweet_api_accounts#verify_tweet_api_account_logins', as: :verify_tweet_api_account_logins
+  get   '/tweet_api_accounts/:id/verify_tweet_api_account_login', to: 'tweet_api_accounts#verify_tweet_api_account_logins', as: :verify_tweet_api_account_login
   post  '/tweet_api_accounts/sync', to: 'tweet_api_accounts#sync'
   get   '/tweet_api_accounts/tweet_streams', to: 'tweet_api_accounts#tweet_streams', as: :tweet_streams
   get   '/tweet_api_accounts/:id/refresh', to: 'tweet_api_accounts#refresh', as: :refresh_tweet_api_account

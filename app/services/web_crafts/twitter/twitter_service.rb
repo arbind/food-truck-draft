@@ -51,6 +51,7 @@ class TwitterService < WebCraftService
   def twitter_client(twitter_account=nil)
     admin_account = twitter_account
     admin_account ||= next_admin_account!
+    return nil if (admin_account.nil? or admin_account.twitter_id.nil?)
 
     client = twitter_clients[admin_account.twitter_id]
     if client.nil?
@@ -59,9 +60,15 @@ class TwitterService < WebCraftService
     end
     client
   rescue Exception => e
+    twitter_clients.delete(admin_account.twitter_id) if (admin_account.present? and admin_account.twitter_id.present?)
     puts e.message
     puts e.backtrace
     nil
+  end
+
+  def delete_twitter_client(twitter_account)
+    return nil if (twitter_account.nil? or twitter_account.twitter_id.nil?)
+    twitter_clients.delete(twitter_account.twitter_id)
   end
 
   def self.hover_craft(twitter_screen_name_or_url)

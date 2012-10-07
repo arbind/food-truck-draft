@@ -1,9 +1,11 @@
 # LAUNCH_THREADS = true
 LAUNCH_THREADS = false
 RUNNING_IN_CONSOLE = defined?(Rails::Console)
-RUNNING_IN_SERVER = ! RUNNING_IN_CONSOLE
+RUNNING_IN_RAKE_TASK = global_variables.include? "$rakefile"
+RUNNING_IN_SERVER = ! ( RUNNING_IN_CONSOLE  or RUNNING_IN_RAKE_TASK)
 
 puts ":: Running in server" if RUNNING_IN_SERVER
+puts ":: Running in rake task" if RUNNING_IN_RAKE_TASK
 puts ":: Running in console" if RUNNING_IN_CONSOLE
 
 # Fire up redis

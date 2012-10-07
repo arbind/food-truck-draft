@@ -70,7 +70,7 @@ class TweetApiAccount
 
   def verify_login
     twitter_service.delete_twitter_client(self) # remove any old clients that may have stale auth info
-    login_ok = remote_pulll!
+    login_ok = remote_pull!
     login_ok = !!login_ok
     update_attributes(login_ok: login_ok)
     login_ok

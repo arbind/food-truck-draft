@@ -74,7 +74,7 @@ class TweetApiAccount
     twitter_service.delete_twitter_client(self) # remove any old clients that may have stale auth info
     client = twitter_service.twitter_client(self)
     login_ok = update_from_twitter_client(client)
-    puts ":: #{scren_name}: Login OK = #{login_ok}"
+    puts ":: #{screen_name}: Login OK = #{login_ok}"
     update_attributes(login_ok: login_ok)
     login_ok
   rescue Exception => e

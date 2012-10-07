@@ -10,16 +10,18 @@ class HoverCraft
   FIT_neutral = 5           # at least its not a bad fit
   FIT_absolute = 8          # known to be a fit
 
+  field :status, type: Symbol, default: :unvisited # [:unvisited, :visited]
+
+  field :skip_this_craft, type: Boolean, default: false
+  field :generated_craft, type: Boolean, default: false
+  field :need_to_generate_craft, type: Boolean, default: false
+
+  field :craft_is_food, type: Boolean, default: false
+  field :craft_is_mobile, type: Boolean, default: false
+
   # geocoder fields
   field :address, default: nil
   field :coordinates, type: Array, default: [] # does geocoder gem auto index this?
-
-  field :status, type: Symbol, default: :unvisited # [:unvisited, :visited]
-
-  field :craft_id, default: nil
-
-  field :skip_this_craft, type: Boolean, default: false
-   field :craft_is_a_truck, type: Boolean, default: false
 
   field :essence_tags, type: Array, default: [] # food, fit, fun, travel, home
   field :theme_tags, type: Array, default: [] # truck, taco, sushi: weight-loss, yoga, etc
@@ -31,6 +33,8 @@ class HoverCraft
   field :fit_score_food, type: Integer, default: FIT_check_manually
   field :fit_score_truck, type: Integer, default: FIT_check_manually
 
+  field :craft_id, default: nil
+
   field :yelp_id, default: nil
   field :yelp_name, default: nil
   field :yelp_username, default: nil
@@ -39,7 +43,8 @@ class HoverCraft
   field :yelp_categories, default: nil
   field :yelp_craft_id, default: nil
 
-  field :twitter_referring_user, default: nil
+  # field :twitter_referring_user, default: nil
+  field :tweet_stream_id, default: nil
   field :twitter_id, default: nil
   field :twitter_name, default: nil
   field :twitter_username, default: nil
@@ -62,7 +67,7 @@ class HoverCraft
   scope :neutral_fit, where(fit_score: FIT_neutral)
   scope :absolute_fit, where(fit_score: FIT_absolute)
 
-  scope :ready_to_make, where(fit_score: 8).and(craft_id: nil)
+  scope :ready_to_make, where(fit_score: 8).and(need_to_generate_craft: true)
 
   geocoded_by :address
   reverse_geocoded_by :coordinates
@@ -70,6 +75,18 @@ class HoverCraft
 
   before_save :calculate_fit_scores
   # after_initialize :calculate_fit_scores # use in debug mode to play with algorythm
+
+  def crafted?() craft_id.present? end
+  def followed?() tweet_stream_id.present? end
+
+  def yelp_exists?() yelp_id.present? end
+  def twitter_exists?() twitter_username.present? end
+  def facebook_exists?() facebook_id.present? end
+
+  def yelp_does_not_exist?() not yelp_exists? end
+  def twitter_does_not_exist?() not twitter_exists? end
+  def facebook_does_not_exist?() not facebook_exists? end
+
 
   def self.explore_missing_twitter_web_crafts
     rate_limit = TwitterService.rate_limit # see how many request we can make
@@ -288,14 +305,6 @@ class HoverCraft
     scan_for_food_trucks_near_place(place, state, term, page+1, total_pages)
   end
 
-  def yelp_exists?() yelp_id.present? end
-  def twitter_exists?() twitter_username.present? end
-  def facebook_exists?() facebook_id.present? end
-
-  def yelp_does_not_exist?() not yelp_exists? end
-  def twitter_does_not_exist?() not twitter_exists? end
-  def facebook_does_not_exist?() not facebook_exists? end
-
   def names_match?(name1, name2)
     return false unless (name1.present? and name2.present?)
     val1 = name1.downcase.gsub(/[^0-9a-z]/i, '') # remove non alphanumerics and compress everything
@@ -312,7 +321,7 @@ class HoverCraft
   def calculate_fit_scores
     # calculate matches strengths
     return set_all_fit_scores(FIT_need_to_explore) if fit_score.eql? FIT_need_to_explore
-    return set_all_fit_scores(FIT_zero) if skip_this_craft?
+    return set_all_fit_scores(FIT_zero) if skip_this_craft
     return set_all_fit_scores(FIT_missing_craft) if yelp_does_not_exist? or twitter_does_not_exist?
 
     calculate_food_fit_score
@@ -372,7 +381,7 @@ class HoverCraft
   end
 
   def calculate_truck_fit_score
-    return (self.fit_score_truck = FIT_absolute) if craft_is_a_truck?
+    return (self.fit_score_truck = FIT_absolute) if craft_is_mobile
     self.fit_score_truck = FIT_check_manually
   end
 

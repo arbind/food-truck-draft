@@ -26,7 +26,7 @@ class TweetApiAccount
   before_save :geocode_this_location! # auto-fetch coordinates
 
   scope :streams, where(is_tweet_streamer: true).and(login_ok: true)
-  scope :admins, where(is_tweet_streamer: false)
+  scope :admins, where(is_tweet_streamer: false).and(login_ok: true)
 
 
 

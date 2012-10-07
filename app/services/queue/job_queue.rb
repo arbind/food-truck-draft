@@ -8,7 +8,8 @@ class JobQueue
 
   def self.service() JobQueueService.instance end
 
-  def self.enqueue(key, job) service.enqueue end
-  def self.dequeue(key) service.dequeue end
+  def self.enqueue(key, job) service.enqueue(key, job) end
+  def self.dequeue(key) service.dequeue(key) end
+  def self.peek(key) service.peek(key) end
 
 end

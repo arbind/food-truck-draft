@@ -52,7 +52,7 @@ class WebCraft
     wc_id = web_craft_hash[:web_craft_id] || web_craft_hash['web_craft_id']
     return nil if wc_id.nil?
 
-    web_craft = find_or_initialize_by(web_craft_id: wc_id)
+    web_craft = find_or_initialize_by(web_craft_id: "#{wc_id}")
     web_craft.update_attributes(web_craft_hash) if web_craft
 
     web_craft

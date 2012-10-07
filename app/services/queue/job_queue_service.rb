@@ -6,7 +6,16 @@ class JobQueueService
   end
 
   def dequeue(key)
-    JobQueue.where(key: key.symbolize).asc(:created_at).limit(1).first
+    entry = JobQueue.where(key: key.symbolize).asc(:created_at).limit(1).first
+    return nil if entry.nil?
+    entry.delete
+    entry.job
+  end
+
+  def peek(key)
+    entry = JobQueue.where(key: key.symbolize).asc(:created_at).limit(1).first
+    return nil if entry.nil?
+    entry.job
   end
 
 end

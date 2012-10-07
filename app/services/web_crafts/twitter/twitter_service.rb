@@ -1,24 +1,56 @@
 class TwitterService < WebCraftService
+  MUTEX = Mutex.new
   include Singleton
+
+  @_twitter_clients = {}
+  @@_admin_account_idx = 0
+  @@_admin_account_last_accessed_at = nil
+
   attr_reader :webservice_client
 
   def self.web_craft_class() TwitterCraft end
 
-  def self.rate_limit() instance.twitter_client.rate_limit_status.remaining_hits end
-  def self.time_until_rate_limit_resets() Util.normalized_time(instance.twitter_client.rate_limit_status.reset_time) end
-  def self.how_long_until_rate_limit_resets?() Util.how_long_from(instance.twitter_client.rate_limit_status.reset_time) end
+  # def self.rate_limit() instance.twitter_client.rate_limit_status.remaining_hits end
+  # def self.time_until_rate_limit_resets() Util.normalized_time(instance.twitter_client.rate_limit_status.reset_time) end
+  # def self.how_long_until_rate_limit_resets?() Util.how_long_from(instance.twitter_client.rate_limit_status.reset_time) end
 
-  def twitter_clients
-    @_twitter_clients ||= {}
+  def twitter_api_rate_limit
+    # +++ move to app config
+    @@_admin_account_access_rate_limit ||= 300 # times per hour
   end
 
-  def next_admin_account
-    TweetApiAccount.next_admin_account 
+  def twitter_clients() @_twitter_clients ||= {} end
+
+  def next_admin_account!
+    # ! this method may sleep the thread in order to stay within twitter rate limits !
+    # add more api admin accounts (non streaming) to help avoid sleeping
+    MUTEX.synchronize do
+      admin_accounts = TweetApiAccount.admins.asc(:created_at)
+      num_admins =  admin_accounts.count
+      return nil if num_admins.zero?
+      @@_admin_account_idx += 1
+      @@_admin_account_idx = 0 if @@_admin_account_idx.eql? num_admins
+
+      access_frequency =  (3600.0/(num_admins * twitter_api_rate_limit)).to_i
+
+      time_elapsed_since_last_access = 1000000
+      time_elapsed_since_last_access = (Time.now - @@_admin_account_last_accessed_at) if @@_admin_account_last_accessed_at.present?
+
+      if (time_elapsed_since_last_access < access_frequency)
+        wait_time =  (1 + access_frequency - time_elapsed_since_last_access).to_i
+        puts ":: Enforcing twitter Rate Limit(#{twitter_api_rate_limit}/hour): Sleeping for #{wait_time} sec"
+        sleep wait_time
+      end
+
+      account = admin_accounts[@@_admin_account_idx]
+      @@_admin_account_last_accessed_at = Time.now
+      account
+    end
   end
 
   def twitter_client(twitter_account=nil)
     admin_account = twitter_account
-    admin_account = next_admin_account if admin_account.nil?
+    admin_account ||= next_admin_account!
 
     client = twitter_clients[admin_account.twitter_id]
     if client.nil?
@@ -26,7 +58,9 @@ class TwitterService < WebCraftService
       twitter_clients[admin_account.twitter_id] = client if admin_account.twitter_id.present?
     end
     client
-  rescue
+  rescue Exception => e
+    puts e.message
+    puts e.backtrace
     nil
   end
 

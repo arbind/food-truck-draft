@@ -158,12 +158,21 @@ class Craft
     save
   end
 
-  def self.materialize_from_twitter_id(tid)
+  def self.materialize_from_twitter_id(tid, default_address=nil, tweet_stream_id=nil)
+    puts "^^Materializing Craft from twitter id #{tid}"
     twitter_craft = TwitterCraft.pull(tid)
+    
     return twitter_craft.craft if twitter_craft.craft.present?
+
+    updates = {}
+    updates[:address] = default_address if (default_address.present? and twitter_craft.address.nil?)
+    updates[:tweet_stream_id] = tweet_stream_id if tweet_stream_id.present? and twitter_craft.tweet_stream_id.nil?
+    twitter_craft.update_attributes(updates) if updates.present?
 
     craft = Craft.create
     craft.bind(twitter_craft)
+    JobQueue.service.enqueue(:make_hover_craft_for_new_twitter_friend, {craft_id: craft._id, twitter_id: tid, tweet_stream_id: tweet_stream_id})
+    puts "^^Materialized Craft with twitter screen_name #{twitter_craft.screen_name}"
     craft
   end
 

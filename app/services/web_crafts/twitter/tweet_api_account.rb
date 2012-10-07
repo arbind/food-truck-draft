@@ -1,15 +1,14 @@
 class TweetApiAccount
-  MUTEX = Mutex.new
-  @@admin_account_idx = 0
-  @@admin_account_last_accessed_at = nil
-
   # used by application (not Users) to connect to twitter api (via Twitter or TweetStream Gem)
   # default Twitter password: 'foodTRUCK2012'
   include Mongoid::Document
   include Mongoid::Timestamps
   include Geocoder::Model::Mongoid
 
+  def stream_service() TweetStreamService.instance end
   def self.stream_service() TweetStreamService.instance end
+    
+  def twitter_service() TwitterService.instance end
   def self.twitter_service() TwitterService.instance end
     
 
@@ -59,36 +58,12 @@ class TweetApiAccount
     false
   end
 
-  def self.twitter_api_rate_limit
-    # +++ move to app config
-    @@admin_account_access_rate_limit ||= 350 # times per hour
+  def twitter_client
+    twitter_service.twitter_client(self)
   end
 
   def self.next_admin_account!
-    # ! this method may sleep the thread in order to stay within twitter rate limits !
-    # add more api admin accounts (non streaming) to help avoid sleeping
-    MUTEX.synchronize do
-      admin_accounts = admins.asc(:created_at)
-      num_admins =  admin_accounts.count
-      return nil if num_admins.zero?
-      @@admin_account_idx += 1
-      @@admin_account_idx = 0 if @@admin_account_idx.eql? num_admins
-
-      access_frequency =  (3600.0/(num_admins * twitter_api_rate_limit)).to_i
-
-      time_elapsed_since_last_access = 1000000
-      time_elapsed_since_last_access = (Time.now - @@admin_account_last_accessed_at) if @@admin_account_last_accessed_at.present?
-
-      if (time_elapsed_since_last_access < access_frequency)
-        wait_time =  (1 + access_frequency - time_elapsed_since_last_access).to_i
-        puts "--- Enforcing twitter Rate Limit(#{twitter_api_rate_limit}/hour): Sleeping for #{wait_time} sec"
-        sleep wait_time
-      end
-
-      account = admin_accounts[@@admin_account_idx]
-      @@admin_account_last_accessed_at = Time.now
-      account
-    end
+    twitter_service.next_admin_account!
   end
 
 
@@ -113,9 +88,14 @@ class TweetApiAccount
 
     remote_pull!
     new_friend_ids = []
+    new_friends_count = 0
     friend_ids.each do |fid|
       twitter_craft = TwitterCraft.where(twitter_id: fid).first
-      JobQueue.service.enqueue(:make_craft_for_twitter_id, {twitter_id: fid, default_address: address, tweet_stream_id: _id})  if twitter_craft.nil?
+      if twitter_craft.nil?
+        JobQueue.service.enqueue(:make_craft_for_twitter_id, {twitter_id: fid, default_address: address, tweet_stream_id: _id})
+        new_friends_count +=1
+      end
+      puts "^^Queued #{new_friends_count} to make_craft_for_twitter_id  from #{screen_name} tweet stream" unless new_friends_count.zero?
     end
       # craft = Craft.materialize_from_twitter_id(fid)
         # client = TwitterService.instance.admin_client

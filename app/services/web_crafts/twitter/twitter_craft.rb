@@ -29,6 +29,8 @@ class TwitterCraft < WebCraft
   field :default_profile
   field :default_profile_image
 
+  field :tweet_stream_id
+  
   field :timeline, default: []
   field :oembed, type: Hash, default: {}
 

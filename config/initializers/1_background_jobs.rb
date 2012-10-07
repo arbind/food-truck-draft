@@ -11,6 +11,7 @@ def launch_job_to_materialize_crafts_from_tweet_stream_friends
     Thread.current[:type] = :chron
     Thread.current[:description] = 'Materializes crafts for any new friends that have been added to a Twitter TweetStreams account'
     puts ":: #{Thread.current[:name]}: Thread Launched"
+    sleep 20 # allow a few moments for the webserver to load
     loop do
       begin
         puts ":: Pulling streams"
@@ -53,10 +54,7 @@ end
 if RUNNING_IN_SERVER
   puts ":: Background Threads will be launched in 20 seconds"
   Rails.application.config.after_initialize do
-    Thread.new do
-      sleep 20 # allow a few moments for the webserver to load
-      launch_background_jobs
-    end
+    launch_background_jobs
   end
 else
   puts ":: Background Threads will not be launched"

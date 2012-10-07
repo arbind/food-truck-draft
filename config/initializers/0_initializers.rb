@@ -1,5 +1,5 @@
-RUNNING_IN_SERVER = defined? Rails::Server
-RUNNING_IN_CONSOLE = ! RUNNING_IN_SERVER
+RUNNING_IN_CONSOLE = defined?(Rails::Console)
+RUNNING_IN_SERVER = ! RUNNING_IN_CONSOLE
 
 puts ":: Running in server" if RUNNING_IN_SERVER
 puts ":: Running in console" if RUNNING_IN_CONSOLE

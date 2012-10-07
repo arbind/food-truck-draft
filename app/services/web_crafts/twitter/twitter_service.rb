@@ -51,7 +51,7 @@ class TwitterService < WebCraftService
   def twitter_client(twitter_account=nil)
     admin_account = twitter_account
     admin_account ||= next_admin_account!
-    return nil if (admin_account.nil? or admin_account.twitter_id.nil?)
+    return nil if admin_account.nil?
 
     client = twitter_clients[admin_account.twitter_id]
     if client.nil?

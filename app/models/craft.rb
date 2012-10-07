@@ -161,7 +161,8 @@ class Craft
   def self.materialize_from_twitter_id(tid, default_address=nil, tweet_stream_id=nil)
     puts "^^Materializing Craft from twitter id #{tid}"
     twitter_craft = TwitterCraft.pull(tid)
-    
+    raise "Twitter user #{tid} could not be pulled!" if twitter_craft.nil?
+
     return twitter_craft.craft if twitter_craft.craft.present?
 
     updates = {}

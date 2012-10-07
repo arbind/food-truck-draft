@@ -38,6 +38,7 @@ class TweetApiAccount
     
 
   def remote_pull!
+    raise "!! could not authenticate #{screen_name}[#{twitter_id}]" unless (login_ok or verify_login)
     # client = Twitter::Client.new(twitter_oauth_config)
     client = TwitterService.instance.twitter_client(self)
     puts client
@@ -72,9 +73,11 @@ class TweetApiAccount
     twitter_service.delete_twitter_client(self) # remove any old clients that may have stale auth info
     twitter_service.twitter_client(self).user
     update_attributes(login_ok: true)
+    true
   rescue Exception => e
     puts "!! #{screen_name}: login failed #{e.message}"
     update_attributes(login_ok: false)
+    false
   end
 
   def consumer_key() oauth_config['consumer_key'] end

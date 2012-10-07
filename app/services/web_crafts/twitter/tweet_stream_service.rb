@@ -53,6 +53,7 @@ class TweetStreamService
   end
 
   def start_stream(tweet_stream)
+    # +++ use tweet_stream.twitter_id instead of screen_name
     active_stream = active_streams[tweet_stream.screen_name]
     if active_stream.present?
       puts "............#{tweet_stream.screen_name}: active_stream found present: #{active_stream.present?} state: #{active_stream[:state]} connected: #{active_stream[:connected]}"

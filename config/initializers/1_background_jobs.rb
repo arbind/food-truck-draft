@@ -52,8 +52,16 @@ def launch_job_to_verify_tweet_accounts_and_start_streaming
     Thread.current[:description] = 'Verify Tweet Api Accounts can login ok, and start listening to tweet streams'
     sleep 4 # allow a few moments for the webserver to load
     puts ":: #{Thread.current[:name]}: Thread Launched"
-    TweetApiAccount.verify_logins
-    TweetStreamService.instance.start_listening
+    loop do
+      begin
+        TweetApiAccount.verify_logins
+        TweetStreamService.instance.start_listening
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace
+      end
+      sleep 1*60*60 # check every hour
+    end
   end
 end
 
@@ -68,17 +76,21 @@ def launch_chron_jobs
 end
 
 def launch_background_jobs
-  launch_initializers
   launch_chron_jobs
 end
 
+if RUNNING_IN_SERVER
+  puts ":: Launching Initializer Threads"
+  Rails.application.config.after_initialize do
+    launch_initializers
+  end
+end
+
 if RUNNING_IN_SERVER and LAUNCH_THREADS
-  puts ":: Background Threads will be launched in 20 seconds"
+  puts ":: Launching Background Threads"
   Rails.application.config.after_initialize do
     launch_background_jobs
   end
 else
   puts ":: Background Threads will not be launched"
 end
-
-

@@ -40,8 +40,7 @@ class TweetApiAccount
   def remote_pull!
     raise "!! could not authenticate #{screen_name}[#{twitter_id}]" unless (login_ok or verify_login)
     # client = Twitter::Client.new(twitter_oauth_config)
-    client = TwitterService.instance.twitter_client(self)
-    puts client
+    client = twitter_service.twitter_client(self)
     user = client.user
     puts user
     self.twitter_id = user.id
@@ -71,9 +70,10 @@ class TweetApiAccount
 
   def verify_login
     twitter_service.delete_twitter_client(self) # remove any old clients that may have stale auth info
-    twitter_service.twitter_client(self).user
-    update_attributes(login_ok: true)
-    true
+    login_ok = remote_pulll!
+    login_ok = !!login_ok
+    update_attributes(login_ok: login_ok)
+    login_ok
   rescue Exception => e
     puts "!! #{screen_name}: login failed #{e.message}"
     update_attributes(login_ok: false)
@@ -128,7 +128,7 @@ class TweetApiAccount
       s.beam_up(url, path, use_ssl, cookies, port)
     end
   end
-  def beam_up(url, path, use_ssl=false, cookies = {}, port=nil)
+  def beam_up(url='www.food-truck.me', path='tweet_api_accounts/sync.json', use_ssl=false, cookies = {}, port=nil)
     params = {}
     params[:tweet_api_account] = self.to_json
     r = Web.http_post(url, path, params, use_ssl, cookies, port)

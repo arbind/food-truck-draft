@@ -51,7 +51,7 @@ def launch_background_jobs
   launch_job_to_detect_duplicates
 end
 
-if RUNNING_IN_SERVER
+if RUNNING_IN_SERVER and LAUNCH_THREADS
   puts ":: Background Threads will be launched in 20 seconds"
   Rails.application.config.after_initialize do
     launch_background_jobs

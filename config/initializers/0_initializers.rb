@@ -1,3 +1,5 @@
+# LAUNCH_THREADS = true
+LAUNCH_THREADS = false
 RUNNING_IN_CONSOLE = defined?(Rails::Console)
 RUNNING_IN_SERVER = ! RUNNING_IN_CONSOLE
 
@@ -11,15 +13,17 @@ REDIS = Redis.new(:host => uri.host, :port => uri.port, :password => uri.passwor
 
 # start listening to tweet streamers once the server loads
 Rails.application.config.after_initialize do
-  Thread.new do
-    sleep 8 # allow a few moments for the webserver to load
-    TweetStreamService.instance.start_listening
+  if LAUNCH_THREADS
+    Thread.new do
+      sleep 8 # allow a few moments for the webserver to load
+      TweetStreamService.instance.start_listening
+    end
   end
 end
 
 
 # ping the server to keep from idling out
-if Rails.env.production? and RUNNING_IN_SERVER
+if Rails.env.production? and RUNNING_IN_SERVER and LAUNCH_THREADS
   puts ":: Initializing Ping Thread"
   PING_URI = URI.parse("http://www.food-truck.me/ping.json")
   ping_thread = Thread.new do

@@ -36,23 +36,6 @@ class TweetApiAccount
   def twitter_service() TwitterService.instance end
   def self.twitter_service() TwitterService.instance end
     
-  def update_from_twitter_client(client)
-    user = client.user
-    self.twitter_id = user.id
-    self.screen_name = user.screen_name
-    self.name = user.name
-    self.description = user.description
-    self.address = user.location
-    self.friends_count = user.friends_count
-    self.followers_count = user.followers_count
-
-    # manage friend list
-    friends = client.friend_ids
-    unfriended = self.friend_ids - friends.ids # +++ TODO unbind TwitterCrafts that are bound to this TweetStreamAccount (if this is a TweetStreamAccount)
-    self.friend_ids = friends.ids
-    self.save!
-  end
-
   def remote_pull!
     raise "!! account login is unverified #{screen_name}[#{twitter_id}]" unless (login_ok or verify_login)
     # client = Twitter::Client.new(twitter_oauth_config)
@@ -65,10 +48,6 @@ class TweetApiAccount
 
   def twitter_client() twitter_service.twitter_client(self) end
   def self.next_admin_account!() twitter_service.next_admin_account! end
-
-  def self.verify_logins
-    TweetApiAccount.all.each { |account| account.verify_login }
-  end
 
   def verify_login
     twitter_service.delete_twitter_client(self) # remove any old clients that may have stale auth info
@@ -96,26 +75,6 @@ class TweetApiAccount
   end
 
   def unfollow(twitter_username_or_id)
-  end
-
-  # Enqueue job to create a new Craft for each new friend this tweetstream is following
-  def queue_friend_ids_to_materialize
-    return unless is_tweet_streamer
-
-    remote_pull!
-    new_friends_count = 0
-    friend_ids.each do |fid|
-      twitter_craft = TwitterCraft.where(twitter_id: fid).first
-      if twitter_craft.nil?
-        JobQueue.service.enqueue(:make_craft_for_twitter_id, {twitter_id: fid, default_address: address, tweet_stream_id: _id})
-        new_friends_count +=1
-      end
-      puts "^^Queued #{new_friends_count} to make_craft_for_twitter_id from #{screen_name} tweet stream" unless new_friends_count.zero?
-    end
-      # craft = Craft.materialize_from_twitter_id(fid)
-        # client = TwitterService.instance.admin_client
-        # user = client.user(fid)
-        # update HoverCrafts also
   end
 
   def streaming_status
@@ -169,6 +128,24 @@ private
       geocode # update lat, lng
     end
     return true
+  end
+
+
+  def update_from_twitter_client(client)
+    user = client.user
+    self.twitter_id = user.id
+    self.screen_name = user.screen_name
+    self.name = user.name
+    self.description = user.description
+    self.address = user.location
+    self.friends_count = user.friends_count
+    self.followers_count = user.followers_count
+
+    # manage friend list
+    friends = client.friend_ids
+    unfriended = self.friend_ids - friends.ids # +++ TODO unbind TwitterCrafts that are bound to this TweetStreamAccount (if this is a TweetStreamAccount)
+    self.friend_ids = friends.ids
+    self.save!
   end
 
 end

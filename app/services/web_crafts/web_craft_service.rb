@@ -8,56 +8,52 @@ class WebCraftService
 
   # fetch and pull
   def self.fetch(web_craft_id)
-    begin
-      web_craft_hash = web_fetch(web_craft_id)
-      return nil if web_craft_hash.nil?
+    web_craft_hash = web_fetch(web_craft_id)
+    return nil if web_craft_hash.nil?
 
-      if web_craft_hash[:web_craft_id].nil?
-        id = web_craft_hash.delete('id') || web_craft_hash.delete(:id)
-        web_craft_hash[:web_craft_id] = id
-      end
-      # grab location info if we can
-      if (web_craft_hash['location'].present? and web_craft_hash['location'].kind_of? Hash)
-        l_hash = {}
-        l = web_craft_hash.delete('location')
-        l_hash[:address] = l[:address] || l['address']
-        if l_hash[:address].present?
-          a = l_hash[:address]
-          a = *a # proceses address as an array incase addresss is an array for street 1, 2
-          l_hash[:address] = a.join(', ') 
-        end
-        l_hash[:city] = l[:city] || l['city']
-        l_hash[:state] = l[:state_code] || l['state_code'] || l[:state] || l['state']
-        l_hash[:zip] = l[:zip] || l['zip'] || l[:zipcode] || l['zipcode'] || l[:postal_code] || l['postal_code']
-        l_hash[:country] = l[:country] || l['country']
-        web_craft_hash[:location_hash] = l_hash
-      end
-
-      # protect mongoid object created_at and updated_at fields
-      prefix = web_craft_class.name.downcase
-      web_craft_hash[:"#{prefix}_created_at"] = web_craft_hash.delete(:created_at)
-      web_craft_hash[:"#{prefix}_updated_at"] = web_craft_hash.delete(:updated_at)
-
-      # do any post process transformations
-
-      web_craft_hash
-    rescue Exception => e
-      puts e.message
-      puts e.backtrace
-      return nil
+    if web_craft_hash[:web_craft_id].nil?
+      id = web_craft_hash.delete('id') || web_craft_hash.delete(:id)
+      web_craft_hash[:web_craft_id] = id
     end
+    # grab location info if we can
+    if (web_craft_hash['location'].present? and web_craft_hash['location'].kind_of? Hash)
+      l_hash = {}
+      l = web_craft_hash.delete('location')
+      l_hash[:address] = l[:address] || l['address']
+      if l_hash[:address].present?
+        a = l_hash[:address]
+        a = *a # proceses address as an array incase addresss is an array for street 1, 2
+        l_hash[:address] = a.join(', ') 
+      end
+      l_hash[:city] = l[:city] || l['city']
+      l_hash[:state] = l[:state_code] || l['state_code'] || l[:state] || l['state']
+      l_hash[:zip] = l[:zip] || l['zip'] || l[:zipcode] || l['zipcode'] || l[:postal_code] || l['postal_code']
+      l_hash[:country] = l[:country] || l['country']
+      web_craft_hash[:location_hash] = l_hash
+    end
+
+    # protect mongoid object created_at and updated_at fields
+    prefix = web_craft_class.name.downcase
+    web_craft_hash[:"#{prefix}_created_at"] = web_craft_hash.delete(:created_at)
+    web_craft_hash[:"#{prefix}_updated_at"] = web_craft_hash.delete(:updated_at)
+
+    # do any post process transformations
+
+    web_craft_hash
+  rescue Exception => e
+    puts "webcraft service.fetch Exception"
+    puts e.message
+    raise e
   end
 
   def self.pull(web_craft_id)
-    begin
-      web_craft_hash = fetch(web_craft_id)
-      web_craft = web_craft_class.materialize(web_craft_hash) if web_craft_hash
-      web_craft
-    rescue Exception => e 
-      puts e.message
-      puts e.backtrace
-      nil
-    end
+    web_craft_hash = fetch(web_craft_id)
+    web_craft = web_craft_class.materialize(web_craft_hash) if web_craft_hash
+    web_craft
+  rescue Exception => e 
+    puts "webcraft service.pull Exception"
+    puts e.message
+    raise e
   end
   # /fetch and pull
 

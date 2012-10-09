@@ -12,13 +12,20 @@ class TweetStreamService
     craft = Craft.materialize_from_twitter_id(twitter_id)
   end
 
-  def queue_all_friend_ids_to_materialize
-    TweetApiAccount.streams.each do |account|
-      account.queue_friend_ids_to_materialize
-    end
+  def refresh_tweet_streams
+    verify_logins
+    start_streams
+  rescue Exception => e
+    puts e.message
+    puts e.backtrace    
   end
 
-  def start_listening
+
+  def verify_logins
+    TweetApiAccount.all.each { |account| account.verify_login }
+  end
+
+  def start_streams
     streams_started = 0
     TweetApiAccount.streams.each do |tweet_stream|
       streams_started += start_stream(tweet_stream)

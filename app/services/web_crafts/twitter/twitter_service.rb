@@ -16,7 +16,7 @@ class TwitterService < WebCraftService
 
   def twitter_api_rate_limit
     # +++ move to app config
-    @@_admin_account_access_rate_limit ||= 300 # times per hour
+    @@_admin_account_access_rate_limit ||= 50 # times per hour
   end
 
   def twitter_clients() @_twitter_clients ||= {} end
@@ -148,6 +148,10 @@ class TwitterService < WebCraftService
       end
     end
     web_craft_hash
+  rescue Twitter::Error::RateLimited => e
+    puts "twitter service Twitter::Error::RateLimited"
+    puts e.message
+    raise e
   end
 
   def self.web_fetch(web_craft_id) # fetch and normalize a web_craft_hash for update_atrributes

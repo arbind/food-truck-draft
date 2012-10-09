@@ -161,8 +161,10 @@ class Craft
   def self.materialize_from_twitter_id(tid, default_address=nil, tweet_stream_id=nil)
     puts "^^Materializing Craft from twitter id #{tid}"
     twitter_craft = TwitterCraft.pull(tid)
-    raise "Twitter user #{tid} could not be pulled!" if twitter_craft.nil?
-
+    if twitter_craft.nil?
+      puts "Twitter user #{tid} could not be pulled!"
+      return nil
+    end
     return twitter_craft.craft if twitter_craft.craft.present?
 
     updates = {}
@@ -172,9 +174,12 @@ class Craft
 
     craft = Craft.create
     craft.bind(twitter_craft)
-    JobQueue.service.enqueue(:make_hover_craft_for_new_twitter_friend, {craft_id: craft._id, twitter_id: tid, tweet_stream_id: tweet_stream_id})
     puts "^^Materialized Craft with twitter screen_name #{twitter_craft.screen_name}"
     craft
+  rescue Exception => e 
+    puts "craft Exception"
+    puts e.message
+    raise e
   end
 
   def self.materialize(provider_id_username_or_href, provider = nil)

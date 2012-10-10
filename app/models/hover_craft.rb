@@ -269,7 +269,6 @@ class HoverCraft
     puts ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"        
   end
 
-
   def self.scan_for_food_trucks_near_place(place, state, term="food truck, truck", page=1, total_pages=0)
     return if ( 1<page and (total_pages < page or 5000 < (page*YelpService::V2_MAX_RESULTS_LIMIT) ) )
 
@@ -390,7 +389,6 @@ class HoverCraft
     puts r
     r
   end
-
 
   def latitude() coordinates.last end
   alias_method :lat, :latitude

@@ -29,7 +29,6 @@ else
   puts ":: No Ping Thread Started"
 end
 
-
 # FTMMIN01
 # FTMMIN02 tellariadne+ftmadmin02@gmail.com
 # FTMMIN03 tellariadne+ftmadmin03@gmail.com

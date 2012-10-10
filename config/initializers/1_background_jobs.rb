@@ -13,7 +13,7 @@ def launch_chron_job_to_materialize_crafts
       TweetStreamService.instance.refresh_tweet_streams # load the latest friends
       JobQueueService.instance.queue_tweet_stream_friend_ids_to_materialize_craft
       JobQueueService.instance.dequeue_tweet_stream_friend_ids_to_materialize_craft
-
+      
       puts ":: Dequeueing hovercraft jobs"
       # launch_chron_job_to_materialize_crafts_from_approved_hover_crafts
       # while cid=JobQueue.service.dequeue(:make_hover_craft_for_new_twitter_friend)

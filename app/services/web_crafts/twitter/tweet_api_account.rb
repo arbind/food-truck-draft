@@ -28,7 +28,12 @@ class TweetApiAccount
   scope :streams, where(is_tweet_streamer: true).and(login_ok: true)
   scope :admins, where(is_tweet_streamer: false).and(login_ok: true)
 
-
+  def self.lookup(id_or_screen_name)
+    id = "#{id_or_screen_name}"
+    account = where(twitter_id: id.to_i).first if id.integer?
+    account = where(screen_name: id_or_screen_name).first if not id.integer?
+    account
+  end
 
   def stream_service() TweetStreamService.instance end
   def self.stream_service() TweetStreamService.instance end

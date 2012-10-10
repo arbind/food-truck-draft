@@ -10,30 +10,16 @@ class HoverCraft
   FIT_neutral = 5           # at least its not a bad fit
   FIT_absolute = 8          # known to be a fit
 
-  field :status, type: Symbol, default: :unvisited # [:unvisited, :visited]
+  field :craft_id, default: nil
+  field :tweet_stream_id, default: nil
 
+  # manual overrides
   field :skip_this_craft, type: Boolean, default: false
-  field :generated_craft, type: Boolean, default: false
-  field :need_to_generate_craft, type: Boolean, default: false
-
-  field :craft_is_food, type: Boolean, default: false
-  field :craft_is_mobile, type: Boolean, default: false
+  field :approve_this_craft, type: Boolean, default: false
 
   # geocoder fields
   field :address, default: nil
   field :coordinates, type: Array, default: [] # does geocoder gem auto index this?
-
-  field :essence_tags, type: Array, default: [] # food, fit, fun, travel, home
-  field :theme_tags, type: Array, default: [] # truck, taco, sushi: weight-loss, yoga, etc
-
-  field :fit_score, type: Integer, default: FIT_check_manually
-  field :fit_score_name, type: Integer, default: FIT_check_manually
-  field :fit_score_username, type: Integer, default: FIT_check_manually
-  field :fit_score_website, type: Integer, default: FIT_check_manually
-  field :fit_score_food, type: Integer, default: FIT_check_manually
-  field :fit_score_truck, type: Integer, default: FIT_check_manually
-
-  field :craft_id, default: nil
 
   field :yelp_id, default: nil
   field :yelp_name, default: nil
@@ -43,8 +29,6 @@ class HoverCraft
   field :yelp_categories, default: nil
   field :yelp_craft_id, default: nil
 
-  # field :twitter_referring_user, default: nil
-  field :tweet_stream_id, default: nil
   field :twitter_id, default: nil
   field :twitter_name, default: nil
   field :twitter_username, default: nil
@@ -60,15 +44,24 @@ class HoverCraft
   field :facebook_website, default: nil
   field :facebook_craft_id, default: nil
 
+  field :fit_score, type: Integer, default: FIT_check_manually
+  field :fit_score_name, type: Integer, default: FIT_check_manually
+  field :fit_score_username, type: Integer, default: FIT_check_manually
+  field :fit_score_website, type: Integer, default: FIT_check_manually
+  field :fit_score_food, type: Integer, default: FIT_check_manually
+  field :fit_score_truck, type: Integer, default: FIT_check_manually
+
   scope :need_to_explore, where(fit_score: FIT_need_to_explore)
-  scope :check_manually, where(fit_score: FIT_check_manually)
-  scope :missing_craft, where(fit_score: FIT_missing_craft)
-  scope :zero_fit, where(fit_score: FIT_zero)
-  scope :neutral_fit, where(fit_score: FIT_neutral)
-  scope :absolute_fit, where(fit_score: FIT_absolute)
+  scope :check_manually,  where(fit_score: FIT_check_manually)
+  scope :missing_craft,   where(fit_score: FIT_missing_craft)
+  scope :zero_fit,        where(fit_score: FIT_zero)
+  scope :neutral_fit,     where(fit_score: FIT_neutral)
+  scope :absolute_fit,    where(fit_score: FIT_absolute)
 
-  scope :ready_to_make, where(fit_score: 8).and(need_to_generate_craft: true)
-
+  scope :ready_to_make,       where(fit_score: 8).and(:tweet_stream_id.exists =>  true).and(craft_id: nil)
+  scope :needs_tweet_stream,  where(fit_score: 8).and(:tweet_stream_id.exists => false).and(craft_id: nil)
+  scope :needs_yelp_craft,    where(yelp_id: nil).and(:tweet_stream_id.exists =>  true).and(craft_id: nil)
+  scope :unknowns,            where(:fit_score.lt => 8).and(:tweet_stream_id.exists => false).and(craft_id: nil).desc(:fit_score)
   geocoded_by :address
   reverse_geocoded_by :coordinates
   before_save :geocode_this_location! # auto-fetch coordinates

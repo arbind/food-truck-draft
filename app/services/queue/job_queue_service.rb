@@ -67,12 +67,14 @@ class JobQueueService
         puts e.message
         puts e.backtrace
       end
-      # JobQueue.service.enqueue(:make_hover_craft_for_new_twitter_friend, {craft_id: craft._id, twitter_id: tid, tweet_stream_id: tweet_stream_id})
-      # find hover craft by twitter_id or twitter_username.downcase
-      # mark as duplicate if more than one found
       # create hovercraft if none found
       # set twitterinfo and tweet_stream_id on hovercraft
-      # mark to 
+      # hover_craft = HoverCraft.service.materialize_from_twitter_craft(craft.twitter)
+
+      # complete the craft if hover craft is ready to make
+      # hover_craft.trigger_to_make
+        # find hover craft by twitter_id or twitter_username.downcase
+        # mark as duplicate if more than one found
     end
   rescue Exception => e
     puts e.message

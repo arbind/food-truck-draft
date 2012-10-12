@@ -152,17 +152,12 @@ class YelpService < WebCraftService
     end
   end
 
-  def self.food_trucks_near_place(place, state, term="food truck, truck", page=1, radius=V2_MAX_RADIUS_FILTER)
-    search(place, state, term, page, radius)
-  end
-
-  def self.search(city, state, term, page=1, radius=V2_MAX_RADIUS_FILTER)
+  def self.search(term, place, page=1, radius=V2_MAX_RADIUS_FILTER)
     offset = V2_MAX_RESULTS_LIMIT*(page-1) # 1 + this ?
     query = {
       term: term,
       # categories: ['streetvendors', 'foodstands'],
-      city: city,
-      state: state,
+      city: place,
       radius_filter: radius,
       offset: offset,
       limit: V2_MAX_RESULTS_LIMIT

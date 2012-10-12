@@ -1,4 +1,4 @@
-class HoverCraftsController < ApplicationController
+class HoverCraftsController < BasicAuthProtectionController
   protect_from_forgery :except => :sync
 
   # GET /crafts

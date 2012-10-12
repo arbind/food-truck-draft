@@ -9,7 +9,7 @@ FoodTruck::Application.configure do
       :V2 => { # Yelp API v2.0 uses OAUTH:
         :consumer_key     => "EdtIXf4NMUBXh8XoysxW2Q",
         :consumer_secret  => "hMUNaKi1Oa_d7OvlHH0d2_7d7-M",
-        :token             => "p4KFTaHrRR6oTGNOzGq28G9lrdgssyId",
+        :token            => "p4KFTaHrRR6oTGNOzGq28G9lrdgssyId",
         :token_secret     => "8Zvy3k9wMPQflJs7Ztgq9w2uE1c"
       }
     },

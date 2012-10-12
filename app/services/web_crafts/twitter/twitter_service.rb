@@ -71,39 +71,39 @@ class TwitterService < WebCraftService
     twitter_clients.delete(twitter_account.twitter_id)
   end
 
-  def self.hover_craft(twitter_screen_name_or_url)
-    #scrape from web page (does not use api) 
-    username = Web.service_id_from_string_or_href(twitter_screen_name_or_url, :twitter);
-    return nil unless username.present?
+  # def self.hover_craft(twitter_screen_name_or_url)
+  #   #scrape from web page (does not use api) 
+  #   username = Web.service_id_from_string_or_href(twitter_screen_name_or_url, :twitter);
+  #   return nil unless username.present?
 
-    username.downcase!
-    href = "https://twitter.com/#{username}"
-    doc = doc = Web.hpricot_doc(href)
-    return nil unless doc.present?
+  #   username.downcase!
+  #   href = "https://twitter.com/#{username}"
+  #   doc = doc = Web.hpricot_doc(href)
+  #   return nil unless doc.present?
 
-    name = doc.search('h1 .fullname').text().squish
-    screen_name = doc.search('.screen-name').text().squish.downcase
-    screen_name.slice!(0) # slice off the @ in front of the screen name
+  #   name = doc.search('h1 .fullname').text().squish
+  #   screen_name = doc.search('.screen-name').text().squish.downcase
+  #   screen_name.slice!(0) # slice off the @ in front of the screen name
 
-    # validate webpage url
-    website = doc.search('.url a[@href]').text().squish.downcase
-    if website
-      begin
-        u = URI.parse(website)
-        u = URI.parse("http://#{website}") unless u.host.present?
-        website = nil if u.host.nil? or 'twitter.com'.eql? u.host
-      rescue
-      end
-    end
+  #   # validate webpage url
+  #   website = doc.search('.url a[@href]').text().squish.downcase
+  #   if website
+  #     begin
+  #       u = URI.parse(website)
+  #       u = URI.parse("http://#{website}") unless u.host.present?
+  #       website = nil if u.host.nil? or 'twitter.com'.eql? u.host
+  #     rescue
+  #     end
+  #   end
 
-    hover_craft = {
-      twitter_name: name,
-      twitter_username: screen_name || username,
-      twitter_href: href,
-      twitter_website: website,
-      twitter_following_list: nil
-    }
-  end
+  #   hover_craft = {
+  #     twitter_name: name,
+  #     twitter_username: screen_name || username,
+  #     twitter_href: href,
+  #     twitter_website: website,
+  #     twitter_following_list: nil
+  #   }
+  # end
 
   def self.raw_fetch(web_craft_id, fetch_timeline=true) # get the user and their timeline
     tid = "#{web_craft_id}"

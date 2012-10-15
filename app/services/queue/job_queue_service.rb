@@ -34,7 +34,7 @@ class JobQueueService
           new_friends_count +=1
         end
       end
-      puts "^^Queued #{new_friends_count} to make_craft_for_twitter_id from #{stream.screen_name} tweet stream" unless new_friends_count.zero?
+      puts ":: #{stream.screen_name} queued #{new_friends_count} to_materialize_craft for friend_ids_" unless new_friends_count.zero?
         # craft = Craft.materialize_from_twitter_id(fid)
           # client = TwitterService.instance.admin_client
           # user = client.user(fid)
@@ -54,8 +54,7 @@ class JobQueueService
       next if TwitterCraft.where(web_craft_id: "#{tid}").present? # don't create it if it already exists
 
       tweet_stream_id = job['tweet_stream_id']
-      next unless (tweet_stream_id.present? and default_address.present?)      
-      # puts ":: #{Thread.current[:name]}: Creating Craft for twitter id: #{job['twitter_id']} )"
+      next unless tweet_stream_id.present?
       begin
         craft = Craft.service.materialize_from_twitter_id(tid, tweet_stream_id)
         count = count + 1
@@ -65,12 +64,12 @@ class JobQueueService
           start_time = Time.now # reset start time
         end
       rescue Twitter::Error::RateLimited => e
-        puts "job queue service Twitter::Error::RateLimited"
-        puts "Rate Limit Reached, Ending Process"
+        puts "!! job queue service Twitter::Error::RateLimited"
+        puts "!! Rate Limit Reached, Ending Process"
         JobQueue.service.enqueue(:make_craft_for_twitter_id, job) # rate limit exceeded, requeue this for later processing
         break
       rescue Exception => e
-        puts "job queue service Exception" # couldn't process this - don't requeue again to avoid infinite error loop
+        puts "!! job queue service Exception" # couldn't process this - don't requeue again to avoid infinite error loop
         puts e.message
         puts e.backtrace
       end

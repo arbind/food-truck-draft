@@ -5,13 +5,13 @@ class CraftService
   def service() CraftService.instance end
 
   def materialize_from_twitter_id(tid, tweet_stream_id=nil)
-    puts "^^Materializing Craft from twitter id #{tid}"
+    puts ":: Materializing Craft from twitter id #{tid}"
     streamer = TweetApiAccount.streams.where(twitter_id: tweet_stream_id).first
     default_address = streamer.address.downcase! if streamer.present? and streamer.address.present?
 
     twitter_craft = TwitterCraft.pull(tid) rescue nil
     if twitter_craft.nil?
-      puts "Twitter user #{tid} could not be pulled!"
+      puts "^^ Twitter user #{tid} could not be pulled!"
       return nil
     end
 
@@ -22,11 +22,11 @@ class CraftService
 
     craft = twitter_craft.craft || Craft.create
     craft.bind(twitter_craft)
-    puts "^^Materialized Craft with twitter screen_name #{twitter_craft.screen_name}"
+    puts ":: materialized #{twitter_craft.screen_name} "
     hc = HoverCraft.service.materialize_from_craft(craft)
     craft
   rescue Exception => e 
-    puts "craft Exception"
+    puts "!! craft Exception"
     puts e.message
     raise e
   end

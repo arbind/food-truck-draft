@@ -24,8 +24,6 @@ class CraftService
     craft.bind(twitter_craft)
     puts "^^Materialized Craft with twitter screen_name #{twitter_craft.screen_name}"
     hc = HoverCraft.service.materialize_from_craft(craft)
-    puts "--- hover craft"
-    puts hc
     craft
   rescue Exception => e 
     puts "craft Exception"

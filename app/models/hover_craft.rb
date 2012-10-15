@@ -117,10 +117,8 @@ class HoverCraft
     updated_ids = {}
     web_crafts = []
     if  yelp_craft_id.present?
-puts "~~~~~~found existing a yelp craft"      
       yelp_craft = YelpCraft.find(yelp_craft_id) rescue nil
     else
-puts "~~~~~~got a yelp craft"      
       yelp_craft = YelpService.web_craft_for_href(yelp_href) if yelp_exists?
     end
     if yelp_craft.present?
@@ -129,10 +127,8 @@ puts "~~~~~~got a yelp craft"
     end
 
     if twitter_craft_id.present?
-puts "~~~~~~found existing a twitter craft"      
       twitter_craft = TwitterCraft.find(twitter_craft_id) rescue nil
     else
-puts "~~~~~~got a twitter craft"      
       twitter_craft = TwitterService.web_craft_for_href(twitter_href) if twitter_exists?
     end
 
@@ -142,10 +138,8 @@ puts "~~~~~~got a twitter craft"
     end
 
     if facebook_craft_id.present?
-puts "~~~~~~found existing a facebook craft"      
       facebook_craft = FacebookCraft.find(facebook_craft_id) rescue nil
     else
-puts "~~~~~~got a facebook craft"      
       facebook_craft = FacebookService.web_craft_for_href(facebook_href) if facebook_exists?
     end
     if facebook_craft
@@ -154,10 +148,8 @@ puts "~~~~~~got a facebook craft"
     end
 
     if webpage_craft_id.present?
-puts "~~~~~~found existing a webpage craft"      
       webpage_craft = WebpageCraft.find(webpage_craft_id) rescue nil
     else
-puts "~~~~~~got a webpage craft"      
       webpage_craft = WebpageService.web_craft_for_href(webpage_url) if webpage_exists?
     end
     if webpage_craft
@@ -166,8 +158,6 @@ puts "~~~~~~got a webpage craft"
     end
 
     if web_crafts.empty?
-puts "~~~~~~ web crafts is empty: #{web_crafts}"
-      puts "No Web crafts created for HoverCraft(#{_id}): #{to_json}"
       return nil 
     end
 

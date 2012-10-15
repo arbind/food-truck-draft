@@ -41,13 +41,13 @@ class HoverCraftService
     hover_craft.update_attributes(hover_craft_info)
 
     scraped_info = scrape_webpage_for_info(hover_craft)
-    hover_craft.update_attributes(scraped_info)
+    hover_craft.update_attributes(scraped_info) if scraped_info.present?
     hover_craft
   end
 
   def scrape_webpage_for_info(hover_craft)
-    return true if hover_craft.fully_populated?
-    return false if hover_craft.webpage_url.nil?
+    return nil if hover_craft.fully_populated?
+    return nil if hover_craft.webpage_url.nil?
 
     # crawl it to fill in any missing infor
     doc = Web.hpricot_doc(hover_craft.webpage_url)

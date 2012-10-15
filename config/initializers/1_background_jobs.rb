@@ -8,8 +8,9 @@ def launch_chron_job_to_materialize_crafts
     Thread.current[:type] = :chron
     Thread.current[:description] = 'Materializes crafts for any new friends that have been added to a Twitter TweetStreams account'
     puts ":: #{Thread.current[:name]}: Thread Launched"
-    sleep 120 # allow a few moments for the webserver to load
-    streamers = nil # array of streams you want to process, nill to process all
+    wait_time = 120
+    streamers = nil # array of streams to process, nil to queue friend_ids for all streams
+    sleep wait_time # allow a few moments for the webserver to load
     loop do
       # this this into api call so it can also be called from web on demand
       TweetStreamService.instance.refresh_tweet_streams # load the latest friends

@@ -30,7 +30,7 @@ class JobQueueService
       new_friends_count = 0
       stream.friend_ids.each do |fid|
         if TwitterCraft.where(web_craft_id: "#{fid}").empty? # only queue TwitterCrafts that do not already exist
-          JobQueue.service.enqueue(:make_craft_for_twitter_id, {twitter_id: fid, default_address: stream.address, tweet_stream_id: stream._id.to_s})
+          JobQueue.service.enqueue(:make_craft_for_twitter_id, {twitter_id: fid, tweet_stream_id: stream._id.to_s})
           new_friends_count +=1
         end
         puts "^^Queued #{new_friends_count} to make_craft_for_twitter_id from #{stream.screen_name} tweet stream" unless new_friends_count.zero?
@@ -53,12 +53,11 @@ class JobQueueService
       tid = job['twitter_id']
       next if TwitterCraft.where(web_craft_id: "#{tid}").present? # don't create it if it already exists
 
-      default_address = job['default_address']
       tweet_stream_id = job['tweet_stream_id']
       next unless (tweet_stream_id.present? and default_address.present?)      
       # puts ":: #{Thread.current[:name]}: Creating Craft for twitter id: #{job['twitter_id']} )"
       begin
-        craft = Craft.service.materialize_from_twitter_id(tid, default_address, tweet_stream_id)
+        craft = Craft.service.materialize_from_twitter_id(tid, tweet_stream_id)
         count = count + 1
         if Time.now-1.day > start_time and count > 800 # don't do more than 800 in 1 day!
           sleep 60*60 + (Time.now-1.day - start_time).to_i

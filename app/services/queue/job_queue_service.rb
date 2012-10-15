@@ -33,8 +33,8 @@ class JobQueueService
           JobQueue.service.enqueue(:make_craft_for_twitter_id, {twitter_id: fid, tweet_stream_id: stream._id.to_s})
           new_friends_count +=1
         end
-        puts "^^Queued #{new_friends_count} to make_craft_for_twitter_id from #{stream.screen_name} tweet stream" unless new_friends_count.zero?
       end
+      puts "^^Queued #{new_friends_count} to make_craft_for_twitter_id from #{stream.screen_name} tweet stream" unless new_friends_count.zero?
         # craft = Craft.materialize_from_twitter_id(fid)
           # client = TwitterService.instance.admin_client
           # user = client.user(fid)

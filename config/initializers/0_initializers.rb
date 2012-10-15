@@ -1,5 +1,5 @@
-# LAUNCH_THREADS = true
-LAUNCH_THREADS = false
+LAUNCH_THREADS = true
+# LAUNCH_THREADS = false
 RUNNING_IN_CONSOLE = defined?(Rails::Console)
 RUNNING_IN_RAKE_TASK = global_variables.include? "$rakefile"
 RUNNING_IN_SERVER = ! ( RUNNING_IN_CONSOLE  or RUNNING_IN_RAKE_TASK)

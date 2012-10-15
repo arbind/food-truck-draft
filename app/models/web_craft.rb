@@ -4,12 +4,12 @@ class WebCraft
   include Geocoder::Model::Mongoid
 
   field :web_craft_id, index: true
+  field :href # url to this provider's account
+  field :username, index: true
 
   field :name
   field :description
-  field :website
-  field :username, index: true
-  field :href, index: true
+  field :website # url to craft's actual website
 
   field :location_hash
   field :address, default: nil

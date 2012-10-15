@@ -55,6 +55,8 @@ gem 'jquery-rails'
 # Deploy with Capistrano
 # gem 'capistrano'
 
-group :development do
+group :test, :development do
+  gem 'spork'
+  gem 'minitest-rails'
   gem 'ruby-debug19', :require => 'ruby-debug'
 end

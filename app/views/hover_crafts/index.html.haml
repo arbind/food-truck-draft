@@ -6,8 +6,8 @@
     %th name
     %th site
     %th user
-    %th food
-    %th truck
+    / %th food
+    / %th truck
     %th webcraft
     %th cat
     %th following
@@ -40,10 +40,10 @@
         %p.yelp_username= ":#{hover_craft[:yelp_username]}"
         %p.twitter_username= ":#{hover_craft[:twitter_username]}"
         %p.facebook_username= ":#{hover_craft[:facebook_username]}"
-      %td{class: "fit-#{hover_craft.fit_score_food}" }
-        %p.fit_score_food= "#{hover_craft[:fit_score_food]}"
-      %td{class: "fit-#{hover_craft.fit_score_truck}" }
-        %p.fit_score_truck= "#{hover_craft[:fit_score_truck]}"
+      / %td{class: "fit-#{hover_craft.fit_score_food}" }
+      /   %p.fit_score_food= "#{hover_craft[:fit_score_food]}"
+      / %td{class: "fit-#{hover_craft.fit_score_truck}" }
+      /   %p.fit_score_truck= "#{hover_craft[:fit_score_truck]}"
       %td
         %p.yelp_craft_id= ":#{hover_craft[:craft_id]}"
         %p.yelp_craft_id= ":#{hover_craft[:yelp_craft_id]}"

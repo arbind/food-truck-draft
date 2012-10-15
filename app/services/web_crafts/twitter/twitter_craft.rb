@@ -1,6 +1,8 @@
 class TwitterCraft < WebCraft
   field :provider, type: Symbol, default: :twitter
 
+  field :tweet_stream_id
+
   field :is_protected
   field :twitter_account_created_at
 
@@ -28,8 +30,6 @@ class TwitterCraft < WebCraft
   field :profile_use_background_image
   field :default_profile
   field :default_profile_image
-
-  field :tweet_stream_id
 
   field :timeline, default: []
   field :oembed, type: Hash, default: {}

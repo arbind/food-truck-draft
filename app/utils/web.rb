@@ -104,28 +104,28 @@ class Web
     val1.eql? val2
   end
 
-  def self.service_id_from_string_or_href(id_or_url, service, path="")
-    # Assumes that the id is at the end of a url
-    # usage:
-    # Web.service_id_from_string_or_href('http://www.facebook.com/arb', :facebook) -> arb
-    # Web.service_id_from_string_or_href('https://yelp.com/biz/arb', :yelp, 'biz') -> arb
-    # Web.service_id_from_string_or_href('arb', :yelp, 'biz') -> arb
-    return nil unless id_or_url.present?
-    return nil unless service.present?
-    svc = service.to_s.downcase
-    p = path
-    p << '/' if p.present? and '/' != p[-1]
-    # match the last token of a service url, or else the entire string itself
-    matches = (id_or_url.match /((^https?:\/\/www\.|^https?:\/\/)#{svc}\.com\/#{p.present? ? p : ""}|^)(\S*)/)
-    return nil if matches.nil? or matches.size < 4
-    user_id = matches[3]
-    return nil unless user_id.present?
-    return nil if user_id.match /^https?:/ #make sure the matched user id is not a url (didn't match on the service)
-    user_id.slice!(0) if ('twitter' == svc and '@' == user_id[0]) # @twitter_handles
-    user_id = user_id.split('/').last if user_id.present? # grab the last token
-    user_id = user_id.split('?').first if user_id.present? # strip off any url parameters
-    user_id
-  end
+  # def self.service_id_from_string_or_href(id_or_url, service, path="")
+  #   # Assumes that the id is at the end of a url
+  #   # usage:
+  #   # Web.service_id_from_string_or_href('http://www.facebook.com/arb', :facebook) -> arb
+  #   # Web.service_id_from_string_or_href('https://yelp.com/biz/arb', :yelp, 'biz') -> arb
+  #   # Web.service_id_from_string_or_href('arb', :yelp, 'biz') -> arb
+  #   return nil unless id_or_url.present?
+  #   return nil unless service.present?
+  #   svc = service.to_s.downcase
+  #   p = path
+  #   p << '/' if p.present? and '/' != p[-1]
+  #   # match the last token of a service url, or else the entire string itself
+  #   matches = (id_or_url.match /((^https?:\/\/www\.|^https?:\/\/)#{svc}\.com\/#{p.present? ? p : ""}|^)(\S*)/)
+  #   return nil if matches.nil? or matches.size < 4
+  #   user_id = matches[3]
+  #   return nil unless user_id.present?
+  #   return nil if user_id.match /^https?:/ #make sure the matched user id is not a url (didn't match on the service)
+  #   user_id.slice!(0) if ('twitter' == svc and '@' == user_id[0]) # @twitter_handles
+  #   user_id = user_id.split('/').last if user_id.present? # grab the last token
+  #   user_id = user_id.split('?').first if user_id.present? # strip off any url parameters
+  #   user_id
+  # end
 
   def self.hpricot_doc(url) 
     doc = open(url, 'User-Agent' => 'ruby') { |f| Hpricot(f) } 
@@ -150,14 +150,29 @@ class Web
     web_crafts_map = web_craft_map_for_website(provider_id_username_or_href)
   end
 
+  def self.provider_for_href(href)
+    return nil unless href.present?
+
+    u = URI.parse(href.to_s.downcase) rescue nil
+    u = (URI.parse("http://#{href.to_s.downcase}")  rescue nil) if u.host.nil?
+    return nil if u.nil? or u.host.nil?
+
+    tokens = u.host.split('.')
+    return nil unless tokens.present?
+    tokens.slice!(0) if 'www'.eql? tokens[0]
+    provider = tokens[0].symbolize # e.g. :facebook or :twitter or :yelp or webpage domain or other
+    provider = :webpage unless [:twitter, :facebook, :yelp, :flickr, :youtube, :instagram].include? provider
+    provider
+  end
+
   def self.web_craft_map_for_website(url)
-    u = URI.parse(url.to_s.downcase)
-    u = URI.parse("http://#{url.to_s.downcase}") if u.host.nil?
-    return nil if u.host.nil?
-    web_service = u.host.split('.')[-2].symbolize # e.g. :facebook or :twitter or :yelp or webpage domain or other
+    # u = URI.parse(url.to_s.downcase)
+    # u = URI.parse("http://#{url.to_s.downcase}") if u.host.nil?
+    # return nil if u.host.nil?
+    # web_service = u.host.split('.')[-2].symbolize # e.g. :facebook or :twitter or :yelp or webpage domain or other
 
     website = nil
-    service = web_service
+    service = provider_for_href(url) #web_service
     begin
       svc_class_name = web_service.to_s.capitalize + "Service" # e.g. "FacebookService" or TwitterService" or "YelpService" or other
       svc_class = Kernel.const_get(svc_class_name.to_sym)

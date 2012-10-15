@@ -90,7 +90,7 @@ class YelpService < WebCraftService
     params = Rack::Utils.parse_query URI(href).query
     website = params['url']
   rescue
-    ""
+    nil
   end 
 
   def self.id_from_href(href)

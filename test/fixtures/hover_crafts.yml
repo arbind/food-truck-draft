@@ -1,0 +1,73 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  craft_id: ""
+  tweet_stream_id: ""
+  skip_this_craft: false
+  approve_this_craft: false
+  address: 
+  coordinates: []
+  website_url: ""
+  yelp_id: ""
+  yelp_name: ""
+  yelp_username: ""
+  yelp_href: ""
+  yelp_website: ""
+  yelp_categories: ""
+  yelp_craft_id: ""
+  twitter_id: ""
+  twitter_name: ""
+  twitter_username: ""
+  twitter_href: ""
+  twitter_website: ""
+  twitter_craft_id: ""
+  twitter_following: ""
+  facebook_id: ""
+  facebook_name: ""
+  facebook_username: ""
+  facebook_href: ""
+  facebook_website: ""
+  facebook_craft_id: ""
+  error_duplicate_crafts: false
+  fit_score: 3
+  fit_score_name: 3
+  fit_score_username: 3
+  fit_score_website: 3
+  fit_score_food: 3
+  fit_score_truck: 3
+
+two:
+  craft_id: ""
+  tweet_stream_id: ""
+  skip_this_craft: false
+  approve_this_craft: false
+  address: 
+  coordinates: []
+  website_url: ""
+  yelp_id: ""
+  yelp_name: ""
+  yelp_username: ""
+  yelp_href: ""
+  yelp_website: ""
+  yelp_categories: ""
+  yelp_craft_id: ""
+  twitter_id: ""
+  twitter_name: ""
+  twitter_username: ""
+  twitter_href: ""
+  twitter_website: ""
+  twitter_craft_id: ""
+  twitter_following: ""
+  facebook_id: ""
+  facebook_name: ""
+  facebook_username: ""
+  facebook_href: ""
+  facebook_website: ""
+  facebook_craft_id: ""
+  error_duplicate_crafts: false
+  fit_score: 3
+  fit_score_name: 3
+  fit_score_username: 3
+  fit_score_website: 3
+  fit_score_food: 3
+  fit_score_truck: 3

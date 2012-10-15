@@ -84,7 +84,8 @@ class FacebookService < WebCraftService
           pagename = tokens[1] if id_is_valid?(tokens[1])
         when 4 # facebook.com/pages/PageName/page_id  <- use the real page id
           pages = tokens[1].downcase
-          page_id = tokens[3]
+          page_id = tokens[2] # sometimes page_id works, 
+          page_id = tokens[3] if  web_fetch(page_id).nil? # sometimes PageName works
           pagename = page_id if ( "pages" == pages and id_is_valid?(page_id) )
         when 5 # facebook.com/pages/city-ST/PageName/some_id
           puts 5

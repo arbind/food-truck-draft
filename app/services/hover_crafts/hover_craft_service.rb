@@ -1,9 +1,73 @@
 class HoverCraftService
-  include Singleton  
-
+  include Singleton
 
   # materializers
-  def materialize_from_twitter_account
+  def materialize_from_craft(craft)
+    # precondition: craft has at least 1 webcraft which is either a twitter or yelp webcraft
+    return nil unless craft.present?
+    return nil unless (craft.yelp.present? or craft.twitter.present?)
+
+    # find existing hover craft
+    hover_craft ||= HoverCraft.where(craft_id:    craft._id.to_s).first
+    hover_craft ||= HoverCraft.where(twitter_id:  craft.twitter.twitter_id).first if craft.twitter.present?
+    hover_craft ||= HoverCraft.where(twitter_username:  craft.twitter.username).first if craft.twitter.present?
+    hover_craft ||= HoverCraft.where(yelp_id:     craft.yelp.yelp_id).first if craft.yelp.present?
+    hover_craft ||= HoverCraft.where(facebook_id: craft.facebook.facebook_id).first if craft.facebook.present?
+    hover_craft ||= HoverCraft.where(webpage_url: craft.webpage.url).first if craft.webpage.present?
+
+    hover_craft_info = info_from_craft(craft)
+
+    if hover_craft_info[:yelp_id].nil? # grab info from yelp
+      begin
+        place = hover_craft_info[:address]
+        name = hover_craft_info[:twitter_name] || hover_craft_info[:facebook_name]
+        name.downcase!
+        yelp_info = yelp_info_for_name_in_place(name, place)
+        hover_craft_info.merge!(yelp_info)
+        hover_craft ||= HoverCraft.where(yelp_name: hover_craft_info[:yelp_name]).first if hover_craft_info[:yelp_name].present?
+      rescue
+      end
+    end
+
+    if hover_craft_info[:webpage_url].nil?
+      url = determine_best_website(hover_craft_info)
+      hover_craft_info[:webpage_url] = url
+      hover_craft ||= HoverCraft.where(webpage_url: url).first if hover_craft_info[:webpage_url].present?
+    end
+
+    # create hover craft if none have been found yet
+    hover_craft ||= HoverCraft.create(craft_id: craft._id.to_s)
+
+    hover_craft.update_attributes(hover_craft_info)
+
+    scraped_info = scrape_webpage_for_info(hover_craft)
+    hover_craft.update_attributes(scraped_info)
+    hover_craft
+  end
+
+  def scrape_webpage_for_info(hover_craft)
+    return true if hover_craft.fully_populated?
+    return false if hover_craft.webpage_url.nil?
+
+    # crawl it to fill in any missing infor
+    doc = Web.hpricot_doc(hover_craft.webpage_url)
+    return false if doc.nil?
+
+    info ={}
+
+    # try to find links to providers if they are missing in the hover_craft
+    yelp_links          = YelpService.hrefs_in_hpricot_doc(doc) if hover_craft.yelp_id.nil?
+    twitter_links       = TwitterService.hrefs_in_hpricot_doc(doc) if hover_craft.twitter_username.nil?
+    facebook_links      = FacebookService.hrefs_in_hpricot_doc(doc) if hover_craft.facebook_username.nil?
+    # hrefs[:you_tube]  = YouTubeService.hrefs_in_hpricot_doc(doc) unless hrefs[:you_tube].present?
+    # hrefs[:flickr]    = FlickrService.hrefs_in_hpricot_doc(doc) unless hrefs[:flickr].present?
+    # hrefs[:rss]       = RssService.hrefs_in_hpricot_doc(doc) unless hrefs[:rss].present?
+
+    # merge in reverse priority order
+    info.merge!(facebook_info_from_href(facebook_links.first)) if facebook_links.present?
+    info.merge!(twitter_info_from_href(twitter_links.first)) if twitter_links.present?
+    info.merge!(yelp_info_from_href(yelp_links.first)) if yelp_links.present?
+    info
   end
 
   # def materialize_from_twitter_craft(twitter_craft)
@@ -57,15 +121,12 @@ class HoverCraftService
     dup = HoverCraft.where(yelp_id: biz['id']).first
     return dup if dup.present?
 
-    yelp_info = yelp_info(biz)
-    puts "got yelp_info #{yelp_info}"
+    yelp_info = yelp_info_for_biz(biz)
     return nil unless yelp_info.present?
-    puts "yelp_info[:yelp_website]: #{yelp_info[:yelp_website]}"
     if yelp_info[:yelp_website].present?
       # +++ ---> check if website is twitter or facebook
       doc = Web.hpricot_doc(yelp_info[:yelp_website])
       if doc.present?
-        puts "got hpricot doc for #{yelp_info[:yelp_website]}"
         twitter_links   = ::TwitterService.hrefs_in_hpricot_doc(doc)
         facebook_links  = ::FacebookService.hrefs_in_hpricot_doc(doc)
         # hrefs[:yelp]      = ::YelpService.hrefs_in_hpricot_doc(doc) unless hrefs[:yelp].present?
@@ -78,8 +139,10 @@ class HoverCraftService
     facebook_info = facebook_info(facebook_links.first) if facebook_links.present?
     twitter_info ||= {}
     facebook_info ||= {}
+    # check and bind twitter_craft if it already exists, fb too (before save?)
+    # bind craft id also if found (priority to twitter)
+    # bind tweet stream id too if twitter craft was found
     h = HoverCraft.create(defaults.merge(yelp_info).merge(twitter_info).merge(facebook_info))
-    puts h
     # identify most likely twitter link if there is more than 1
     # identify most likely facebook link if there is more than 1
     # create HoverCraft if strong fit
@@ -94,107 +157,114 @@ class HoverCraftService
   end
 
 
-
   # scanners
-  def scan_place_for_food_trucks(place)
-    scan_place('food truck, truck', place)
+  def scan_place_for_food_trucks(place, page=1, total_pages=0)
+    scan_place('food truck, truck', place, page, total_pages)
   end
 
-  def scan_place_for_food(place)
-    # scan_place('food', place)
-    # scan_place('restaurant', place)
-    # scan_place('dinner', place)
-    # scan_place('lunch', place)
-    # scan_place('breakfast', place)
+  def scan_place_for_food(place, page=1, total_pages=0)
+    # scan_place('food', place, page, total_pages)
+    # scan_place('restaurant', place, page, total_pages)
+    # scan_place('dinner', place, page, total_pages)
+    # scan_place('lunch', place, page, total_pages)
+    # scan_place('breakfast', place, page, total_pages)
   end
 
-  def scan_place_for_cuisine(cuisine, place)
-    scan_place(cuisine, place)
+  def scan_place_for_cuisine(cuisine, place, page=1, total_pages=0)
+    scan_place(cuisine, place, page, total_pages)
   end
 
-  def scan_place(term, place)
-    scan_place_on_yelp(term, place)
+  def scan_place(term, place, page=1, total_pages=0)
+    scan_place_on_yelp(term, place, page, total_pages)
     # +++ add other data sources
   end
 
   def scan_place_on_yelp(term, place, page=1, total_pages=0)
     return if ( 1<page and (total_pages < page or 5000 < (page*YelpService::V2_MAX_RESULTS_LIMIT) ) )
-    location = place.downcase
+    max_pages = total_pages
+    defaults = { address: place.downcase }
 
-    defaults = { address: location }
-
-    results = YelpService.search(term, location, page)
+    results = YelpService.search(term, place, page)
     return unless results.present?
 
     results ||= {}
-    if 1 == page
+    if 1 == page and max_pages.zero?
       total_results = results['total'] || 0
-      total_pages = 1 + (total_results / YelpService::V2_MAX_RESULTS_LIMIT)
-      puts "total_results = #{total_results}"
-      puts "total_pages = #{total_pages}"
+      max_pages = 1 + (total_results / YelpService::V2_MAX_RESULTS_LIMIT)
     end
 
     biz_list = *results['businesses']
     if biz_list.count.zero?
       puts "==========================================="
-      puts "Zero results returned! From page #{page} of #{total_pages}"
+      puts "Zero results returned! From page #{page} of #{max_pages}"
       puts "==========================================="
       return 
     end
     puts "============================"
-    puts "exploring #{biz_list.count} results from page #{page} of #{total_pages}"
-    # biz_list.each{ |biz| materialize_from_yelp_biz(biz, defaults) }
-    materialize_from_yelp_biz(biz_list.first, defaults)
+    puts "exploring #{biz_list.count} results from page #{page} of #{max_pages}"
+    biz_list.each{ |biz| materialize_from_yelp_biz(biz, defaults) }
 
-    # scan_place_on_yelp(term, location, state, country, page+1, total_pages)
+    scan_place_on_yelp(term, place, page+1, max_pages)
   end
-
-
-  def fill_twitter_info(hover_craft, username)
-    return true if hover_craft.twitter_username.present?
-    # +++ todo!
-    twitter_info = nil # +++
-    return false if twitter_info.nil?
-    hover_craft.update_attributes(twitter_info)
-  end
-
-  def fill_facebook_info(hover_craft, fb_username)
-    return true if hover_craft.facebook_username.present?
-    # +++ todo!
-    facebook_info = nil # +++
-    return false if facebook_info.nil?
-    hover_craft.update_attributes(facebook_info)
-  end
-
-  def fill_website_info(hover_craft)
-    return true if hover_craft.website.present?
-    # +++ todo!
-    # analyze yelp, twitter and fb website urls for a best match that is not a provider
-    website_info = nil # +++
-    return false if website_info.nil?
-    hover_craft.update_attributes(website_info)
-  end
-
-  def fill_yelp_info(hover_craft)
-    return true if hover_craft.yelp_id.present?
-
-    place = hover_craft.address
-    return false if place.nil?
-
-    name = hover_craft.twitter_name || hover_craft.facebook_name
-    return false if name.nil?
-
-    name.downcase!
-    yelp_info = yelp_info_for_name_in_place(name, place)
-    return false if yelp_info.nil?
-    hover_craft.update_attributes(yelp_info)
-  end
-
-
 
 private
-  def facebook_info(facebook_username_or_url)
-    username = Web.service_id_from_string_or_href(facebook_username_or_url, :facebook);
+
+  def determine_best_website(hover_craft_info)
+    return hover_craft_info[:webpage_url] if hover_craft_info[:webpage_url].present?
+    if :webpage.eql? Web.provider_for_href(hover_craft_info[:yelp_website])
+      return hover_craft_info[:yelp_website] if Web.href_domains_match?(hover_craft_info[:yelp_website], hover_craft_info[:twitter_website])
+      return hover_craft_info[:yelp_website] if Web.href_domains_match?(hover_craft_info[:yelp_website], hover_craft_info[:facebook_website])
+    end
+    if :webpage.eql? Web.provider_for_href(hover_craft_info[:twitter_website])
+      return hover_craft_info[:twitter_website] if Web.href_domains_match?(hover_craft_info[:twitter_website], hover_craft_info[:facebook_website])
+    end
+    return hover_craft_info[:twitter_website] if hover_craft_info[:twitter_website].present? and :webpage.eql? Web.provider_for_href(hover_craft_info[:twitter_website])
+    return hover_craft_info[:yelp_website] if hover_craft_info[:yelp_website].present? and :webpage.eql? Web.provider_for_href(hover_craft_info[:yelp_website])
+    return hover_craft_info[:facebook_website] if hover_craft_info[:facebook_website].present? and :webpage.eql? Web.provider_for_href(hover_craft_info[:facebook_website])
+    nil
+  end
+
+  def info_from_craft(craft)
+    return nil unless craft.present? and craft.web_crafts.present?
+    # pick off most likely address
+    address   = craft.yelp.address if craft.yelp.present?
+    address ||= craft.twitter.address if craft.twitter.present?
+    address ||= craft.facebook.address if craft.facebook.present?
+
+    info = {}
+    info[:craft_id] = craft._id.to_s 
+    info[:address] = address
+    info[:tweet_stream_id] = craft.tweet_stream_id
+    info.merge!(info_from_web_craft(craft.twitter))  if craft.twitter.present?
+    info.merge!(info_from_web_craft(craft.yelp))     if craft.yelp.present?
+    info.merge!(info_from_web_craft(craft.facebook)) if craft.facebook.present?
+    info.merge!(info_from_web_craft(craft.webpage))  if craft.webpage.present?
+    info
+  end
+
+  def info_from_web_craft(web_craft)
+    return nil unless web_craft.present?
+    provider = web_craft.provider
+    if :webpage.eql? provider
+      info = {
+        webpage_craft_id: web_craft._id.to_s,
+        webpage_url: web_craft.url
+      }
+      return info
+    end 
+
+    info = {
+      :"#{provider}_craft_id" => web_craft._id.to_s,
+      :"#{provider}_id"       => web_craft.web_craft_id,
+      :"#{provider}_name"     => web_craft.name,
+      :"#{provider}_username" => web_craft.username,
+      :"#{provider}_href"     => web_craft.href,
+      :"#{provider}_website"  => web_craft.website
+    }
+  end
+
+  def facebook_info_from_href(href)
+    username = FacebookService.id_from_href(href);
     return nil unless username.present?
     web_craft_hash = FacebookService.web_fetch(username)
     return nil unless web_craft_hash.present?
@@ -213,7 +283,7 @@ private
       end
     end
 
-    hover_craft = {
+    info = {
       facebook_id: id,
       facebook_name: name,
       facebook_username: username,
@@ -222,9 +292,9 @@ private
     }
   end
 
-  def twitter_info(twitter_screen_name_or_url)
+  def twitter_info_from_href(href)
     #scrape from web page (does not use api) 
-    username = Web.service_id_from_string_or_href(twitter_screen_name_or_url, :twitter);
+    username = TwitterService.id_from_href(href);
     return nil unless username.present?
 
     username.downcase!
@@ -247,13 +317,19 @@ private
       end
     end
 
-    hover_craft = {
+    info = {
       twitter_name: name,
       twitter_username: screen_name || username,
       twitter_href: href,
       twitter_website: website,
-      twitter_following_list: nil
     }
+  end
+
+  def yelp_info_from_href(href)
+    yelp_id = YelpService.id_from_href(href);
+    return nil unless yelp_id.present?
+    biz = YelpService.biz_for_id(yelp_id)
+    info = yelp_info_for_biz(biz)
   end
 
   def yelp_info_for_name_in_place(name, place)
@@ -264,20 +340,16 @@ private
     return nil if results.empty?
 
     biz = biz_list.first
-    yelp_info(biz)
+    yelp_info_for_biz(biz)
   end
 
-  def yelp_info(biz)
+  def yelp_info_for_biz(biz)
     return nil unless biz.present? and biz['id'].present?
 
     yelp_id = biz['id']
     name= biz['name']
     href = biz['url']
-puts "----"
-puts biz
-puts "----"
     website = YelpService.website_for_account(yelp_id)
-    puts "website: #{website}"
     if website
       begin
         u = URI.parse(website)
@@ -287,13 +359,12 @@ puts "----"
       end
     end
 
-    hover_craft = {
+    info = {
       yelp_id: yelp_id,
       yelp_name: name,
       yelp_href: href,
       yelp_website: website
     }
   end
-
 
 end

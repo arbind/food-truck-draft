@@ -47,32 +47,34 @@ class JobQueueService
 
   def dequeue_tweet_stream_friend_ids_to_materialize_craft
     puts ":: Dequeueing twitter friend jobs"
+    count = 0
+    start_time = Time.now
     while job=JobQueue.dequeue(:make_craft_for_twitter_id)
       tid = job['twitter_id']
       next if TwitterCraft.where(web_craft_id: "#{tid}").present? # don't create it if it already exists
 
       default_address = job['default_address']
       tweet_stream_id = job['tweet_stream_id']
-      puts job
-      puts ":: #{Thread.current[:name]}: Creating Craft for twitter id: #{job['twitter_id']} )"
+      next unless (tweet_stream_id.present? and default_address.present?)      
+      # puts ":: #{Thread.current[:name]}: Creating Craft for twitter id: #{job['twitter_id']} )"
       begin
-        craft = Craft.materialize_from_twitter_id(tid, default_address, tweet_stream_id)
+        craft = Craft.service.materialize_from_twitter_id(tid, default_address, tweet_stream_id)
+        count = count + 1
+        if Time.now-1.day > start_time and count > 800 # don't do more than 800 in 1 day!
+          sleep 60*60 + (Time.now-1.day - start_time).to_i
+          count = 0 # reset count
+          start_time = Time.now # reset start time
+        end
       rescue Twitter::Error::RateLimited => e
         puts "job queue service Twitter::Error::RateLimited"
         puts "Rate Limit Reached, Ending Process"
-        JobQueue.service.enqueue(:make_craft_for_twitter_id, job) # rate limit exceeded, requeue this
+        JobQueue.service.enqueue(:make_craft_for_twitter_id, job) # rate limit exceeded, requeue this for later processing
         break
       rescue Exception => e
-        puts "job queue service Exception"
+        puts "job queue service Exception" # couldn't process this - don't requeue again to avoid infinite error loop
         puts e.message
         puts e.backtrace
       end
-      # create hovercraft if none found
-      # set twitterinfo and tweet_stream_id on hovercraft
-      # hover_craft = HoverCraft.service.materialize_from_twitter_craft(craft.twitter)
-      # hover_craft.materialize_craft if hover_craft.is_ready_to_make?
-        # find hover craft by twitter_id or twitter_username.downcase
-        # mark as duplicate if more than one found
     end
   rescue Exception => e
     puts e.message

@@ -16,7 +16,8 @@ def launch_chron_job_to_materialize_crafts
       TweetStreamService.instance.refresh_tweet_streams # load the latest friends
       JobQueueService.instance.queue_tweet_stream_friend_ids_to_materialize_craft streamers
       JobQueueService.instance.dequeue_tweet_stream_friend_ids_to_materialize_craft      
-      sleep 2*60*60 # check every 1 hour
+      sleep 4*60*60 # check every n hour
+      # move number of hours (4) into app config
     end
   end
 end

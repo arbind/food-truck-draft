@@ -1,6 +1,27 @@
 class HoverCraftService
   include Singleton
 
+  def delete_all_the_crafts_and_job_queue_and_clear_hover_craft_all_ids(ok='no')
+    return unless ok.eql? :oK
+    puts "Deleted #{Craft.all.delete} Crafts"
+    puts "Deleted #{WebCraft.all.delete} WebCrafts"
+    puts "Deleted #{JobQueue.all.delete} JobQueue"
+    count = 0
+    HoverCraft.all.each do |hc|
+      count = count + 1 
+      updates = {
+        craft_id: nil,
+        tweet_stream_id: nil,
+        yelp_craft_id: nil,
+        twitter_craft_id: nil,
+        facebook_craft_id: nil,
+        webpage_craft_id: nil
+      }
+      hc.update_attributes(updates)
+    end
+    puts "Cleared id's for #{count} HoverCrafts"
+  end
+
   # materializers
   def materialize_from_craft(craft)
     # precondition: craft has at least 1 webcraft which is either a twitter or yelp webcraft

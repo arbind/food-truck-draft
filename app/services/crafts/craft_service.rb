@@ -8,7 +8,6 @@ class CraftService
     puts ":: Materializing Craft from twitter id #{tid}"
     streamer = TweetApiAccount.streams.where(twitter_id: tweet_stream_id).first
     default_address = streamer.address.downcase! if streamer.present? and streamer.address.present?
-
     twitter_craft = TwitterCraft.pull(tid) rescue nil
     if twitter_craft.nil?
       puts "^^ Twitter user #{tid} could not be pulled!"
@@ -16,9 +15,9 @@ class CraftService
     end
 
     updates = {}
-    updates[:address] = default_address if (default_address.present? and twitter_craft.address.nil?)
+    updates[:address] = default_address if default_address.present? # use the streamer's address over the actual twitter account's address
     updates[:tweet_stream_id] = tweet_stream_id if tweet_stream_id.present? and twitter_craft.tweet_stream_id.nil?
-    twitter_craft.update_attributes(updates) if updates.present?
+    twitter_craft.update_attributes(updates)
 
     craft = twitter_craft.craft || Craft.create
     craft.bind(twitter_craft)

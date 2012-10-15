@@ -10,17 +10,11 @@ def launch_chron_job_to_materialize_crafts
     puts ":: #{Thread.current[:name]}: Thread Launched"
     sleep 120 # allow a few moments for the webserver to load
     loop do
+      # this this into api call so it can also be called from web on demand
       TweetStreamService.instance.refresh_tweet_streams # load the latest friends
-      JobQueueService.instance.queue_tweet_stream_friend_ids_to_materialize_craft
-      JobQueueService.instance.dequeue_tweet_stream_friend_ids_to_materialize_craft
-      # HoverCraft.ready_to_make.map(&:materialize)
-      
-      puts ":: Dequeueing hovercraft jobs"
-      # launch_chron_job_to_materialize_crafts_from_approved_hover_crafts
-      # while cid=JobQueue.service.dequeue(:make_hover_craft_for_new_twitter_friend)
-        # +++ todo create hover craft
-      # end
-      sleep 1*60*60 # check every 1 hour
+      JobQueueService.instance.queue_tweet_stream_friend_ids_to_materialize_craft streamer
+      JobQueueService.instance.dequeue_tweet_stream_friend_ids_to_materialize_craft      
+      sleep 2*60*60 # check every 1 hour
     end
   end
 end

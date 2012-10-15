@@ -30,7 +30,7 @@ class JobQueueService
       new_friends_count = 0
       stream.friend_ids.each do |fid|
         if TwitterCraft.where(web_craft_id: "#{fid}").empty? # only queue TwitterCrafts that do not already exist
-          JobQueue.service.enqueue(:make_craft_for_twitter_id, {twitter_id: fid, tweet_stream_id: stream._id.to_s})
+          JobQueue.service.enqueue(:make_craft_for_twitter_id, {twitter_id: fid, tweet_stream_id: stream.twitter_id})
           new_friends_count +=1
         end
       end

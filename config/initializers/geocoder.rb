@@ -15,7 +15,7 @@ Geocoder.configure do |config|
   # config.units = :km
 
   # caching (see below for details):
-  config.cache = REDIS
+  # config.cache = REDIS
   config.cache_prefix = "geocoder:"
 end
 

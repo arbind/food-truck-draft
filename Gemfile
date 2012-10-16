@@ -9,6 +9,7 @@ gem 'rails', '3.2.2'
 gem 'redis'
 gem 'mongoid', '2.4.8'
 gem 'bson_ext'
+# gem 'mongoid'
 gem 'newrelic_rpm' #Server Monitoring
 group :production do
   gem 'thin'

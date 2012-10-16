@@ -15,15 +15,15 @@ class Craft
   field :geo_location_history, :type => Array # for mobile crafts like a Food Truck
 
   # add all nizer.name to search_tags - be sure to update list when binding to a new nizer
-  field :provider_id_tags, type: Array, default: [], index: true # e.g. fb:facebook_id, yelp:yelp_id, @twitter_id etc. should be aliased to this field for a normalized id 
-  field :provider_username_tags, type: Array, default: [], index: true  # e.g. fb:username, @twitter_handle
+  field :provider_id_tags, type: Array, default: [] # e.g. fb:facebook_id, yelp:yelp_id, @twitter_id etc. should be aliased to this field for a normalized id 
+  field :provider_username_tags, type: Array, default: []  # e.g. fb:username, @twitter_handle
 
-  field :essence_tags, type: Array, default: [], index: true # food, fit, fun, travel, home
-  field :theme_tags, type: Array, default: [], index: true # truck, taco, sushi: weight-loss, yoga, etc
+  field :essence_tags, type: Array, default: [] # food, fit, fun, travel, home
+  field :theme_tags, type: Array, default: [] # truck, taco, sushi: weight-loss, yoga, etc
 
 
-  field :href_tags, type: Array, default: [], index: true
-  field :search_tags, type: Array, default: [], index: true
+  field :href_tags, type: Array, default: []
+  field :search_tags, type: Array, default: []
 
   # statuses
   field :status_strength, type: Integer
@@ -32,6 +32,13 @@ class Craft
 
   has_many :web_crafts, :dependent => :destroy
   # has_and_belongs_to_many :nizers # organizers
+
+  index :provider_id_tags
+  index :provider_username_tags
+  index :essence_tags
+  index :theme_tags
+  index :href_tags
+  index :search_tags
 
   geocoded_by :address
   reverse_geocoded_by :coordinates

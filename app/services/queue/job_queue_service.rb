@@ -3,7 +3,7 @@ class JobQueueService
 
   def enqueue(key, uid, job)
     return true if JobQueue.where(key: key.symbolize, uid: uid).first.present?
-    JobQueue.create(key: key.symbolize, job: job)
+    JobQueue.create(key: key.symbolize, uid: uid, job: job)
   end
 
   def dequeue(key)

@@ -16,6 +16,9 @@ class HoverCraft
   field :craft_id, default: nil
   field :tweet_stream_id, type: Integer, default: nil
 
+  # Need to follow up to correct
+  field :flag, type: Boolean, default: false
+
   # manual overrides
   field :skip_this_craft, type: Boolean, default: false
   field :approve_this_craft, type: Boolean, default: false
@@ -70,22 +73,25 @@ class HoverCraft
   scope :neutral_fit,     where(fit_score: FIT_neutral)
   scope :absolute_fit,    where(fit_score: FIT_absolute)
 
+  # need to follow up
+  scope :flagged,                   where(flag: true).and(skip_this_craft: false)
+
   # crafts with both twitter and yelp
-  scope :twelps,                 excludes(craft_id: nil).and(skip_this_craft: false).excludes(yelp_craft_id: nil).excludes(twitter_craft_id: nil).desc(:yelp_name)
+  scope :twelps,                    excludes(craft_id: nil).and(skip_this_craft: false).excludes(yelp_craft_id: nil).excludes(twitter_craft_id: nil).desc(:yelp_name)
 
   scope :trigger_with_tweet_stream, where(fit_score: 8).and(craft_id: nil).and(skip_this_craft: false) # implies: and(tweet_stream_id: nil)
-  scope :approve_to_promote,           where(:fit_score.lt => 8).excludes(yelp_id: nil).and(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
+  scope :approve_to_promote,        where(:fit_score.lt => 8).excludes(yelp_id: nil).and(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
 
   # already created crafts - could be enhanced?
-  scope :missing_tweet_stream,    excludes(craft_id: nil).and(skip_this_craft: false).where(tweet_stream_id: nil).desc(:fit_score)
-  scope :missing_yelp_craft,      excludes(craft_id: nil).and(skip_this_craft: false).where(yelp_craft_id: nil).desc(:fit_score)
-  scope :missing_twitter_craft,   excludes(craft_id: nil).and(skip_this_craft: false).where(twitter_craft_id: nil).desc(:fit_score)
-  scope :missing_facebook_craft,  excludes(craft_id: nil).and(skip_this_craft: false).where(facebook_craft_id: nil).desc(:fit_score)
+  scope :missing_tweet_stream,      excludes(craft_id: nil).and(skip_this_craft: false).where(tweet_stream_id: nil).desc(:fit_score)
+  scope :missing_yelp_craft,        excludes(craft_id: nil).and(skip_this_craft: false).where(yelp_craft_id: nil).desc(:fit_score)
+  scope :missing_twitter_craft,     excludes(craft_id: nil).and(skip_this_craft: false).where(twitter_craft_id: nil).desc(:fit_score)
+  scope :missing_facebook_craft,    excludes(craft_id: nil).and(skip_this_craft: false).where(facebook_craft_id: nil).desc(:fit_score)
 
-  scope :crafted,                 excludes(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
-  scope :uncrafted,               where(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
+  scope :crafted,                   excludes(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
+  scope :uncrafted,                 where(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
 
-  scope :skipped,                 where(skip_this_craft: true).desc(:fit_score)
+  scope :skipped,                   where(skip_this_craft: true).desc(:fit_score)
 
   geocoded_by :address
   reverse_geocoded_by :coordinates

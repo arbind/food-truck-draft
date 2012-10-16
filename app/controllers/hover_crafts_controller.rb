@@ -1,10 +1,21 @@
 class HoverCraftsController < BasicAuthProtectionController
   protect_from_forgery :except => :sync
 
+  # ready_to_make
+  # needs_tweet_stream
+  # needs_yelp_craft
+  # unknowns
+  # approve_to_make
+
   # GET /crafts
   # GET /crafts.json
   def index
-    @hover_crafts = HoverCraft.where(:fit_score.gte => -5).desc(:fit_score)
+    @scope = params[:scope].symbolize if params[:scope].present?
+    @scope ||= :approve_to_make
+
+    @hover_crafts = HoverCraft.try(@scope).desc(:fit_score)
+    @hover_crafts ||= HoverCraft.approve_to_make
+    @hover_crafts.desc(:fit_score)
     # @hover_crafts = HoverCraft.ready_to_make.desc(:fit_score)
     respond_to do |format|
       format.html # index.html.erb

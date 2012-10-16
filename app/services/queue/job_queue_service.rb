@@ -47,8 +47,6 @@ class JobQueueService
 
   def dequeue_tweet_stream_friend_ids_to_materialize_craft
     puts ":: Dequeueing twitter friend jobs"
-    count = 0
-    start_time = Time.now
     while job=JobQueue.dequeue(:make_craft_for_twitter_id)
       tid = job['twitter_id']
       next if TwitterCraft.where(web_craft_id: "#{tid}").present? # don't create it if it already exists
@@ -57,12 +55,7 @@ class JobQueueService
       next unless tweet_stream_id.present?
       begin
         craft = Craft.service.materialize_from_twitter_id(tid, tweet_stream_id)
-        count = count + 1
-        if Time.now-1.day > start_time and count > 800 # don't do more than 800 in 1 day!
-          sleep 60*60 + (Time.now-1.day - start_time).to_i
-          count = 0 # reset count
-          start_time = Time.now # reset start time
-        end
+        # +++ ad rescue YelpError RateLimited
       rescue Twitter::Error::RateLimited => e
         puts "!! job queue service Twitter::Error::RateLimited"
         puts "!! Rate Limit Reached, Ending Process"

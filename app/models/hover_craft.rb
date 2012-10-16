@@ -70,21 +70,19 @@ class HoverCraft
   scope :neutral_fit,     where(fit_score: FIT_neutral)
   scope :absolute_fit,    where(fit_score: FIT_absolute)
 
-  scope :trigger_with_tweet_stream, where(fit_score: 8).and(craft_id: nil).and(skip_this_craft: false) # implies: and(:tweet_stream_id.exists => false)
-  scope :approve_to_make,           where(:fit_score.lt => 8).and(:yelp_id.exists => true).and(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
+  scope :trigger_with_tweet_stream, where(fit_score: 8).and(craft_id: nil).and(skip_this_craft: false) # implies: and(tweet_stream_id: nil)
+  scope :approve_to_make,           where(:fit_score.lt => 8).excludes(yelp_id: nil).and(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
 
   # already created crafts - could be enhanced?
-  scope :missing_tweet_stream,    where(tweet_stream_id: nil).and(:craft_id.exists => true).and(skip_this_craft: false).desc(:fit_score)
-  scope :missing_yelp_craft,      where(yelp_craft_id: nil).and(:craft_id.exists => true).and(skip_this_craft: false).desc(:fit_score)
-  scope :missing_twitter_craft,   where(twitter_craft_id: nil).and(:craft_id.exists => true).and(skip_this_craft: false).desc(:fit_score)
-  scope :missing_facebook_craft,  where(facebook_craft_id: nil).and(:craft_id.exists => true).and(skip_this_craft: false).desc(:fit_score)
+  scope :missing_tweet_stream,    excludes(craft_id: nil).and(skip_this_craft: false).where(tweet_stream_id: nil).desc(:fit_score)
+  scope :missing_yelp_craft,      excludes(craft_id: nil).and(skip_this_craft: false).where(yelp_craft_id: nil).desc(:fit_score)
+  scope :missing_twitter_craft,   excludes(craft_id: nil).and(skip_this_craft: false).where(twitter_craft_id: nil).desc(:fit_score)
+  scope :missing_facebook_craft,  excludes(craft_id: nil).and(skip_this_craft: false).where(facebook_craft_id: nil).desc(:fit_score)
 
-  scope :unknowns,                where(:fit_score.lt => 8).and(:tweet_stream_id.exists => false).and(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
+  scope :crafted,                 excludes(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
+  scope :uncrafted,               where(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
 
-  scope :crafted,                 where(:craft_id.exists => true).and(skip_this_craft: false).desc(:fit_score)
-  scope :uncrafted,               where(:craft_id.exists => false).and(skip_this_craft: false).desc(:fit_score)
-
-  scope :skipped,                  where(skip_this_craft: true).desc(:fit_score)
+  scope :skipped,                 where(skip_this_craft: true).desc(:fit_score)
 
   geocoded_by :address
   reverse_geocoded_by :coordinates

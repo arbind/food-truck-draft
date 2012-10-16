@@ -70,6 +70,9 @@ class HoverCraft
   scope :neutral_fit,     where(fit_score: FIT_neutral)
   scope :absolute_fit,    where(fit_score: FIT_absolute)
 
+  # crafts with both twitter and yelp
+  scope :twelps,                 excludes(craft_id: nil).and(skip_this_craft: false).excludes(yelp_craft_id: nil).excludes(twitter_craft_id: nil).desc(:yelp_name)
+
   scope :trigger_with_tweet_stream, where(fit_score: 8).and(craft_id: nil).and(skip_this_craft: false) # implies: and(tweet_stream_id: nil)
   scope :approve_to_promote,           where(:fit_score.lt => 8).excludes(yelp_id: nil).and(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
 

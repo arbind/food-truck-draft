@@ -1,29 +1,34 @@
 %h1= "#{@hover_crafts.count} Hover Crafts"
 
+
+%h2 Created
+%a.button{href: hover_crafts_path(scope: 'twelps') } twelps
+
+%h2 Add Tweet Stream
 %a.button{href: hover_crafts_path(scope: 'trigger_with_tweet_stream') } trigger
-%a.button{href: hover_crafts_path(scope: 'approve_to_promote') } approve
+%a.button{href: hover_crafts_path(scope: 'need_to_follow') } need_to_follow
 
-%hr
+%h2 Flagged
+%a.button{href: hover_crafts_path(scope: 'flagged') } flagged
 
-/ %a.button{href: hover_crafts_path(scope: 'missing_tweet_stream') } add stream
-%a.button{href: hover_crafts_path(scope: 'missing_yelp_craft') }  add yelp
-%a.button{href: hover_crafts_path(scope: 'missing_twitter_craft') }  add twitter
-%a.button{href: hover_crafts_path(scope: 'missing_facebook_craft') }  add facebook
+%h2 Generate Webcrafts
+%a.button{href: hover_crafts_path(scope: 'missing_yelp_craft') }  missing yelp
+%a.button{href: hover_crafts_path(scope: 'missing_twitter_craft') }  missing twitter
+%a.button{href: hover_crafts_path(scope: 'missing_facebook_craft') }  missing facebook
 
-%hr
+%h2 Promote
+%a.button{href: hover_crafts_path(scope: 'approve_to_promote') } promote
 
+%h2 Lookups
+%a.button{href: hover_crafts_path(scope: 'no_yelp') } no_yelp
+%a.button{href: hover_crafts_path(scope: 'no_twitter') } no_twitter
+%a.button{href: hover_crafts_path(scope: 'no_facebook') } no_facebook
+
+%h2 Overview
 %a.button{href: hover_crafts_path(scope: 'crafted') } crafted
 %a.button{href: hover_crafts_path(scope: 'uncrafted') } uncrafted
-
-%hr
-
 %a.button{href: hover_crafts_path(scope: 'skipped') } skipped
 %a.button{href: hover_crafts_path(scope: 'all') } all
-
-%hr
-
-%a.button{href: hover_crafts_path(scope: 'twelps') } twelps
-%a.button{href: hover_crafts_path(scope: 'flagged') } flagged
 
 %table.hover-craft
   %tr.hover-craft-header

@@ -82,11 +82,18 @@ class HoverCraft
   scope :trigger_with_tweet_stream, where(fit_score: 8).and(craft_id: nil).and(skip_this_craft: false) # implies: and(tweet_stream_id: nil)
   scope :approve_to_promote,        where(:fit_score.lt => 8).excludes(yelp_id: nil).and(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
 
-  # already created crafts - could be enhanced?
-  scope :missing_tweet_stream,      excludes(craft_id: nil).and(skip_this_craft: false).where(tweet_stream_id: nil).desc(:fit_score)
-  scope :missing_yelp_craft,        excludes(craft_id: nil).and(skip_this_craft: false).where(yelp_craft_id: nil).desc(:fit_score)
-  scope :missing_twitter_craft,     excludes(craft_id: nil).and(skip_this_craft: false).where(twitter_craft_id: nil).desc(:fit_score)
-  scope :missing_facebook_craft,    excludes(craft_id: nil).and(skip_this_craft: false).where(facebook_craft_id: nil).desc(:fit_score)
+  # need to follow
+  scope :need_to_follow,      excludes(craft_id: nil).and(skip_this_craft: false).excludes(twitter_id: nil).where(tweet_stream_id: nil).desc(:fit_score)
+
+  # need to lookup data
+  scope :no_yelp,             excludes(craft_id: nil).and(skip_this_craft: false).where(yelp_id: nil)
+  scope :no_twitter,          excludes(craft_id: nil).and(skip_this_craft: false).where(twitter_username: nil)
+  scope :no_facebook,         excludes(craft_id: nil).and(skip_this_craft: false).where(facebook_id: nil)
+
+  # crafted, have data for missing crafts - webcrafts could be added?
+  scope :missing_yelp_craft,        excludes(craft_id: nil).and(skip_this_craft: false).excludes(yelp_name: nil).where(yelp_craft_id: nil)
+  scope :missing_twitter_craft,     excludes(craft_id: nil).and(skip_this_craft: false).excludes(twitter_username: nil).where(twitter_craft_id: nil)
+  scope :missing_facebook_craft,    excludes(craft_id: nil).and(skip_this_craft: false).excludes(facebook_name: nil).where(facebook_craft_id: nil)
 
   scope :crafted,                   excludes(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)
   scope :uncrafted,                 where(craft_id: nil).and(skip_this_craft: false).desc(:fit_score)

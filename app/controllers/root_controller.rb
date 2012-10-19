@@ -27,7 +27,6 @@ class RootController < ApplicationController
 
     @crafts = @crafts.skip(skip).limit(limit)
 
-
     @total_pages = 1 + (@total_crafts_count/RESULTS_PER_PAGE).to_i
     js_var(total_crafts_count: @total_crafts_count, page: @page, total_pages: @total_pages)
 
@@ -36,6 +35,7 @@ class RootController < ApplicationController
       @crafts ||= Craft.where(search_tags: @look_for)
     end
 
+    @crafts = @crafts.to_a
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: nil }

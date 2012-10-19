@@ -73,15 +73,19 @@ class HoverCraftService
     h_crafts ||= HoverCraft.missing_yelp_craft
     h_crafts.each do |hc|
       next if hc.yelp_craft_id.present?
-      next unless hc.craft_id.present? and hc.twitter_craft.present? and hc.yelp_id.present? and hc.yelp_href.present? and not hc.skip_this_craft
-      next unless names_match?(hc.yelp_name, hc.twitter_name)
+      next unless hc.craft_id.present? and hc.twitter_craft_id.present? and hc.yelp_id.present? and hc.yelp_href.present? and not hc.skip_this_craft
+      next unless hc.names_match?(hc.yelp_name, hc.twitter_name)
 
       craft = Craft.find(hc.craft_id) rescue nil
       next unless craft.present?
 
-      yelp_craft = YelpService.web_craft_for_href(yelp_href) rescue nil
-      break unless help_craft.present?
+      yelp_craft = YelpService.web_craft_for_href(hc.yelp_href) rescue nil
+      puts "Yelp_craft: #{yelp_craft}"
+      break unless yelp_craft.present?
+      puts "binding"
       craft.bind(yelp_craft)
+      hc.update_attributes(yelp_craft_id: craft.yelp._id.to_s)
+      craft
     end
   end
 

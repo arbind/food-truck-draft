@@ -66,6 +66,25 @@ class HoverCraftService
     hover_craft
   end
 
+  # when rate limit reached for yelp service, sometimes the yelpcraft does not get materialized
+  # run this the next day to pick them back up
+  def bind_missing_yelp_crafts(hover_crafts=nil)
+    h_crafts = hover_crafts
+    h_crafts ||= HoverCraft.missing_yelp_craft
+    h_crafts.each do |hc|
+      next if hc.yelp_craft_id.present?
+      next unless hc.craft_id.present? and hc.twitter_craft.present? and hc.yelp_id.present? and hc.yelp_href.present? and not hc.skip_this_craft
+      next unless names_match?(hc.yelp_name, hc.twitter_name)
+
+      craft = Craft.find(hc.craft_id) rescue nil
+      next unless craft.present?
+
+      yelp_craft = YelpService.web_craft_for_href(yelp_href) rescue nil
+      break unless help_craft.present?
+      craft.bind(yelp_craft)
+    end
+  end
+
   def scrape_webpage_for_info(hover_craft)
     return nil if hover_craft.fully_populated?
     return nil if hover_craft.webpage_url.nil?

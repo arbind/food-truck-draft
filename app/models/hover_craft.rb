@@ -137,6 +137,12 @@ class HoverCraft
   def add_webpage_info()  service.add_webpage_info(self)  end
   def add_yelp_info()     service.add_yelp_info(self)     end
 
+  def blindly_update_atributes(updates)
+    HoverCraft.skip_callback(:save, :after, :trigger_craft_materialization) # skip the callback, avoid infinite loop on save
+    update_attributes(updates) # skip active_record callbacks    
+    HoverCraft.set_callback(:save, :after, :trigger_craft_materialization)  # restore the callback for future calls
+  end
+
   def materialize_craft
     updated_ids = {}
     web_crafts = []
@@ -193,7 +199,7 @@ class HoverCraft
       puts "Now Confused: Multiple crafts  exists for this HoverCraft #{_id}:"
       crafts.each{|c| puts "CraftID: #{c._id}"}
       updated_ids[:error_duplicate_crafts] = true
-      update_my_columns_(updated_ids) # skip callbacks to avoid infinite loop. update_columns not available till rails 4 
+      blindly_update_atributes(updated_ids) # skip active_record callbacks, avoid infinite loop on save
       return nil
     end
     
@@ -201,11 +207,10 @@ class HoverCraft
     craft ||= Craft.create
 
     craft.bind(web_crafts)
-    updated_ids[:craft_id] =craft._id
 
-    HoverCraft.skip_callback(:save, :after, :trigger_craft_materialization) # skip the callback, avoid infinite loop on save
-    update_attributes(updated_ids) # skip active_record callbacks    
-    HoverCraft.set_callback(:save, :after, :trigger_craft_materialization)  # restore the callback for future calls
+    updated_ids[:craft_id] =craft._id
+    blindly_update_atributes(updated_ids) # skip active_record callbacks, avoid infinite loop on save
+
     craft
   end
 

@@ -80,9 +80,7 @@ class HoverCraftService
       next unless craft.present?
 
       yelp_craft = YelpService.web_craft_for_href(hc.yelp_href) rescue nil
-      puts "Yelp_craft: #{yelp_craft}"
-      break unless yelp_craft.present?
-      puts "binding"
+      next unless yelp_craft.present?
       craft.bind(yelp_craft)
       hc.update_attributes(yelp_craft_id: craft.yelp._id.to_s)
       craft

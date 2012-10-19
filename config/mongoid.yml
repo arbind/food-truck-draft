@@ -1,12 +1,15 @@
 development:
+  identity_map_enabled: true
   host: localhost
   database: food_truck_development
 
 test:
+  identity_map_enabled: true
   host: localhost
   database: food_truck_test
 
 # set these environment variables on your prod server
 production:
+  identity_map_enabled: true
   uri: <%= ENV['MONGOLAB_URI'] %>
   # uri: <%= ENV['MONGOHQ_URL'] %>

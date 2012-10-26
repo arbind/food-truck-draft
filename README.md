@@ -1,4 +1,4 @@
-# [food-truck.me](food-truck.me)
+# [food-truck.me](http://food-truck.me)
 ================
 
 ## Local-area food truck listing for the world.

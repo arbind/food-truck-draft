@@ -146,42 +146,26 @@ class HoverCraft
   def materialize_craft
     updated_ids = {}
     web_crafts = []
-    if  yelp_craft_id.present?
-      yelp_craft = YelpCraft.find(yelp_craft_id) rescue nil
-    else
-      yelp_craft = YelpService.web_craft_for_href(yelp_href) if yelp_exists?
-    end
+
+    yelp_craft = YelpService.web_craft_for_href(yelp_href) if (yelp_exists? and yelp_craft_id.blank?)
     if yelp_craft.present?
       updated_ids[:yelp_craft_id] = yelp_craft._id.to_s
       web_crafts << yelp_craft
     end
 
-    if twitter_craft_id.present?
-      twitter_craft = TwitterCraft.find(twitter_craft_id) rescue nil
-    else
-      twitter_craft = TwitterService.web_craft_for_href(twitter_href) if twitter_exists?
-    end
-
+    twitter_craft = TwitterService.web_craft_for_href(twitter_href) if (twitter_exists? and twitter_craft_id.blank?)
     if twitter_craft
       updated_ids[:twitter_craft_id] = twitter_craft._id.to_s
       web_crafts << twitter_craft
     end
 
-    if facebook_craft_id.present?
-      facebook_craft = FacebookCraft.find(facebook_craft_id) rescue nil
-    else
-      facebook_craft = FacebookService.web_craft_for_href(facebook_href) if facebook_exists?
-    end
+    facebook_craft = FacebookService.web_craft_for_href(facebook_href) if (facebook_exists? and facebook_craft_id.blank?)
     if facebook_craft
       updated_ids[:facebook_craft_id] = facebook_craft._id.to_s
       web_crafts << facebook_craft
     end
 
-    if webpage_craft_id.present?
-      webpage_craft = WebpageCraft.find(webpage_craft_id) rescue nil
-    else
-      webpage_craft = WebpageService.web_craft_for_href(webpage_url) if webpage_exists?
-    end
+    webpage_craft = WebpageService.web_craft_for_href(webpage_url) if (webpage_exists? and webpage_craft_id.blank?)
     if webpage_craft
       updated_ids[:webpage_craft_id] = webpage_craft._id.to_s
       web_crafts << webpage_craft
@@ -192,18 +176,18 @@ class HoverCraft
     end
 
     # see if a craft is already bound to any of the web_crafts
-    crafts_map = {}
-    web_crafts.map{|wc| crafts_map[wc.craft._id] = wc.craft if wc.craft.present?} # collect all the parent crafts for the web_crafts
-    crafts = crafts_map.values
-    if 1<crafts.size  # ambiguos situation if more than one craft already exists
-      puts "Now Confused: Multiple crafts  exists for this HoverCraft #{_id}:"
-      crafts.each{|c| puts "CraftID: #{c._id}"}
-      updated_ids[:error_duplicate_crafts] = true
-      blindly_update_atributes(updated_ids) # skip active_record callbacks, avoid infinite loop on save
-      return nil
-    end
-    
-    craft = crafts.first if crafts.present?
+    # crafts_map = {}
+    # web_crafts.map{|wc| crafts_map[wc.craft._id] = wc.craft if wc.craft.present?} # collect all the parent crafts for the web_crafts
+    # crafts = crafts_map.values
+    # if 1<crafts.size  # ambiguos situation if more than one craft already exists
+    #   puts "Now Confused: Multiple crafts  exists for this HoverCraft #{_id}:"
+    #   crafts.each{|c| puts "CraftID: #{c._id}"}
+    #   updated_ids[:error_duplicate_crafts] = true
+    #   blindly_update_atributes(updated_ids) # skip active_record callbacks, avoid infinite loop on save
+    #   return nil
+    # end
+    # craft = crafts.first if crafts.present?
+    craft = Craft.find(craft_id) rescue nil
     craft ||= Craft.create
 
     craft.bind(web_crafts)

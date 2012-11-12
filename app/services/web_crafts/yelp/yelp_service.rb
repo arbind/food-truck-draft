@@ -33,7 +33,7 @@ class YelpService < WebCraftService
     }
   end
 
-  def self.raw_fetch(web_craft_id, scrape_website_url=true)
+  def self.raw_fetch(web_craft_id, get_reviews=false, scrape_website_url=true)
     phone_number = phone_number_10_digits(web_craft_id)
     if phone_number
       web_craft_hash = biz_for_phone_number(phone_number)
@@ -43,6 +43,11 @@ class YelpService < WebCraftService
     return nil if web_craft_hash.nil?
     if (scrape_website_url)
       web_craft_hash['website'] = website_for_account(web_craft_hash['url'])
+    end
+    unless get_reviews
+      # these fields should not be cached (YELP API USAGE POLICY)
+      skip_fiels =  ['reviews', 'review_count', 'rating', 'rating_img_url', 'rating_img_url_small', 'rating_img_url_large', 'snippet_image_url', 'snippet_text', 'image_url' ]
+      skip_fiels.map {|f| web_craft_hash.delete f}
     end
     web_craft_hash
   end

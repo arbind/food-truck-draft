@@ -105,7 +105,7 @@ class TwitterService < WebCraftService
   #   }
   # end
 
-  def self.raw_fetch(web_craft_id, fetch_timeline=true) # get the user and their timeline
+  def self.raw_fetch(web_craft_id, fetch_timeline=false) # get the user and their timeline
     tid = "#{web_craft_id}"
     tid = tid.to_i if tid.integer?
     puts "Fetching id: #{tid}"

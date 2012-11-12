@@ -52,10 +52,10 @@ class WebCraft
     wc_id = web_craft_hash[:web_craft_id] || web_craft_hash['web_craft_id']
     return nil if wc_id.nil?
 
-    web_craft = find_or_initialize_by(web_craft_id: "#{wc_id}")
-    web_craft.update_attributes(web_craft_hash) if web_craft
-
-    web_craft
+    # web_craft = find_or_initialize_by(web_craft_id: "#{wc_id}")
+    # web_craft.update_attributes(web_craft_hash) if web_craft
+    new (web_craft_hash)
+    # web_craft
   end
 
   # fetch and pull
@@ -70,21 +70,21 @@ class WebCraft
   def fetch() web_craft_service_class.fetch(web_craft_id) end
   def pull
     web_craft_hash = web_craft_service_class.fetch(id_for_fetching)
-    calculate_tags!(web_craft_hash)
+    # calculate_tags!(web_craft_hash)
     update_attributes(web_craft_hash)
   end
 
-  def calculate_tags!(web_craft_hash)
-    calculate_href_tags!(web_craft_hash)
-    calculate_search_tags!(web_craft_hash)
-  end
+  # def calculate_tags!(web_craft_hash)
+  #   calculate_href_tags!(web_craft_hash)
+  #   calculate_search_tags!(web_craft_hash)
+  # end
 
-  def calculate_href_tags!(web_craft_hash)
-    web_craft_hash[:href_tags] = []
-  end
-  def calculate_search_tags!(web_craft_hash)
-    web_craft_hash[:search_tags] = []
-  end
+  # def calculate_href_tags!(web_craft_hash)
+  #   web_craft_hash[:href_tags] = []
+  # end
+  # def calculate_search_tags!(web_craft_hash)
+  #   web_craft_hash[:search_tags] = []
+  # end
 
   private
   def format_attributes

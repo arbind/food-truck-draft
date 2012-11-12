@@ -168,58 +168,60 @@ class Craft
 
   def bind(web_craft)
     web_craft_list = *web_craft 
-    web_craft_list.each do |web_craft|
-      next if web_crafts.find(web_craft.id) rescue nil # don't add duplicates!
-      self.web_crafts << web_craft
+    web_craft_list.each do |wc|
+      self.build_twitter_craft(wc.attributes)   if wc.provider.eql :twitter
+      self.build_yelp_craft(wc.attributes)      if wc.provider.eql :yelp
+      self.build_facebook_craft(wc.attributes)  if wc.provider.eql :facebook
+      self.build_webpage_craft(wc.attributes)   if wc.provider.eql :webpage
 
-      self.provider_id_tags << web_craft.web_craft_id if web_craft.web_craft_id.present?
-      self.provider_username_tags << web_craft.username if web_craft.username.present?
-      self.href_tags << web_craft.href if web_craft.href.present?
-      self.href_tags << web_craft.website if web_craft.website.present?
-      self.address = web_craft.address if (:yelp==web_craft.provider || ( web_craft.address.present? and not self.address.present?) )
-      self.coordinates = web_craft.coordinates if (:yelp==web_craft.provider || ( web_craft.coordinates.present? and not self.coordinates.present?) )
+      self.provider_id_tags << wc.web_craft_id unless (wc.web_craft_id.present? and self.provider_id_tags.include?(wc.web_craft_id))
+      self.provider_username_tags << wc.username unless (wc.username.present? and self.provider_username_tags.include?(wc.username))
+      self.href_tags << wc.href unless (wc.href.present? and self.href_tags.include?(wc.href))
+      self.href_tags << wc.website unless (wc.website.present? and self.href_tags.include?(wc.website))
+      self.address = wc.address if (:yelp==wc.provider || ( wc.address.present? and not self.address.present?) )
+      self.coordinates = wc.coordinates if (:yelp==wc.provider || ( wc.coordinates.present? and not self.coordinates.present?) )
     end
     save
   end
 
-  def migrate_web_crafts
-    puts "migrating #{_id}"
-    d = ['_id', '_type', 'craft_id', 'href_tags', 'search_tags', 'created_at', 'updated_at', 'timeline', 'oembed', 'reviews', 'snippet_text', 'snippet_image_url']
+  # def migrate_web_crafts
+  #   puts "migrating #{_id}"
+  #   d = ['_id', '_type', 'craft_id', 'href_tags', 'search_tags', 'created_at', 'updated_at', 'timeline', 'oembed', 'reviews', 'snippet_text', 'snippet_image_url']
 
-    wc = web_crafts.twitter_crafts.first
-    if wc
-      puts "twitter #{wc._id}"
-      atts = {}.merge wc.attributes
-      d.map{|k| atts.delete k}    
-      self.build_twitter_craft atts
-    end
+  #   wc = web_crafts.twitter_crafts.first
+  #   if wc
+  #     puts "twitter #{wc._id}"
+  #     atts = {}.merge wc.attributes
+  #     d.map{|k| atts.delete k}    
+  #     self.build_twitter_craft atts
+  #   end
 
-    wc = web_crafts.yelp_crafts.first
-    if wc
-      puts "yelp #{wc._id}"
-      atts = {}.merge wc.attributes
-      d.map{|k| atts.delete k}    
-      self.build_yelp_craft atts
-    end
+  #   wc = web_crafts.yelp_crafts.first
+  #   if wc
+  #     puts "yelp #{wc._id}"
+  #     atts = {}.merge wc.attributes
+  #     d.map{|k| atts.delete k}    
+  #     self.build_yelp_craft atts
+  #   end
 
-    wc = web_crafts.facebook_crafts.first
-    if wc
-      puts "facebook #{wc._id}"
-      atts = {}.merge wc.attributes
-      d.map{|k| atts.delete k}    
-      self.build_facebook_craft atts
-    end
+  #   wc = web_crafts.facebook_crafts.first
+  #   if wc
+  #     puts "facebook #{wc._id}"
+  #     atts = {}.merge wc.attributes
+  #     d.map{|k| atts.delete k}    
+  #     self.build_facebook_craft atts
+  #   end
 
-    wc = web_crafts.webpage_crafts.first
-    if wc
-      puts "webpage #{wc._id}"
-      atts = {}.merge wc.attributes
-      d.map{|k| atts.delete k}    
-      self.build_webpage_craft atts
-    end
+  #   wc = web_crafts.webpage_crafts.first
+  #   if wc
+  #     puts "webpage #{wc._id}"
+  #     atts = {}.merge wc.attributes
+  #     d.map{|k| atts.delete k}    
+  #     self.build_webpage_craft atts
+  #   end
 
-    save
-  end
+  #   save
+  # end
 
   # def twitter() twitter_craft end
   # def yelp() yelp_craft end
@@ -260,8 +262,8 @@ class Craft
   end
 
   def last_tweet_html
-    if twitter_craft.present? and craft.twitter_craft.oembed.present?
-      x = twitter.oembed['html'].html_safe
+    if twitter_craft.present? and twitter_craft.oembed.present?
+      x = twitter_craft.oembed['html'].html_safe
     else
       x = nil
     end
@@ -335,7 +337,6 @@ class Craft
     x
   end
   # Craft Branding
-
 
   def web_craft_for_provider(provider) web_crafts.where(provider: provider).first end
 

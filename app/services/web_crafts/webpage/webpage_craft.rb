@@ -1,10 +1,11 @@
 class WebpageCraft < WebCraft
-  # the website's url is aliased to :web_craft_id
+  field :provider, type: Symbol, default: :webpage
+
   field :host
   field :keywords
 
   embedded_in :craft
 
-  alias_method :url, :web_craft_id
+  alias_method :url, :web_craft_id   # use the website's url as its :web_craft_id
   
 end

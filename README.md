@@ -1,10 +1,10 @@
-food-truck.me
-==========================================
+# [food-truck.me](http://food-truck.me)
 
-Local Area Food Truck Listing
+## Local-area food truck listing for the world.
 
-To find potential food trucks near some place:
-0. rails c
-1. > HoverCraft.scan_for_food_trucks_near_place(@place, @state)
-2. > HoverCraft.ready_to_make.each{ |h| h.materialize_craft }
-3. > 
+### MVP:
++ 1. food truck coverage for entire USA
++ 2. real-time update of tweets and yelp ratings/reviews
++ 3. real-time search-result ranking based on recent tweets and location
++ 4. trusted location and schedule info, parsed out from tweets
+

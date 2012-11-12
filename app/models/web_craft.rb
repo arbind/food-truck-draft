@@ -1,6 +1,6 @@
 class WebCraft
   include Mongoid::Document
-  include Mongoid::Timestamps
+  # include Mongoid::Timestamps
   include Geocoder::Model::Mongoid
 
   field :web_craft_id
@@ -18,15 +18,15 @@ class WebCraft
   # field :id_tags, index: true # e.g. facebook_id, yelp_id, twitter_id etc. should be aliased to this field for a normalized id 
   # field :username_tags, index: true  # e.g. username, twitter_handle
 
-  field :href_tags, type: Array, default: []
-  field :search_tags, type: Array, default: []
+  # field :href_tags, type: Array, default: []
+  # field :search_tags, type: Array, default: []
 
   belongs_to :craft
 
-  index :web_craft_id
-  index :username
-  index :href_tags
-  index :search_tags
+  # index :web_craft_id
+  # index :username
+  # index :href_tags
+  # index :search_tags
 
 
   scope :yelp_crafts,     where(provider: :yelp)

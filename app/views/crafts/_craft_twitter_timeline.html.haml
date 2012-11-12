@@ -1,24 +1,23 @@
-- if craft.twitter.present?
-  - tweeter = craft.twitter
+- if craft.twitter_craft.present?
   .twitter-timeline.left
-    - craft.twitter.timeline[0..2].each do |tweet|
-      %blockquote.cut.tweet
-        .vcard.author
-          %a{href:"https://twitter.com/#{tweeter.screen_name}"}
-            %span.avatar
-              %img.phto{src:tweeter.profile_image_url}
-            %span.fn
-              = tweeter.name
-            %span.screen-name
-              = "@#{tweeter.screen_name}"
-        .entry
-          = tweet['text']
-        .footer
-          .how-long-ago
-            =Util.how_long_ago_was(tweet['created_at'])
-          %a.view-details{href:"https://twitter.com/#{tweeter.screen_name}/statuses/#{tweet['id']}"}
-            - if tweet['in_reply_to_status_id']
-              view thread
-            -else 
-              view details
+    / - craft.twitter.timeline[0..2].each do |tweet|
+    /   %blockquote.cut.tweet
+    /     .vcard.author
+    /       %a{href:"https://twitter.com/#{tweeter.screen_name}"}
+    /         %span.avatar
+    /           %img.phto{src:tweeter.profile_image_url}
+    /         %span.fn
+    /           = tweeter.name
+    /         %span.screen-name
+    /           = "@#{tweeter.screen_name}"
+    /     .entry
+    /       = tweet['text']
+    /     .footer
+    /       .how-long-ago
+    /         =Util.how_long_ago_was(tweet['created_at'])
+    /       %a.view-details{href:"https://twitter.com/#{tweeter.screen_name}/statuses/#{tweet['id']}"}
+    /         - if tweet['in_reply_to_status_id']
+    /           view thread
+    /         -else 
+    /           view details
 

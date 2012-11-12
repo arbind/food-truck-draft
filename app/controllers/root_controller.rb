@@ -11,9 +11,6 @@ class RootController < ApplicationController
   end
 
   def index
-Speed.of 'request' do
-Speed.of 'query-construction' do
-
     @look_for = params[:look_for] || params[:q]
     @radius = params[:radius] || params[:r] || 100 # miles
     @page = params[:page] || params[:p] || '1' # page
@@ -28,7 +25,7 @@ Speed.of 'query-construction' do
     limit = RESULTS_PER_PAGE
     skip = (@page-1) * RESULTS_PER_PAGE
 
-    @crafts = @crafts.skip(skip).limit(limit).batchSize(limit)
+    @crafts = @crafts.skip(skip).limit(limit)
 
     @total_pages = 1 + (@total_crafts_count/RESULTS_PER_PAGE).to_i
     js_var(total_crafts_count: @total_crafts_count, page: @page, total_pages: @total_pages)
@@ -37,14 +34,10 @@ Speed.of 'query-construction' do
       @crafts = @crafts.where(search_tags: @look_for)  if @crafts.present?
       @crafts ||= Craft.where(search_tags: @look_for)
     end
-end
-Speed.of 'render' do
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: nil }
     end
-end
-end
   end
 
   def route_subdomain

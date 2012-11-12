@@ -20,6 +20,9 @@ class FacebookCraft < WebCraft
   field :restaurant_specialties
   field :category
   field :cover
+
+  embedded_in :craft
+
   alias_method :facebook_id, :web_craft_id
   # normalize attributes for WebCraft
   alias_method :link, :href  # facebook specifies it href as link=

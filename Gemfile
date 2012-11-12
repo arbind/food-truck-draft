@@ -59,5 +59,5 @@ gem 'jquery-rails'
 group :test, :development do
   gem 'spork'
   gem 'minitest-rails'
-  gem 'ruby-debug19', :require => 'ruby-debug'
+  # gem 'ruby-debug19', :require => 'ruby-debug'
 end

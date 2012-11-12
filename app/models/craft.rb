@@ -30,6 +30,11 @@ class Craft
   field :rejected, type: Boolean, default: false
   field :approved, type: Boolean, default: false
 
+  embeds_one :twitter_craft
+  embeds_one :yelp_craft
+  embeds_one :facebook_craft
+  embeds_one :webpage_craft
+
   has_many :web_crafts, :dependent => :destroy
   # has_and_belongs_to_many :nizers # organizers
 
@@ -56,10 +61,10 @@ class Craft
   end
 
   def self.where_twitter_exists
-    crafts = Craft.all.reject{|c| c.twitter.nil?} # find all crafts with a twitter webcraft
+    crafts = Craft.all.reject{|c| c.twitter_craft.nil?} # find all crafts with a twitter webcraft
   end
   def self.without_twitter
-    crafts = Craft.all.reject{|c| c.twitter.present?} # find all crafts with missing twitter webcrafts
+    crafts = Craft.all.reject{|c| c.twitter_craft.present?} # find all crafts with missing twitter webcrafts
   end
 
   def tweet_stream_id() twitter.present? ? twitter.tweet_stream_id : nil end
@@ -177,31 +182,85 @@ class Craft
     save
   end
 
-  def yelp() web_crafts.yelp_crafts.first end
-  def flickr() web_crafts.flickr_crafts.first end
-  def webpage() web_crafts.webpage_crafts.first end
-  def twitter() web_crafts.twitter_crafts.first end
-  def facebook() web_crafts.facebook_crafts.first end
-  def you_tube() web_crafts.you_tube_crafts.first end
-  def google_plus() web_crafts.google_plus_crafts.first end
+  def migrate_web_crafts
+    puts "migrating #{_id}"
+    d = ['_id', '_type', 'craft_id', 'href_tags', 'search_tags', 'created_at', 'updated_at', 'timeline', 'oembed', 'reviews', 'snippet_text', 'snippet_image_url']
+
+    wc = web_crafts.twitter_crafts.first
+    if wc
+      puts "twitter #{wc._id}"
+      atts = {}.merge wc.attributes
+      d.map{|k| atts.delete k}    
+      self.build_twitter_craft atts
+    end
+
+    wc = web_crafts.yelp_crafts.first
+    if wc
+      puts "yelp #{wc._id}"
+      atts = {}.merge wc.attributes
+      d.map{|k| atts.delete k}    
+      self.build_yelp_craft atts
+    end
+
+    wc = web_crafts.facebook_crafts.first
+    if wc
+      puts "facebook #{wc._id}"
+      atts = {}.merge wc.attributes
+      d.map{|k| atts.delete k}    
+      self.build_facebook_craft atts
+    end
+
+    wc = web_crafts.webpage_crafts.first
+    if wc
+      puts "webpage #{wc._id}"
+      atts = {}.merge wc.attributes
+      d.map{|k| atts.delete k}    
+      self.build_webpage_craft atts
+    end
+
+    save
+  end
+
+  # def twitter() twitter_craft end
+  # def yelp() yelp_craft end
+  # def facebook() facebook_craft end
+  # def webpage() webpage_craft end
+
+  # def yelp() web_crafts.yelp_crafts.first end
+  # def flickr() web_crafts.flickr_crafts.first end
+  # def webpage() web_crafts.webpage_crafts.first end
+  # def twitter() web_crafts.twitter_crafts.first end
+  # def facebook() web_crafts.facebook_crafts.first end
+  # def you_tube() web_crafts.you_tube_crafts.first end
+  # def google_plus() web_crafts.google_plus_crafts.first end
+
+  # def yelp() nil end
+  # def flickr() nil end
+  # def webpage() nil end
+  # def twitter() nil end
+  # def facebook() nil end
+  # def you_tube() nil end
+  # def google_plus() nil end
+
+
 
   # Derive the Craft's Brand
   def name
-    x = twitter.name if twitter.present?
-    x ||= yelp.name if yelp.present?
-    x ||= facebook.name if facebook.present?
+    x = twitter_craft.name if twitter_craft.present?
+    x ||= yelp_craft.name if yelp_craft.present?
+    x ||= facebook_craft.name if facebook_craft.present?
     x
   end
 
   def description
-    x = twitter.description if twitter.present?
-    x ||= yelp.description if yelp.present?
-    x ||= facebook.description if facebook.present?
+    x = twitter_craft.description if twitter_craft.present?
+    x ||= yelp_craft.description if yelp_craft.present?
+    x ||= facebook_craft.description if facebook_craft.present?
     x
   end
 
   def last_tweet_html
-    if twitter.present? and twitter.oembed.present?
+    if twitter_craft.present? and craft.twitter_craft.oembed.present?
       x = twitter.oembed['html'].html_safe
     else
       x = nil
@@ -226,28 +285,28 @@ class Craft
 
   def last_tweeted_at
     return @last_tweeted_at if @last_tweeted_at.present?
-    if twitter.present? and twitter.timeline.present? and twitter.timeline.first.present? and twitter.timeline.first["created_at"].present?      
-      @last_tweeted_at = twitter.timeline.first["created_at"]
-      @last_tweeted_at = @last_tweeted_at.to_time if @last_tweeted_at.present?
-    else
-      @last_tweeted_at = nil
-    end
+    # if twitter.present? and twitter.timeline.present? and twitter.timeline.first.present? and twitter.timeline.first["created_at"].present?      
+    #   @last_tweeted_at = twitter.timeline.first["created_at"]
+    #   @last_tweeted_at = @last_tweeted_at.to_time if @last_tweeted_at.present?
+    # else
+    #   @last_tweeted_at = nil
+    # end
     @last_tweeted_at
   end
 
   def website
     # first see if there is a website specified
-    x = yelp.website if yelp.present?
-    x ||= twitter.website if twitter.present?
-    x ||= facebook.website if facebook.present?
+    x = yelp_craft.website if yelp_craft.present?
+    x ||= twitter_craft.website if twitter_craft.present?
+    x ||= facebook_craft.website if facebook_craft.present?
     # if not, look for an href to a service
-    x ||= twitter.href if twitter.present?
-    x ||= facebok.href if facebook.present?
-    x ||= yelp.href if yelp.present?
+    x ||= twitter_craft.href if twitter_craft.present?
+    x ||= facebok_craft.href if facebook_craft.present?
+    x ||= yelp_craft.href if yelp_craft.present?
     x
   end
   def geo_enabled
-    twitter.geo_enabled if twitter.present?
+    craft.twitter_craft.geo_enabled if twitter_craft.present?
   end
 
   def location 
@@ -255,21 +314,21 @@ class Craft
   end
 
   def profile_image_url
-    x = twitter.profile_image_url if twitter.present?
+    x = twitter_craft.profile_image_url if twitter_craft.present?
   end
   def profile_background_color
-    x = twitter.profile_background_color if twitter.present?
+    x = twitter_craft.profile_background_color if twitter_craft.present?
     x ||= 'grey'
     x
   end
   def profile_background_image_url
-    x = twitter.profile_background_image_url if twitter.present?
+    x = twitter_craft.profile_background_image_url if twitter_craft.present?
     x ||= ''
     x
   end
   def profile_background_tile
-    if twitter.present?
-      x = twitter.profile_background_tile 
+    if twitter_craft.present?
+      x = twitter_craft.profile_background_tile 
     else
       x = false 
     end
@@ -303,49 +362,49 @@ class Craft
       scores[:reviewed_rating] = yelp.rating * vesting
     end
 
-    if twitter.present? # 1 point for each 500 followers (max of 5 points)
-      vesting = ([twitter.followers_count, 500].min)/100.0
+    if twitter_craft.present? # 1 point for each 500 followers (max of 5 points)
+      vesting = ([twitter_craft.followers_count, 500].min)/100.0
       scores[:twitter_reach] = 5 * vesting
 
-      if twitter.timeline and twitter.timeline.first
-        last_tweeted = twitter.timeline.first['created_at']
-        time = last_tweeted.to_time
-        time = time + (-Time.zone_offset(Time.now.zone))
-        if 30.minutes.ago < time
-          recent_activity_score = 5
-        elsif 1.hour.ago < time
-          recent_activity_score = 4.9
-        elsif 2.hours.ago < time
-          recent_activity_score = 4.8
-        elsif 3.hours.ago < time
-          recent_activity_score = 4.7
-        elsif 4.hours.ago < time
-          recent_activity_score = 4.6
-        elsif 8.hours.ago < time
-          recent_activity_score = 4.5
-        elsif 9.hours.ago < time
-          recent_activity_score = 4.4
-        elsif 10.hours.ago < time
-          recent_activity_score = 4.3
-        elsif 11.hours.ago < time
-          recent_activity_score = 4.2
-        elsif 12.hours.ago < time
-          recent_activity_score = 4.1
-        elsif 24.hours.ago < time
-          recent_activity_score = 4.0
-        elsif 36.hours.ago < time
-          recent_activity_score = 3.5
-        elsif 48.hours.ago < time
-          recent_activity_score = 3.0
-        elsif 60.hours.ago < time
-          recent_activity_score = 2.5
-        elsif 72.hours.ago < time
-          recent_activity_score = 2.0
-        else 
-          recent_activity_score = 1.0
-        end
-        scores[:twitter_recent_activity] = recent_activity_score
-      end
+      # if twitter_craft.timeline and twitter.timeline.first
+      #   last_tweeted = twitter_craft.timeline.first['created_at']
+      #   time = last_tweeted.to_time
+      #   time = time + (-Time.zone_offset(Time.now.zone))
+      #   if 30.minutes.ago < time
+      #     recent_activity_score = 5
+      #   elsif 1.hour.ago < time
+      #     recent_activity_score = 4.9
+      #   elsif 2.hours.ago < time
+      #     recent_activity_score = 4.8
+      #   elsif 3.hours.ago < time
+      #     recent_activity_score = 4.7
+      #   elsif 4.hours.ago < time
+      #     recent_activity_score = 4.6
+      #   elsif 8.hours.ago < time
+      #     recent_activity_score = 4.5
+      #   elsif 9.hours.ago < time
+      #     recent_activity_score = 4.4
+      #   elsif 10.hours.ago < time
+      #     recent_activity_score = 4.3
+      #   elsif 11.hours.ago < time
+      #     recent_activity_score = 4.2
+      #   elsif 12.hours.ago < time
+      #     recent_activity_score = 4.1
+      #   elsif 24.hours.ago < time
+      #     recent_activity_score = 4.0
+      #   elsif 36.hours.ago < time
+      #     recent_activity_score = 3.5
+      #   elsif 48.hours.ago < time
+      #     recent_activity_score = 3.0
+      #   elsif 60.hours.ago < time
+      #     recent_activity_score = 2.5
+      #   elsif 72.hours.ago < time
+      #     recent_activity_score = 2.0
+      #   else 
+      #     recent_activity_score = 1.0
+      #   end
+      #   scores[:twitter_recent_activity] = recent_activity_score
+      # end
     end
     scores[:reach] = scores[:twitter_recent_activity]
     scores[:recent_activity] = scores[:twitter_recent_activity]

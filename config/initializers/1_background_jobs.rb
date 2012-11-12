@@ -37,7 +37,7 @@ def launch_initializer_to_refresh_tweet_streams
 end
 
 def launch_initializers
-  launch_initializer_to_refresh_tweet_streams
+  #launch_initializer_to_refresh_tweet_streams
 end
 
 def launch_chron_jobs
@@ -48,14 +48,14 @@ end
 if RUNNING_IN_SERVER
   puts ":: Launching Initializer Threads"
   Rails.application.config.after_initialize do
-    launch_initializers
+    # launch_initializers
   end
 end
 
 if RUNNING_IN_SERVER and LAUNCH_THREADS
   puts ":: Launching Background Threads"
   Rails.application.config.after_initialize do
-    launch_chron_jobs
+    # launch_chron_jobs
   end
 else
   puts ":: Background Threads will not be launched"

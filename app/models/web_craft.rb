@@ -17,25 +17,19 @@ class WebCraft
 
   # field :id_tags, index: true # e.g. facebook_id, yelp_id, twitter_id etc. should be aliased to this field for a normalized id 
   # field :username_tags, index: true  # e.g. username, twitter_handle
-
   # field :href_tags, type: Array, default: []
   # field :search_tags, type: Array, default: []
-
-  belongs_to :craft
-
   # index :web_craft_id
   # index :username
   # index :href_tags
   # index :search_tags
-
-
-  scope :yelp_crafts,     where(provider: :yelp)
-  scope :flickr_crafts,   where(provider: :flickr)
-  scope :webpage_crafts,  where(provider: :webpage)
-  scope :twitter_crafts,  where(provider: :twitter)
-  scope :facebook_crafts, where(provider: :facebook)
-  scope :you_tube_crafts, where(provider: :you_tube)
-  scope :google_plus_crafts, where(provider: :google_plus)
+  # scope :yelp_crafts,     where(provider: :yelp)
+  # scope :flickr_crafts,   where(provider: :flickr)
+  # scope :webpage_crafts,  where(provider: :webpage)
+  # scope :twitter_crafts,  where(provider: :twitter)
+  # scope :facebook_crafts, where(provider: :facebook)
+  # scope :you_tube_crafts, where(provider: :you_tube)
+  # scope :google_plus_crafts, where(provider: :google_plus)
 
   geocoded_by :address
   reverse_geocoded_by :coordinates
